@@ -1499,7 +1499,7 @@ function RR.UI.MainWindow:ShowDropdown(anchorBtn, items)
         dropdownPopup.scrollBar = scrollBar
 
         local function onMouseWheel(selfF, delta)
-        dropdownPopup.onMouseWheel = onMouseWheel
+            if not scrollBar:IsShown() then return end
             local current = scrollBar:GetValue() or 0
             local minVal, maxVal = scrollBar:GetMinMaxValues()
             local step = 22 * 2
@@ -1509,11 +1509,14 @@ function RR.UI.MainWindow:ShowDropdown(anchorBtn, items)
                 scrollBar:SetValue(math.max(minVal, current - step))
             end
         end
+        dropdownPopup.onMouseWheel = onMouseWheel
 
         dropdownPopup:EnableMouseWheel(true)
         dropdownPopup:SetScript("OnMouseWheel", onMouseWheel)
         scrollFrame:EnableMouseWheel(true)
         scrollFrame:SetScript("OnMouseWheel", onMouseWheel)
+        scrollChild:EnableMouseWheel(true)
+        scrollChild:SetScript("OnMouseWheel", onMouseWheel)
 
         local clickWatcher = CreateFrame("Frame", nil, dropdownPopup)
         clickWatcher:SetScript("OnUpdate", function()
