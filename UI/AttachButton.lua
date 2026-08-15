@@ -20,19 +20,20 @@ local CANDIDATE_FRAMES = {
 function RR.UI.AttachButton:Initialize()
     if self.button then return end
 
-    local btn = CreateFrame("Button", "RecipeRadarAttachButton", UIParent, BackdropTemplateMixin and "BackdropTemplate")
-    btn:SetSize(32, 22)
+    local btn = CreateFrame("Button", "RecipeRadarAttachButton", UIParent, "UIPanelButtonTemplate")
+    btn:SetSize(42, 22)
     btn:SetFrameStrata("HIGH")
     btn:SetMovable(true)
     btn:SetClampedToScreen(true)
     btn:EnableMouse(true)
     btn:RegisterForDrag("RightButton")
-
-    RR.UI.Theme:SkinPanel(btn, 0.95)
-
-    btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    btn.text:SetPoint("CENTER", 0, 0)
-    btn.text:SetText(RR.COLORS.GOLD .. "RR")
+    btn:SetText("RR")
+    
+    local font = btn:GetFontString()
+    if font then
+        font:SetFontObject("GameFontNormalSmall")
+        font:SetTextColor(1, 0.82, 0, 1)
+    end
 
     btn:SetScript("OnClick", function()
         RR.UI.MainWindow:Toggle()
