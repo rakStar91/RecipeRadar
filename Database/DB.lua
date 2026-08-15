@@ -1,6 +1,7 @@
 -- ============================================================================
 -- RecipeRadar: Database/DB.lua
 -- Central database query engine (Classic Era + TBC)
+-- Fully ID-driven & dynamic Blizzard API localization across all languages
 -- ============================================================================
 
 local RR = RecipeRadar
@@ -21,6 +22,25 @@ RR.DB.npcMap = {}
 RR.DB.zoneMap = {}
 RR.DB.questMap = {}
 RR.DB.itemMap = {}
+RR.DB.profNameToKey = {}
+
+-- Official Blizzard Profession Spell-IDs (Universal across all locales)
+local PROFESSION_SPELL_IDS = {
+    ["Alchemy"] = 2259,
+    ["Blacksmithing"] = 2018,
+    ["Cooking"] = 2550,
+    ["Enchanting"] = 7411,
+    ["Engineering"] = 4036,
+    ["First Aid"] = 3273,
+    ["Fishing"] = 7620,
+    ["Herbalism"] = 2366,
+    ["Jewelcrafting"] = 25229,
+    ["Leatherworking"] = 2108,
+    ["Mining"] = 2575,
+    ["Poisons"] = 2842,
+    ["Skinning"] = 8613,
+    ["Tailoring"] = 3908,
+}
 
 function RR.DB:Initialize()
     if RR_DATA then
@@ -33,7 +53,7 @@ function RR.DB:Initialize()
         self.Raw.factions = RR_DATA["factions"] or {}
         self.Raw.professions = RR_DATA["professions"] or {}
 
-        -- Build O(1) lookup maps
+        -- 1. Build O(1) Lookup Maps
         self.npcMap = {}
         for _, npc in pairs(self.Raw.npcs) do
             if type(npc) == "table" and npc.id then
@@ -65,45 +85,44 @@ function RR.DB:Initialize()
                 end
             end
         end
-    end
-end
 
-function RR.DB:GetEnglishProfessionName(profName)
-    if not profName then return "Tailoring" end
-    if self.Raw.skills and self.Raw.skills[profName] then return profName end
+        -- 2. Build Dynamic Multilingual Profession Name Resolver via Blizzard API & DB
+        self.profNameToKey = {}
+        
+        -- Query Blizzard Spell API for the active client language
+        for engKey, spellId in pairs(PROFESSION_SPELL_IDS) do
+            local spellName = nil
+            if C_Spell and C_Spell.GetSpellInfo then
+                local info = C_Spell.GetSpellInfo(spellId)
+                spellName = info and info.name
+            elseif GetSpellInfo then
+                spellName = GetSpellInfo(spellId)
+            end
 
-    -- Check RR_DATA["professions"]
-    if self.Raw.professions then
-        for engName, pData in pairs(self.Raw.professions) do
-            if type(pData) == "table" and pData.name then
-                for _, locName in pairs(pData.name) do
-                    if locName == profName then
-                        return engName
+            if spellName then
+                self.profNameToKey[spellName] = engKey
+            end
+            self.profNameToKey[engKey] = engKey
+        end
+
+        -- Also index all 10 language dictionaries from Database/Classic/Professions.lua
+        if self.Raw.professions then
+            for engName, pData in pairs(self.Raw.professions) do
+                if type(pData) == "table" and pData.name then
+                    for _, locName in pairs(pData.name) do
+                        if locName and locName ~= "" then
+                            self.profNameToKey[locName] = engName
+                        end
                     end
                 end
             end
         end
     end
+end
 
-    -- Explicit dictionary fallback
-    local map = {
-        ["Alchemie"] = "Alchemy",
-        ["Alchimie"] = "Alchemy",
-        ["Schmiedekunst"] = "Blacksmithing",
-        ["Kochkunst"] = "Cooking",
-        ["Verzauberkunst"] = "Enchanting",
-        ["Ingenieurskunst"] = "Engineering",
-        ["Erste Hilfe"] = "First Aid",
-        ["Angeln"] = "Fishing",
-        ["Kräuterkunde"] = "Herbalism",
-        ["Lederverarbeitung"] = "Leatherworking",
-        ["Bergbau"] = "Mining",
-        ["Gifte"] = "Poisons",
-        ["Kürschnerei"] = "Skinning",
-        ["Schneiderei"] = "Tailoring",
-        ["Juwelenschleifen"] = "Jewelcrafting",
-    }
-    return map[profName] or profName
+function RR.DB:GetEnglishProfessionName(profName)
+    if not profName then return "Tailoring" end
+    return self.profNameToKey[profName] or profName
 end
 
 function RR.DB:GetRecipesForProfession(professionName)
