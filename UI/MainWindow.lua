@@ -790,6 +790,32 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
 
     local playerFaction = UnitFactionGroup("player") or "Alliance"
 
+    local ALLIANCE_ZONES = {
+        [1519] = true, -- Stormwind
+        [1537] = true, -- Ironforge
+        [1657] = true, -- Darnassus
+        [12]   = true, -- Elwynn Forest
+        [1]    = true, -- Dun Morogh
+        [141]  = true, -- Teldrassil
+        [40]   = true, -- Westfall
+        [38]   = true, -- Loch Modan
+        [148]  = true, -- Darkshore
+        [44]   = true, -- Redridge Mountains
+        [10]   = true, -- Duskwood
+        [11]   = true, -- Wetlands
+    }
+
+    local HORDE_ZONES = {
+        [1637] = true, -- Orgrimmar
+        [1638] = true, -- Thunder Bluff
+        [1497] = true, -- Undercity
+        [14]   = true, -- Durotar
+        [215]  = true, -- Mulgore
+        [85]   = true, -- Tirisfal Glades
+        [17]   = true, -- The Barrens
+        [130]  = true, -- Silverpine Forest
+    }
+
     local function resolveNPC(npcId)
         local npc = RR.DB:GetNPC(npcId)
         if not npc then return nil end
@@ -799,23 +825,40 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         local nx = tonumber(npc.location and npc.location.x or npc.x)
         local ny = tonumber(npc.location and npc.location.y or npc.y)
 
-        local isFactionMatch = false
-        local isOtherFaction = false
         local reacts = npc.reacts
+        local effectiveFaction = "Neutral"
+
         if reacts then
             if type(reacts) == "table" then
+                local hasA = false
+                local hasH = false
                 for _, r in ipairs(reacts) do
-                    if r == playerFaction then isFactionMatch = true end
-                    if r ~= playerFaction and (r == "Horde" or r == "Alliance") then isOtherFaction = true end
+                    if r == "Alliance" then hasA = true end
+                    if r == "Horde" then hasH = true end
                 end
-            elseif reacts == playerFaction then
-                isFactionMatch = true
-            elseif reacts ~= playerFaction and (reacts == "Horde" or reacts == "Alliance") then
-                isOtherFaction = true
+                if hasA and not hasH then effectiveFaction = "Alliance"
+                elseif hasH and not hasA then effectiveFaction = "Horde"
+                end
+            elseif reacts == "Alliance" then
+                effectiveFaction = "Alliance"
+            elseif reacts == "Horde" then
+                effectiveFaction = "Horde"
             end
         end
 
-        return nName, zName, nx, ny, isFactionMatch, (isOtherFaction and not isFactionMatch)
+        -- If faction is neutral or multi-faction, resolve territory via city/zone!
+        if effectiveFaction == "Neutral" and zId then
+            if ALLIANCE_ZONES[zId] then
+                effectiveFaction = "Alliance"
+            elseif HORDE_ZONES[zId] then
+                effectiveFaction = "Horde"
+            end
+        end
+
+        local isFactionMatch = (effectiveFaction == playerFaction or effectiveFaction == "Neutral")
+        local isOtherFaction = (effectiveFaction ~= playerFaction and effectiveFaction ~= "Neutral")
+
+        return nName, zName, nx, ny, isFactionMatch, isOtherFaction
     end
 
     local function formatNPC(nName, zName, nx, ny, suffix)
