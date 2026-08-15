@@ -74,7 +74,7 @@ function RR.UI.MainWindow:Initialize()
     local nameLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     nameLabel:SetPoint("TOPLEFT", 8, -8)
     nameLabel:SetTextColor(1, 0.82, 0, 1)
-    nameLabel:SetText("Name:")
+    nameLabel:SetText(RR.L["LABEL_NAME_COLON"])
 
     local searchBox = CreateFrame("EditBox", nil, filterArea, BackdropTemplateMixin and "BackdropTemplate")
     searchBox:SetPoint("TOPLEFT", nameLabel, "TOPRIGHT", 14, 3)
@@ -112,18 +112,18 @@ function RR.UI.MainWindow:Initialize()
     local sourceLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     sourceLabel:SetPoint("TOPLEFT", 8, -40)
     sourceLabel:SetTextColor(1, 0.82, 0, 1)
-    sourceLabel:SetText("Quelle:")
+    sourceLabel:SetText(RR.L["LABEL_SOURCE_COLON"])
 
     local sourceMenu = {
-        { text = "Alle Quellen", value = "any" },
-        { text = "Lehrer", value = "trainer", icon = "Interface\\Icons\\INV_Misc_Book_09" },
-        { text = "Händler", value = "vendor", icon = "Interface\\Icons\\INV_Misc_Coin_01" },
-        { text = "Quest", value = "quest", icon = "Interface\\GossipFrame\\AvailableQuestIcon" },
+        { text = RR.L["SOURCE_ALL"], value = "any" },
+        { text = RR.L["SOURCE_TRAINER"], value = "trainer", icon = "Interface\\Icons\\INV_Misc_Book_09" },
+        { text = RR.L["SOURCE_VENDOR"], value = "vendor", icon = "Interface\\Icons\\INV_Misc_Coin_01" },
+        { text = RR.L["SOURCE_QUEST"], value = "quest", icon = "Interface\\GossipFrame\\AvailableQuestIcon" },
         { text = "Gegner-Beute (Drop)", value = "drop", icon = "Interface\\GossipFrame\\VendorGossipIcon" },
-        { text = "Weltereignis", value = "holiday", icon = "Interface\\Icons\\INV_Misc_Gift_01" },
-        { text = "Ruf", value = "reputation", icon = "Interface\\Icons\\Achievement_Reputation_01" },
+        { text = RR.L["SOURCE_HOLIDAY"], value = "holiday", icon = "Interface\\Icons\\INV_Misc_Gift_01" },
+        { text = RR.L["SOURCE_REPUTATION"], value = "reputation", icon = "Interface\\Icons\\Achievement_Reputation_01" },
     }
-    self.sourceBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Quelle", function(selfF)
+    self.sourceBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, RR.L["DROPDOWN_SOURCE"], function(selfF)
         local menu = {}
         for _, itm in ipairs(sourceMenu) do
             table.insert(menu, {
@@ -142,10 +142,10 @@ function RR.UI.MainWindow:Initialize()
     RR.UI.Theme:AddTooltip(self.sourceBtn, RR.L["TOOLTIP_SOURCE_FILTER_TITLE"], RR.L["TOOLTIP_SOURCE_FILTER_DESC"])
 
     local factionMenu = {
-        { text = "Alle Fraktionen", value = "any" },
-        { text = "Allianz", value = "Alliance", icon = RR.ADDON_PATH .. "\\images\\alliance.tga" },
-        { text = "Horde", value = "Horde", icon = RR.ADDON_PATH .. "\\images\\horde.tga" },
-        { text = "Neutral", value = "Neutral", icon = RR.ADDON_PATH .. "\\images\\neutral.tga" },
+        { text = RR.L["FACTION_ALL"], value = "any" },
+        { text = RR.L["FACTION_ALLIANCE"], value = "Alliance", icon = RR.ADDON_PATH .. "\\images\\alliance.tga" },
+        { text = RR.L["FACTION_HORDE"], value = "Horde", icon = RR.ADDON_PATH .. "\\images\\horde.tga" },
+        { text = RR.L["FACTION_NEUTRAL"], value = "Neutral", icon = RR.ADDON_PATH .. "\\images\\neutral.tga" },
         { text = "Argentumdämmerung", value = 529 },
         { text = "Thoriumbruderschaft", value = 59 },
         { text = "Holzschlundfeste", value = 576 },
@@ -154,7 +154,7 @@ function RR.UI.MainWindow:Initialize()
         { text = "Dunkelmond-Jahrmarkt", value = 909 },
         { text = "Cenarischer Zirkel", value = 609 },
     }
-    self.factionBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Fraktion", function(selfF)
+    self.factionBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, RR.L["DROPDOWN_FACTION"], function(selfF)
         local menu = {}
         for _, itm in ipairs(factionMenu) do
             table.insert(menu, {
@@ -172,9 +172,9 @@ function RR.UI.MainWindow:Initialize()
     self.factionBtn:SetPoint("LEFT", self.sourceBtn, "RIGHT", 8, 0)
     RR.UI.Theme:AddTooltip(self.factionBtn, RR.L["TOOLTIP_FACTION_FILTER_TITLE"], RR.L["TOOLTIP_FACTION_FILTER_DESC"])
 
-    self.specBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 135, "Spezialisierung", function(selfF)
+    self.specBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 135, RR.L["DROPDOWN_SPEC"], function(selfF)
         local menu = {
-            { text = "Alle Spezialisierungen", value = "any" },
+            { text = RR.L["FACTION_ALL"], value = "any" },
         }
         self:ShowDropdown(selfF, menu)
     end)
@@ -212,16 +212,16 @@ function RR.UI.MainWindow:Initialize()
     local zoneLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     zoneLabel:SetPoint("TOPLEFT", 8, -72)
     zoneLabel:SetTextColor(1, 0.82, 0, 1)
-    zoneLabel:SetText("Zone:")
+    zoneLabel:SetText(RR.L["LABEL_ZONE_COLON"])
 
-    self.continentBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Jede Region", function(selfF)
+    self.continentBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, RR.L["REGION_ALL"], function(selfF)
         local contMenu = {
-            { text = "Jede Region", value = "any" },
-            { text = "Kalimdor", value = 1 },
-            { text = "Östliche Königreiche", value = 2 },
-            { text = "Schlachtfelder", value = 3 },
-            { text = "Dungeons", value = 4 },
-            { text = "Schlachtzüge", value = 5 },
+            { text = RR.L["REGION_ALL"], value = "any" },
+            { text = RR.L["CONTINENT_KALIMDOR"], value = 1 },
+            { text = RR.L["CONTINENT_EASTERN_KINGDOMS"], value = 2 },
+            { text = RR.L["CONTINENT_BATTLEGROUNDS"], value = 3 },
+            { text = RR.L["CONTINENT_DUNGEONS"], value = 4 },
+            { text = RR.L["CONTINENT_RAIDS"], value = 5 },
         }
         local menu = {}
         for _, itm in ipairs(contMenu) do
@@ -245,7 +245,7 @@ function RR.UI.MainWindow:Initialize()
     self.continentBtn:SetPoint("LEFT", zoneLabel, "RIGHT", 14, 0)
     RR.UI.Theme:AddTooltip(self.continentBtn, RR.L["TOOLTIP_REGION_FILTER_TITLE"], RR.L["TOOLTIP_REGION_FILTER_DESC"])
 
-    self.zoneDropBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Zone", function(selfF)
+    self.zoneDropBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, RR.L["DROPDOWN_ZONE"], function(selfF)
         local curCont = RR.Config:GetFilterSetting("continentFilter") or "any"
         local zones = RR.DB:GetZonesInContinent(curCont)
         local curZone = RR.Config:GetFilterSetting("zoneFilter") or "any"
@@ -255,7 +255,7 @@ function RR.UI.MainWindow:Initialize()
                 text = "Alle Zonen",
                 func = function()
                     RR.Config:SetFilterSetting("zoneFilter", "any")
-                    selfF.text:SetText("Zone")
+                    selfF.text:SetText(RR.L["DROPDOWN_ZONE"])
                     self:UpdateFilterButtons()
                     self:Refresh()
                 end,
@@ -269,7 +269,7 @@ function RR.UI.MainWindow:Initialize()
                 func = function()
                     RR.Config:SetFilterSetting("zoneFilter", z.id)
                     selfF.text:SetText(z.name)
-                    local contLabel = (self.continentBtn and self.continentBtn.text and self.continentBtn.text:GetText()) or "Jede Region"
+                    local contLabel = (self.continentBtn and self.continentBtn.text and self.continentBtn.text:GetText()) or RR.L["REGION_ALL"]
                     local prof = RR.Scanner.currentProfession or "Tailoring"
                     local zoneData = { id = z.id, name = z.name, cont = curCont, contName = contLabel }
                     RR.Config:SaveLastZoneForProfession(prof, zoneData)
@@ -289,12 +289,12 @@ function RR.UI.MainWindow:Initialize()
 
     -- Quick Zone Buttons (Jede Zone, Aktuelle Zone, Letzte Zone)
     self.zoneBtns = {}
-    local zBtnAny = RR.UI.Theme:CreateDarkButton(filterArea, "Jede Zone", 80, 24)
+    local zBtnAny = RR.UI.Theme:CreateDarkButton(filterArea, RR.L["QUICK_ANY_ZONE"], 80, 24)
     zBtnAny:SetPoint("LEFT", self.zoneDropBtn, "RIGHT", 10, 0)
     zBtnAny:SetScript("OnClick", function()
         RR.Config:SetFilterSetting("continentFilter", "any")
         RR.Config:SetFilterSetting("zoneFilter", "any")
-        if self.continentBtn and self.continentBtn.text then self.continentBtn.text:SetText("Jede Region") end
+        if self.continentBtn and self.continentBtn.text then self.continentBtn.text:SetText(RR.L["REGION_ALL"]) end
         if self.zoneDropBtn and self.zoneDropBtn.text then self.zoneDropBtn.text:SetText("Zone") end
         self:UpdateFilterButtons()
         self:Refresh()
@@ -302,10 +302,10 @@ function RR.UI.MainWindow:Initialize()
     RR.UI.Theme:AddTooltip(zBtnAny, RR.L["TOOLTIP_QUICK_ANY_TITLE"], RR.L["TOOLTIP_QUICK_ANY_DESC"])
     self.zoneBtns.any = zBtnAny
 
-    local zBtnCurrent = RR.UI.Theme:CreateDarkButton(filterArea, "Aktuelle Zone", 95, 24)
+    local zBtnCurrent = RR.UI.Theme:CreateDarkButton(filterArea, RR.L["QUICK_CURRENT_ZONE"], 95, 24)
     zBtnCurrent:SetPoint("LEFT", zBtnAny, "RIGHT", 5, 0)
     zBtnCurrent:SetScript("OnClick", function()
-        local curRealZone = GetRealZoneText() or "Aktuelle Zone"
+        local curRealZone = GetRealZoneText() or RR.L["QUICK_CURRENT_ZONE"]
         RR.Config:SetFilterSetting("zoneFilter", "current")
         if self.zoneDropBtn and self.zoneDropBtn.text then self.zoneDropBtn.text:SetText(curRealZone) end
         self:UpdateFilterButtons()
@@ -314,7 +314,7 @@ function RR.UI.MainWindow:Initialize()
     RR.UI.Theme:AddTooltip(zBtnCurrent, RR.L["TOOLTIP_QUICK_CURRENT_TITLE"], RR.L["TOOLTIP_QUICK_CURRENT_DESC"])
     self.zoneBtns.current = zBtnCurrent
 
-    local zBtnLast = RR.UI.Theme:CreateDarkButton(filterArea, "Letzte Zone", 110, 24)
+    local zBtnLast = RR.UI.Theme:CreateDarkButton(filterArea, RR.L["QUICK_LAST_ZONE"], 110, 24)
     zBtnLast:SetPoint("LEFT", zBtnCurrent, "RIGHT", 5, 0)
     zBtnLast:SetScript("OnClick", function()
         local prof = RR.Scanner.currentProfession or "Tailoring"
@@ -322,7 +322,7 @@ function RR.UI.MainWindow:Initialize()
         if lastZone and lastZone.id then
             RR.Config:SetFilterSetting("continentFilter", lastZone.cont)
             RR.Config:SetFilterSetting("zoneFilter", lastZone.id)
-            if self.continentBtn and self.continentBtn.text then self.continentBtn.text:SetText(lastZone.contName or "Jede Region") end
+            if self.continentBtn and self.continentBtn.text then self.continentBtn.text:SetText(lastZone.contName or RR.L["REGION_ALL"]) end
             if self.zoneDropBtn and self.zoneDropBtn.text then self.zoneDropBtn.text:SetText(lastZone.name) end
             self:UpdateFilterButtons()
             self:Refresh()
@@ -402,10 +402,10 @@ function RR.UI.MainWindow:Initialize()
                 GameTooltip:SetOwner(selfR, "ANCHOR_RIGHT")
                 GameTooltip:AddLine(selfR.recipeData.name or "Rezept", 1, 0.82, 0)
                 if selfR.sourceTooltipSources and selfR.sourceTooltipSources ~= "" then
-                    GameTooltip:AddLine("Quelle: " .. selfR.sourceTooltipSources, 1, 1, 1)
+                    GameTooltip:AddLine(RR.L["LABEL_SOURCE_COLON"] .. " " .. selfR.sourceTooltipSources, 1, 1, 1)
                 end
                 if selfR.sourceTooltipFaction and selfR.sourceTooltipFaction ~= "" then
-                    GameTooltip:AddLine("Fraktion: " .. selfR.sourceTooltipFaction, 1, 1, 1)
+                    GameTooltip:AddLine(RR.L["DROPDOWN_FACTION"] .. ": " .. selfR.sourceTooltipFaction, 1, 1, 1)
                 end
                 GameTooltip:Show()
             end
@@ -465,13 +465,13 @@ function RR.UI.MainWindow:Initialize()
 
     self.attrRows = {}
     local attrKeys = {
-        "Name",
-        "Phase",
-        "Min. Fertigkeitsstufe",
-        "Benötigt Ruf",
-        "Spezialisierung",
-        "Feiertag",
-        "Kosten",
+        RR.L["LABEL_NAME"],
+        RR.L["LABEL_PHASE"],
+        RR.L["LABEL_MIN_SKILL"],
+        RR.L["LABEL_NEEDS_REP"],
+        RR.L["LABEL_SPECIALISATION"],
+        RR.L["LABEL_HOLIDAY"],
+        RR.L["LABEL_PRICE"],
     }
     local attrY = -6
     for i, labelText in ipairs(attrKeys) do
@@ -503,7 +503,7 @@ function RR.UI.MainWindow:Initialize()
     local srcHeader = attrBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     srcHeader:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 8, attrY - 4)
     srcHeader:SetTextColor(1, 0.82, 0, 1)
-    srcHeader:SetText("Erlernbar durch:")
+    srcHeader:SetText(RR.L["LABEL_LEARNABLE_BY"])
     self.srcHeader = srcHeader
 
     -- Scrollable frame for sources to prevent overflow into Twink status
@@ -612,7 +612,7 @@ function RR.UI.MainWindow:Initialize()
 
     self.progressText = self.progressBar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     self.progressText:SetPoint("CENTER", 0, 0)
-    self.progressText:SetText("Fehlend: 0 / 0")
+    self.progressText:SetText(string.format(RR.L["PROGRESS_MISSING_FORMAT"], 0, 0))
 
     self:UpdateFilterButtons()
 end
@@ -650,7 +650,7 @@ function RR.UI.MainWindow:UpdateLastZoneForCurrentProfession()
         end
     else
         if self.zoneBtns and self.zoneBtns.last then
-            self.zoneBtns.last:SetText("Letzte Zone")
+            self.zoneBtns.last:SetText(RR.L["QUICK_LAST_ZONE"])
         end
     end
 end
@@ -680,9 +680,8 @@ function RR.UI.MainWindow:Refresh()
     -- Update the 3rd zone button label to match current profession's stored last zone
     self:UpdateLastZoneForCurrentProfession()
 
-    -- Update Title Banner Plaque with profession name
-    local locProfName = prof
-    local spellId = RR.DB:GetEnglishProfessionName(prof)
+    -- Update Title Banner Plaque with profession name in client locale
+    local locProfName = RR.DB:GetProfessionDisplayName(prof)
     if self.titlePlaque and self.titlePlaque.SetTitle then
         self.titlePlaque:SetTitle(RR.NAME .. " - " .. locProfName)
     end
@@ -695,10 +694,10 @@ function RR.UI.MainWindow:Refresh()
     self.progressBar:SetMinMaxValues(0, counts.total)
     if curMode == "known" then
         self.progressBar:SetValue(counts.known)
-        self.progressText:SetText(string.format("Gelernt: %d / %d", counts.known, counts.total))
+        self.progressText:SetText(string.format(RR.L["PROGRESS_KNOWN_FORMAT"], counts.known, counts.total))
     else
         self.progressBar:SetValue(counts.missing)
-        self.progressText:SetText(string.format("Fehlend: %d / %d", counts.missing, counts.total))
+        self.progressText:SetText(string.format(RR.L["PROGRESS_MISSING_FORMAT"], counts.missing, counts.total))
     end
 
     -- Update Scrollbar
@@ -795,7 +794,7 @@ function RR.UI.MainWindow:RenderList()
             -- Faction restriction & placement
             local hasAlliance = meta.factions["Alliance"]
             local hasHorde = meta.factions["Horde"]
-            local factionText = "Alle Fraktionen"
+            local factionText = RR.L["FACTION_ALL"]
             local factionColor = "|cffffff00"
 
             if hasAlliance and not hasHorde then
@@ -864,7 +863,6 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     local locale = GetLocale()
     local meta = RR.DB:GetRecipeAcquisitionMetadata(data)
 
-    local labels = "Name\nPhase\nMin. Fertigkeitsstufe\nBenötigt XP Level\nBenötigt Ruf\nSpezialisierung\nFeiertag\nSonderaktion\nKosten\nErlernbar durch"
     
     local rName = recipeItem.name or "-"
     local phaseNum = tonumber(meta.phase or data.phase or 1)
@@ -1151,7 +1149,7 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
                 local zName = zId and RR.DB:GetZoneName(zId)
                 local ox = tonumber(obj.location and obj.location.x or obj.x)
                 local oy = tonumber(obj.location and obj.location.y or obj.y)
-                local lineText, wp = formatNPC(oName, zName, ox, oy, "Objekt")
+                local lineText, wp = formatNPC(oName, zName, ox, oy, RR.L["LABEL_OBJECT"])
                 table.insert(allSources, {
                     text = lineText,
                     waypoint = wp,
@@ -1194,7 +1192,7 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         local saText = RR.DB:GetSpecialActionText(specActionKey)
         if saText then
             table.insert(allSources, {
-                text = string.format("Hinweis: %s", saText),
+                text = string.format(RR.L["LABEL_NOTE"], saText),
                 waypoint = nil,
                 faction = "Neutral",
                 isPlayerFaction = true,

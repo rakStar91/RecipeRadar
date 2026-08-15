@@ -16,17 +16,20 @@ local defaultStrings = {
     ["NPCS"] = "World & NPCs",
     ["OPTIONS"] = "Options",
     ["SEARCH_PLACEHOLDER"] = "Search recipes, items, NPCs...",
+    ["SEARCH_BUTTON"] = "Search",
 
     -- Mode Filters
     ["MODE_MISSING"] = "Missing",
-    ["MODE_KNOWN"] = "Known",
+    ["MODE_KNOWN"] = "Learned",
     ["MODE_ALL"] = "All",
 
-    -- Dropdown Headers
-    ["DROPDOWN_SOURCE"] = "Source v",
-    ["DROPDOWN_FACTION"] = "Faction v",
-    ["DROPDOWN_ZONE"] = "Zone v",
-    ["DROPDOWN_PHASE"] = "Phase v",
+    -- Dropdown Headers / Initial labels
+    ["DROPDOWN_SOURCE"] = "Source",
+    ["DROPDOWN_FACTION"] = "Faction",
+    ["DROPDOWN_SPEC"] = "Specialisation",
+    ["DROPDOWN_PHASE"] = "Phase",
+    ["DROPDOWN_REGION"] = "Region",
+    ["DROPDOWN_ZONE"] = "Zone",
 
     -- Source Filters
     ["SOURCE_ALL"] = "All Sources",
@@ -45,12 +48,18 @@ local defaultStrings = {
     ["FACTION_NEUTRAL"] = "Neutral",
 
     -- Zone & Region Filters
-    ["ZONE_ALL"] = "All Zones",
-    ["ZONE_CURRENT"] = "Current Zone",
-    ["ZONE_LAST"] = "Last Zone",
+    ["REGION_ALL"] = "Any Region",
+    ["ZONE_ALL_DROPDOWN"] = "All Zones",
     ["CONTINENT_KALIMDOR"] = "Kalimdor",
     ["CONTINENT_EASTERN_KINGDOMS"] = "Eastern Kingdoms",
-    ["CONTINENT_DUNGEONS"] = "Dungeons & Raids",
+    ["CONTINENT_BATTLEGROUNDS"] = "Battlegrounds",
+    ["CONTINENT_DUNGEONS"] = "Dungeons",
+    ["CONTINENT_RAIDS"] = "Raids",
+
+    -- Quick Zone Buttons
+    ["QUICK_ANY_ZONE"] = "Any Zone",
+    ["QUICK_CURRENT_ZONE"] = "Current Zone",
+    ["QUICK_LAST_ZONE"] = "Last Zone",
 
     -- Phase Filters
     ["PHASE_ALL"] = "All Phases",
@@ -61,17 +70,23 @@ local defaultStrings = {
     ["PHASE_5"] = "Phase 5: Gates of Ahn'Qiraj (AQ)",
     ["PHASE_6"] = "Phase 6: Naxxramas & Scourge",
 
+    -- Filter Labels
+    ["LABEL_NAME_COLON"] = "Name:",
+    ["LABEL_SOURCE_COLON"] = "Source:",
+    ["LABEL_ZONE_COLON"] = "Zone:",
+
     -- Detail Inspector Attribute Labels
-    ["LABEL_NAME"] = "Name:",
-    ["LABEL_PHASE"] = "Phase:",
-    ["LABEL_NEEDS_SKILL"] = "Needs skill level:",
-    ["LABEL_NEEDS_XP"] = "Needs XP level:",
-    ["LABEL_NEEDS_REP"] = "Needs reputation:",
-    ["LABEL_SPECIALISATION"] = "Specialisation:",
-    ["LABEL_HOLIDAY"] = "Holiday:",
-    ["LABEL_PRICE"] = "Price:",
-    ["LABEL_LEARNED_FROM"] = "Learned from:",
-    ["LABEL_OBTAINED_FROM"] = "Obtained from:",
+    ["LABEL_NAME"] = "Name",
+    ["LABEL_PHASE"] = "Phase",
+    ["LABEL_MIN_SKILL"] = "Min. Skill Level",
+    ["LABEL_NEEDS_XP"] = "Min. XP Level",
+    ["LABEL_NEEDS_REP"] = "Requires Reputation",
+    ["LABEL_SPECIALISATION"] = "Specialisation",
+    ["LABEL_HOLIDAY"] = "Holiday / Event",
+    ["LABEL_PRICE"] = "Price",
+    ["LABEL_LEARNABLE_BY"] = "Learnable from:",
+    ["LABEL_NOTE"] = "Note: %s",
+    ["LABEL_OBJECT"] = "Object",
 
     -- Source Suffixes
     ["TAG_TRAINER"] = "(Trainer)",
@@ -84,9 +99,11 @@ local defaultStrings = {
     ["TOMTOM_ADDED"] = "Added waypoint to %s in %s (%s, %s)",
     ["TOMTOM_NOT_INSTALLED"] = "TomTom is not installed! Location: ",
     ["PROGRESS"] = "Progress",
+    ["PROGRESS_MISSING_FORMAT"] = "Missing: %d / %d",
+    ["PROGRESS_KNOWN_FORMAT"] = "Learned: %d / %d",
     ["REAGENTS"] = "Required Materials",
     ["ACQUISITION"] = "Acquisition Source",
-    ["ALTS_STATUS"] = "Realm Character Status",
+    ["ALTS_STATUS"] = "Alt Character Status (This Realm)",
     ["LEARNED"] = "Learned",
     ["REQUIRES_SKILL"] = "Requires %s (%d)",
     ["NO_RECIPES_FOUND"] = "No recipes found matching current filters.",
@@ -150,15 +167,18 @@ local translations = {
         ["NPCS"] = "Welt & NPCs",
         ["OPTIONS"] = "Optionen",
         ["SEARCH_PLACEHOLDER"] = "Rezept, Item oder NPC suchen...",
+        ["SEARCH_BUTTON"] = "Suche",
 
         ["MODE_MISSING"] = "Fehlend",
         ["MODE_KNOWN"] = "Gelernt",
         ["MODE_ALL"] = "Alle",
 
-        ["DROPDOWN_SOURCE"] = "Quelle v",
-        ["DROPDOWN_FACTION"] = "Fraktion v",
-        ["DROPDOWN_ZONE"] = "Zone v",
-        ["DROPDOWN_PHASE"] = "Phase v",
+        ["DROPDOWN_SOURCE"] = "Quelle",
+        ["DROPDOWN_FACTION"] = "Fraktion",
+        ["DROPDOWN_SPEC"] = "Spezialisierung",
+        ["DROPDOWN_PHASE"] = "Phase",
+        ["DROPDOWN_REGION"] = "Region",
+        ["DROPDOWN_ZONE"] = "Zone",
 
         ["SOURCE_ALL"] = "Alle Quellen",
         ["SOURCE_TRAINER"] = "Lehrer",
@@ -174,12 +194,17 @@ local translations = {
         ["FACTION_HORDE"] = "Horde",
         ["FACTION_NEUTRAL"] = "Neutral",
 
-        ["ZONE_ALL"] = "Alle Zonen",
-        ["ZONE_CURRENT"] = "Aktuelle Zone",
-        ["ZONE_LAST"] = "Letzte Zone",
+        ["REGION_ALL"] = "Jede Region",
+        ["ZONE_ALL_DROPDOWN"] = "Alle Zonen",
         ["CONTINENT_KALIMDOR"] = "Kalimdor",
         ["CONTINENT_EASTERN_KINGDOMS"] = "Östliche Königreiche",
-        ["CONTINENT_DUNGEONS"] = "Instanzen & Schlachtzüge",
+        ["CONTINENT_BATTLEGROUNDS"] = "Schlachtfelder",
+        ["CONTINENT_DUNGEONS"] = "Dungeons",
+        ["CONTINENT_RAIDS"] = "Schlachtzüge",
+
+        ["QUICK_ANY_ZONE"] = "Jede Zone",
+        ["QUICK_CURRENT_ZONE"] = "Aktuelle Zone",
+        ["QUICK_LAST_ZONE"] = "Letzte Zone",
 
         ["PHASE_ALL"] = "Alle Phasen",
         ["PHASE_1"] = "Phase 1: Geschmolzener Kern & Onyxia",
@@ -189,16 +214,21 @@ local translations = {
         ["PHASE_5"] = "Phase 5: Tore von Ahn'Qiraj (AQ)",
         ["PHASE_6"] = "Phase 6: Naxxramas & Geißelinvasion",
 
-        ["LABEL_NAME"] = "Name:",
-        ["LABEL_PHASE"] = "Phase:",
-        ["LABEL_NEEDS_SKILL"] = "Benötigter Skill:",
-        ["LABEL_NEEDS_XP"] = "Spielerstufe:",
-        ["LABEL_NEEDS_REP"] = "Ruf:",
-        ["LABEL_SPECIALISATION"] = "Spezialisierung:",
-        ["LABEL_HOLIDAY"] = "Weltereignis:",
-        ["LABEL_PRICE"] = "Preis:",
-        ["LABEL_LEARNED_FROM"] = "Erlernt von:",
-        ["LABEL_OBTAINED_FROM"] = "Fundort:",
+        ["LABEL_NAME_COLON"] = "Name:",
+        ["LABEL_SOURCE_COLON"] = "Quelle:",
+        ["LABEL_ZONE_COLON"] = "Zone:",
+
+        ["LABEL_NAME"] = "Name",
+        ["LABEL_PHASE"] = "Phase",
+        ["LABEL_MIN_SKILL"] = "Min. Fertigkeitsstufe",
+        ["LABEL_NEEDS_XP"] = "Spielerstufe",
+        ["LABEL_NEEDS_REP"] = "Benötigt Ruf",
+        ["LABEL_SPECIALISATION"] = "Spezialisierung",
+        ["LABEL_HOLIDAY"] = "Feiertag",
+        ["LABEL_PRICE"] = "Kosten",
+        ["LABEL_LEARNABLE_BY"] = "Erlernbar durch:",
+        ["LABEL_NOTE"] = "Hinweis: %s",
+        ["LABEL_OBJECT"] = "Objekt",
 
         ["TAG_TRAINER"] = "(Lehrer)",
         ["TAG_VENDOR"] = "(Händler)",
@@ -207,6 +237,8 @@ local translations = {
 
         ["TOMTOM_WAYPOINT"] = "TomTom Wegpunkt",
         ["PROGRESS"] = "Fortschritt",
+        ["PROGRESS_MISSING_FORMAT"] = "Fehlend: %d / %d",
+        ["PROGRESS_KNOWN_FORMAT"] = "Gelernt: %d / %d",
         ["REAGENTS"] = "Benötigte Materialien",
         ["ACQUISITION"] = "Bezugsquelle",
         ["ALTS_STATUS"] = "Twink Status (Dieser Realm)",

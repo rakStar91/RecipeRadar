@@ -447,3 +447,28 @@ function RR.DB:GetObject(objectId)
     end
     return nil
 end
+
+--- Returns localized display name for a profession in the current locale
+function RR.DB:GetProfessionDisplayName(profInput)
+    if not profInput or profInput == "" then
+        -- Default to Tailoring in the current client locale
+        local profData = self.profMap and (self.profMap["Tailoring"] or self.profMap["Schneiderei"])
+        if profData and profData.name then
+            return self:GetLocalizedText(profData.name)
+        end
+        return (GetLocale() == "deDE" and "Schneiderei") or "Tailoring"
+    end
+
+    local profData = self.profMap and self.profMap[profInput]
+    if profData and profData.name then
+        return self:GetLocalizedText(profData.name)
+    end
+
+    -- Check if profInput is an english profession key
+    local engName = self:GetEnglishProfessionName(profInput)
+    if engName and self.profMap and self.profMap[engName] then
+        return self:GetLocalizedText(self.profMap[engName].name)
+    end
+
+    return profInput
+end
