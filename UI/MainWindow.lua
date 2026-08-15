@@ -894,7 +894,7 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         local isFactionMatch = (effectiveFaction == playerFaction or effectiveFaction == "Neutral")
         local isOtherFaction = (effectiveFaction ~= playerFaction and effectiveFaction ~= "Neutral")
 
-        return nName, zName, nx, ny, isFactionMatch, isOtherFaction
+        return nName, zName, nx, ny, isFactionMatch, isOtherFaction, effectiveFaction
     end
 
     local function formatNPC(nName, zName, nx, ny, suffix)
@@ -935,13 +935,14 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     -- 1. Vendors
     if vendorSources and type(vendorSources) == "table" then
         for _, id in ipairs(vendorSources) do
-            local nName, zName, nx, ny, isFactionMatch, isOtherFaction = resolveNPC(id)
+            local nName, zName, nx, ny, isFactionMatch, isOtherFaction, effFaction = resolveNPC(id)
             if nName and not seenSources[id] then
                 seenSources[id] = true
                 local lineText, wp = formatNPC(nName, zName, nx, ny, "Händler")
                 table.insert(allSources, {
                     text = lineText,
                     waypoint = wp,
+                    faction = effFaction,
                     isPlayerFaction = isFactionMatch,
                     isOtherFaction = isOtherFaction,
                 })
@@ -952,13 +953,14 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     -- 2. Trainers
     if trainerSources and type(trainerSources) == "table" then
         for _, id in ipairs(trainerSources) do
-            local nName, zName, nx, ny, isFactionMatch, isOtherFaction = resolveNPC(id)
+            local nName, zName, nx, ny, isFactionMatch, isOtherFaction, effFaction = resolveNPC(id)
             if nName and not seenSources[id] then
                 seenSources[id] = true
                 local lineText, wp = formatNPC(nName, zName, nx, ny, "Lehrer")
                 table.insert(allSources, {
                     text = lineText,
                     waypoint = wp,
+                    faction = effFaction,
                     isPlayerFaction = isFactionMatch,
                     isOtherFaction = isOtherFaction,
                 })
@@ -974,11 +976,20 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
                 local qName = (type(q.name) == "table" and (q.name[locale] or q.name["German"] or q.name["English"])) or "Quest"
                 local zName = RR.DB:GetZoneName(q.zone_id) or "World"
                 local lineText = string.format("%s (Quest) - %s", qName, zName)
-                local isMatch = q.reacts and ((type(q.reacts) == "table" and q.reacts[1] == playerFaction) or q.reacts == playerFaction)
+                local qFaction = "Neutral"
+                if q.reacts then
+                    if type(q.reacts) == "table" then qFaction = q.reacts[1] or "Neutral"
+                    else qFaction = q.reacts
+                    end
+                end
+                local isMatch = (qFaction == playerFaction or qFaction == "Neutral")
+                local isOther = (qFaction ~= playerFaction and qFaction ~= "Neutral")
                 table.insert(allSources, {
                     text = lineText,
                     waypoint = nil,
+                    faction = qFaction,
                     isPlayerFaction = isMatch,
+                    isOtherFaction = isOther,
                 })
             end
         end
@@ -987,14 +998,16 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     -- 4. Drops
     if dropSources and type(dropSources) == "table" then
         for _, id in ipairs(dropSources) do
-            local nName, zName, nx, ny = resolveNPC(id)
+            local nName, zName, nx, ny, isFactionMatch, isOtherFaction, effFaction = resolveNPC(id)
             if nName and not seenSources[id] then
                 seenSources[id] = true
                 local lineText, wp = formatNPC(nName, zName, nx, ny, "Beute")
                 table.insert(allSources, {
                     text = lineText,
                     waypoint = wp,
-                    isPlayerFaction = true,
+                    faction = effFaction or "Neutral",
+                    isPlayerFaction = isFactionMatch,
+                    isOtherFaction = isOtherFaction,
                 })
             end
         end
@@ -1057,7 +1070,16 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
                 row:SetPoint("TOPLEFT", self.srcScrollChild, "TOPLEFT", 4, -curY)
                 row:SetPoint("RIGHT", self.srcScrollChild, "RIGHT", -4, 0)
 
-                row.text:SetText("• " .. src.text)
+                local factionIcon = ""
+                if src.faction == "Alliance" then
+                    factionIcon = "|TInterface\\AddOns\\RecipeRadar\\images\\alliance.tga:13:13:0:0|t "
+                elseif src.faction == "Horde" then
+                    factionIcon = "|TInterface\\AddOns\\RecipeRadar\\images\\horde.tga:13:13:0:0|t "
+                else
+                    factionIcon = "|TInterface\\AddOns\\RecipeRadar\\images\\neutral.tga:13:13:0:0|t "
+                end
+
+                row.text:SetText("• " .. factionIcon .. src.text)
                 if src.isOtherFaction then
                     row.text:SetTextColor(0.65, 0.65, 0.65)
                 else
