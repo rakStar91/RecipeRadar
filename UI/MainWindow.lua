@@ -413,41 +413,72 @@ function RR.UI.MainWindow:Initialize()
     attrBox:SetPoint("TOPRIGHT", -6, -6)
     attrBox:SetHeight(270)
     RR.UI.Theme:SkinPanel(attrBox, 0.7)
+    self.attrBox = attrBox
 
     self.detailFactionIcon = attrBox:CreateTexture(nil, "OVERLAY")
     self.detailFactionIcon:SetSize(28, 28)
     self.detailFactionIcon:SetPoint("TOPRIGHT", -8, -8)
 
-    self.detailLabels = attrBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    self.detailLabels:SetPoint("TOPLEFT", 8, -8)
-    self.detailLabels:SetJustifyH("LEFT")
-    self.detailLabels:SetJustifyV("TOP")
-    self.detailLabels:SetTextColor(1, 0.82, 0, 1)
-    self.detailLabels:SetText("Name\nPhase\nMin. Fertigkeitsstufe\nBenötigt XP Level\nBenötigt Ruf\nSpezialisierung\nFeiertag\nSonderaktion\nKosten\nErlernbar durch")
+    self.attrRows = {}
+    local attrKeys = {
+        "Name",
+        "Phase",
+        "Min. Fertigkeitsstufe",
+        "Benötigt XP Level",
+        "Benötigt Ruf",
+        "Spezialisierung",
+        "Feiertag",
+        "Sonderaktion",
+        "Kosten",
+    }
+    local attrY = -6
+    for i, labelText in ipairs(attrKeys) do
+        local rowF = CreateFrame("Frame", nil, attrBox)
+        rowF:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 8, attrY)
+        rowF:SetPoint("TOPRIGHT", attrBox, "TOPRIGHT", -8, attrY)
+        rowF:SetHeight(13)
 
-    self.detailValues = attrBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    self.detailValues:SetPoint("TOPLEFT", 140, -8)
-    self.detailValues:SetPoint("RIGHT", -8, 0)
-    self.detailValues:SetJustifyH("LEFT")
-    self.detailValues:SetJustifyV("TOP")
-    self.detailValues:SetTextColor(1, 1, 1, 1)
-    self.detailValues:SetText("-\n-\n-\n-\n-\n-\n-\n-\n-\n-")
+        local lbl = rowF:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        lbl:SetPoint("TOPLEFT", 0, 0)
+        lbl:SetTextColor(1, 0.82, 0, 1)
+        lbl:SetText(labelText)
+
+        local val = rowF:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        val:SetPoint("TOPLEFT", 135, 0)
+        val:SetPoint("TOPRIGHT", 0, 0)
+        val:SetJustifyH("LEFT")
+        val:SetTextColor(1, 1, 1, 1)
+        val:SetWordWrap(false)
+        val:SetText("-")
+
+        rowF.label = lbl
+        rowF.value = val
+        table.insert(self.attrRows, rowF)
+        attrY = attrY - 14
+    end
+
+    -- "Erlernbar durch:" Header
+    local srcHeader = attrBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    srcHeader:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 8, attrY - 2)
+    srcHeader:SetTextColor(1, 0.82, 0, 1)
+    srcHeader:SetText("Erlernbar durch:")
+    self.srcHeader = srcHeader
+    self.srcStartY = attrY - 16
 
     -- Interactive source rows pool for "Erlernbar durch"
     self.sourceRows = {}
-    local sourceStartY = -164
-    for i = 1, 10 do
+    for i = 1, 12 do
         local row = CreateFrame("Button", nil, attrBox)
-        row:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 140, sourceStartY - (i - 1) * 16)
+        row:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 12, self.srcStartY - (i - 1) * 16)
         row:SetPoint("RIGHT", attrBox, "RIGHT", -8, 0)
-        row:SetHeight(16)
+        row:SetHeight(14)
         row:EnableMouse(true)
 
         local text = row:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-        text:SetPoint("LEFT", 0, 0)
+        text:SetPoint("TOPLEFT", 0, 0)
         text:SetPoint("RIGHT", 0, 0)
         text:SetJustifyH("LEFT")
-        text:SetWordWrap(false)
+        text:SetWordWrap(true)
         row.text = text
 
         row:SetScript("OnEnter", function(btn)
@@ -905,18 +936,36 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         return false
     end)
 
-    local values = string.format("%s\n%s\n%s\n%s\n%s\n%s\n%s\n-\n%s",
-        rName, rPhase, rSkill, rXp, rRep, rSpec, rHol, rPrice)
+    local attrVals = {
+        rName,
+        rPhase,
+        rSkill,
+        rXp,
+        rRep,
+        rSpec,
+        rHol,
+        "-",
+        rPrice,
+    }
+    if self.attrRows then
+        for i, rowF in ipairs(self.attrRows) do
+            if attrVals[i] then
+                rowF.value:SetText(attrVals[i])
+            end
+        end
+    end
 
-    self.detailLabels:SetText(labels)
-    self.detailValues:SetText(values)
-
-    -- Populate interactive source rows under "Erlernbar durch"
+    -- Dynamically position and wrap each source row directly beneath "Erlernbar durch:"
+    local curSrcY = self.srcStartY or -144
     if self.sourceRows then
         for i, row in ipairs(self.sourceRows) do
             local src = allSources[i]
             if src then
-                row.text:SetText(src.text)
+                row:ClearAllPoints()
+                row:SetPoint("TOPLEFT", self.attrBox or row:GetParent(), "TOPLEFT", 12, curSrcY)
+                row:SetPoint("RIGHT", self.attrBox or row:GetParent(), "RIGHT", -8, 0)
+
+                row.text:SetText("• " .. src.text)
                 if src.isOtherFaction then
                     row.text:SetTextColor(0.65, 0.65, 0.65)
                 else
@@ -924,6 +973,11 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
                 end
                 row.waypoint = src.waypoint
                 row:Show()
+
+                -- Dynamic height for text wrapping
+                local textHeight = math.max(14, math.ceil(row.text:GetStringHeight()) + 2)
+                row:SetHeight(textHeight)
+                curSrcY = curSrcY - textHeight - 2
             else
                 row:Hide()
             end
