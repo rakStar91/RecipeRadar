@@ -169,13 +169,13 @@ function RR.UI.MainWindow:Initialize()
     self.specBtn:SetPoint("LEFT", self.factionBtn, "RIGHT", 8, 0)
 
     local phaseMenu = {
-        { text = "Alle Phasen", value = 0 },
-        { text = "Phase 1", value = 1 },
-        { text = "Phase 2", value = 2 },
-        { text = "Phase 3", value = 3 },
-        { text = "Phase 4", value = 4 },
-        { text = "Phase 5", value = 5 },
-        { text = "Phase 6", value = 6 },
+        { text = RR.L["PHASE_ALL"], value = 0 },
+        { text = RR.L["PHASE_1"], value = 1 },
+        { text = RR.L["PHASE_2"], value = 2 },
+        { text = RR.L["PHASE_3"], value = 3 },
+        { text = RR.L["PHASE_4"], value = 4 },
+        { text = RR.L["PHASE_5"], value = 5 },
+        { text = RR.L["PHASE_6"], value = 6 },
     }
     self.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 105, "Phase", function(selfF)
         local menu = {}

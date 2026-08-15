@@ -54,12 +54,12 @@ local defaultStrings = {
 
     -- Phase Filters
     ["PHASE_ALL"] = "All Phases",
-    ["PHASE_1"] = "Phase 1",
-    ["PHASE_2"] = "Phase 2",
-    ["PHASE_3"] = "Phase 3",
-    ["PHASE_4"] = "Phase 4",
-    ["PHASE_5"] = "Phase 5",
-    ["PHASE_6"] = "Phase 6",
+    ["PHASE_1"] = "Phase 1: Molten Core & Onyxia",
+    ["PHASE_2"] = "Phase 2: Dire Maul & World Bosses",
+    ["PHASE_3"] = "Phase 3: Blackwing Lair (BWL)",
+    ["PHASE_4"] = "Phase 4: Zul'Gurub (ZG)",
+    ["PHASE_5"] = "Phase 5: Gates of Ahn'Qiraj (AQ)",
+    ["PHASE_6"] = "Phase 6: Naxxramas & Scourge",
 
     -- Detail Inspector Attribute Labels
     ["LABEL_NAME"] = "Name:",
@@ -150,12 +150,12 @@ local translations = {
         ["CONTINENT_DUNGEONS"] = "Instanzen & Schlachtzüge",
 
         ["PHASE_ALL"] = "Alle Phasen",
-        ["PHASE_1"] = "Phase 1",
-        ["PHASE_2"] = "Phase 2",
-        ["PHASE_3"] = "Phase 3",
-        ["PHASE_4"] = "Phase 4",
-        ["PHASE_5"] = "Phase 5",
-        ["PHASE_6"] = "Phase 6",
+        ["PHASE_1"] = "Phase 1: Geschmolzener Kern & Onyxia",
+        ["PHASE_2"] = "Phase 2: Düsterbruch & Weltbosse",
+        ["PHASE_3"] = "Phase 3: Pechschwingenhort (BWL)",
+        ["PHASE_4"] = "Phase 4: Zul'Gurub (ZG)",
+        ["PHASE_5"] = "Phase 5: Tore von Ahn'Qiraj (AQ)",
+        ["PHASE_6"] = "Phase 6: Naxxramas & Geißelinvasion",
 
         ["LABEL_NAME"] = "Name:",
         ["LABEL_PHASE"] = "Phase:",
