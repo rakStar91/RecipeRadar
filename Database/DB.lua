@@ -37,7 +37,6 @@ local LOCALE_TO_DB_KEY = {
     ["zhTW"] = "Taiwanese",
     ["koKR"] = "Korean",
     ["ptBR"] = "Portuguese",
-    ["itIT"] = "Italian",
 }
 
 function RR.DB:GetLocalizedText(nameTable)
