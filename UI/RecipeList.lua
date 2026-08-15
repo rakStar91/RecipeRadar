@@ -203,32 +203,32 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
                 local sourceLabels = {}
                 if meta.sourceTypes["vendor"] then
                     table.insert(sources, "vendor")
-                    table.insert(sourceLabels, "Verkäufer")
+                    table.insert(sourceLabels, RR.L["SOURCE_VENDOR"])
                 end
                 if meta.sourceTypes["drop"] then
                     table.insert(sources, "drop")
-                    table.insert(sourceLabels, "Drop")
+                    table.insert(sourceLabels, RR.L["SOURCE_DROP"])
                 end
                 if meta.sourceTypes["quest"] then
                     table.insert(sources, "quest")
-                    table.insert(sourceLabels, "Quest")
+                    table.insert(sourceLabels, RR.L["SOURCE_QUEST"])
                 end
                 if meta.sourceTypes["trainer"] then
                     table.insert(sources, "trainer")
-                    table.insert(sourceLabels, "Lehrer")
+                    table.insert(sourceLabels, RR.L["SOURCE_TRAINER"])
                 end
                 if meta.sourceTypes["holiday"] then
                     table.insert(sources, "holiday")
-                    table.insert(sourceLabels, "Weltereignis")
+                    table.insert(sourceLabels, RR.L["SOURCE_HOLIDAY"])
                 end
                 if meta.sourceTypes["object"] then
                     table.insert(sources, "object")
-                    table.insert(sourceLabels, "Objekt")
+                    table.insert(sourceLabels, RR.L["SOURCE_OBJECT"])
                 end
 
                 if #sources == 0 then
                     table.insert(sources, "trainer")
-                    table.insert(sourceLabels, "Lehrer")
+                    table.insert(sourceLabels, RR.L["SOURCE_TRAINER"])
                 end
 
                 -- Faction restriction & placement
@@ -238,12 +238,12 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
                 local factionColor = "|cffffff00"
 
                 if hasAlliance and not hasHorde then
-                    factionText = "Nur Allianz"
+                    factionText = RR.L["FACTION_ALLIANCE_ONLY"]
                     factionColor = "|cff0070dd"
                     row.iconFaction:SetTexture(RR.ADDON_PATH .. "\\images\\alliance.tga")
                     row.iconFaction:Show()
                 elseif hasHorde and not hasAlliance then
-                    factionText = "Nur Horde"
+                    factionText = RR.L["FACTION_HORDE_ONLY"]
                     factionColor = "|cffff2020"
                     row.iconFaction:SetTexture(RR.ADDON_PATH .. "\\images\\horde.tga")
                     row.iconFaction:Show()

@@ -24,9 +24,9 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
 
     -- 1. Mode Buttons (Missing, Learned, All) placed on the far right column
     local modeDefs = {
-        { id = "missing", text = "Fehlend", top = -4 },
-        { id = "known", text = "Bekannt", top = -36 },
-        { id = "all", text = "Alle", top = -68 },
+        { id = "missing", text = RR.L["MODE_MISSING"], top = -4 },
+        { id = "known", text = RR.L["MODE_KNOWN"], top = -36 },
+        { id = "all", text = RR.L["MODE_ALL"], top = -68 },
     }
     for _, md in ipairs(modeDefs) do
         local mBtn = RR.UI.Theme:CreateDarkButton(filterArea, md.text, 92, 24)
@@ -75,7 +75,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     end)
     instance.searchBox = searchBox
 
-    local searchBtn = RR.UI.Theme:CreateDarkButton(filterArea, "Suche", 80, 24)
+    local searchBtn = RR.UI.Theme:CreateDarkButton(filterArea, RR.L["SEARCH_BUTTON"], 80, 24)
     searchBtn:SetPoint("LEFT", searchBox, "RIGHT", 6, 0)
     searchBtn:SetScript("OnClick", function()
         instance.searchBox:ClearFocus()
@@ -118,22 +118,29 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     instance.sourceBtn:SetPoint("LEFT", sourceLabel, "RIGHT", 8, 0)
     RR.UI.Theme:AddTooltip(instance.sourceBtn, RR.L["TOOLTIP_SOURCE_FILTER_TITLE"], RR.L["TOOLTIP_SOURCE_FILTER_DESC"])
 
-    local factionMenu = {
-        { text = RR.L["FACTION_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" },
-        { text = RR.L["FACTION_ALLIANCE"], value = "Alliance", icon = RR.ADDON_PATH .. "\\images\\alliance.tga" },
-        { text = RR.L["FACTION_HORDE"], value = "Horde", icon = RR.ADDON_PATH .. "\\images\\horde.tga" },
-        { text = RR.L["FACTION_NEUTRAL"], value = "Neutral", icon = RR.ADDON_PATH .. "\\images\\neutral.tga" },
-        { text = "Argentumdämmerung", value = 529, icon = "Interface\\Icons\\INV_BannerPVP_02" },
-        { text = "Thoriumbruderschaft", value = 59, icon = "Interface\\Icons\\INV_BannerPVP_02" },
-        { text = "Holzschlundfeste", value = 576, icon = "Interface\\Icons\\INV_BannerPVP_02" },
-        { text = "Stamm der Zandalari", value = 270, icon = "Interface\\Icons\\INV_BannerPVP_02" },
-        { text = "Hydraxianer", value = 749, icon = "Interface\\Icons\\INV_BannerPVP_02" },
-        { text = "Dunkelmond-Jahrmarkt", value = 909, icon = "Interface\\Icons\\INV_BannerPVP_02" },
-        { text = "Cenarischer Zirkel", value = 609, icon = "Interface\\Icons\\INV_BannerPVP_02" },
-    }
+    local repFactionIds = { 529, 59, 576, 270, 749, 909, 609 }
+    local function buildFactionMenu()
+        local menu = {
+            { text = RR.L["FACTION_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" },
+            { text = RR.L["FACTION_ALLIANCE"], value = "Alliance", icon = RR.ADDON_PATH .. "\\images\\alliance.tga" },
+            { text = RR.L["FACTION_HORDE"], value = "Horde", icon = RR.ADDON_PATH .. "\\images\\horde.tga" },
+            { text = RR.L["FACTION_NEUTRAL"], value = "Neutral", icon = RR.ADDON_PATH .. "\\images\\neutral.tga" },
+        }
+        for _, fId in ipairs(repFactionIds) do
+            local fName = RR.DB:GetFactionName(fId)
+            if fName then
+                table.insert(menu, {
+                    text = fName,
+                    value = fId,
+                    icon = "Interface\\Icons\\INV_BannerPVP_02",
+                })
+            end
+        end
+        return menu
+    end
     instance.factionBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, RR.L["DROPDOWN_FACTION"], function(selfF)
         local menu = {}
-        for _, itm in ipairs(factionMenu) do
+        for _, itm in ipairs(buildFactionMenu()) do
             table.insert(menu, {
                 text = itm.text,
                 icon = itm.icon,
@@ -168,7 +175,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         { text = RR.L["PHASE_5"], value = 5, icon = "Interface\\Icons\\INV_Misc_AhnQirajTrinket_03" },
         { text = RR.L["PHASE_6"], value = 6, icon = "Interface\\Icons\\Spell_Shadow_Necromancy" },
     }
-    instance.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 105, "Phase", function(selfF)
+    instance.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 105, RR.L["DROPDOWN_PHASE"], function(selfF)
         local menu = {}
         for _, itm in ipairs(phaseMenu) do
             table.insert(menu, {
@@ -211,7 +218,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                     RR.Config:SetFilterSetting("zoneFilter", "any")
                     selfF.text:SetText(itm.text)
                     if instance.zoneDropBtn and instance.zoneDropBtn.text then
-                        instance.zoneDropBtn.text:SetText("Zone")
+                        instance.zoneDropBtn.text:SetText(RR.L["DROPDOWN_ZONE"])
                     end
                     instance:UpdateFilterButtons()
                     if instance.onRefresh then instance.onRefresh() end
@@ -231,7 +238,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
 
         local menu = {
             {
-                text = "Alle Zonen",
+                text = RR.L["ZONE_ALL_DROPDOWN"],
                 func = function()
                     RR.Config:SetFilterSetting("zoneFilter", "any")
                     selfF.text:SetText(RR.L["DROPDOWN_ZONE"])
@@ -273,7 +280,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         RR.Config:SetFilterSetting("continentFilter", "any")
         RR.Config:SetFilterSetting("zoneFilter", "any")
         if instance.continentBtn and instance.continentBtn.text then instance.continentBtn.text:SetText(RR.L["REGION_ALL"]) end
-        if instance.zoneDropBtn and instance.zoneDropBtn.text then instance.zoneDropBtn.text:SetText("Zone") end
+        if instance.zoneDropBtn and instance.zoneDropBtn.text then instance.zoneDropBtn.text:SetText(RR.L["DROPDOWN_ZONE"]) end
         instance:UpdateFilterButtons()
         if instance.onRefresh then instance.onRefresh() end
     end)

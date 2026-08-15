@@ -225,11 +225,11 @@ function RR.UI.DetailPane:Create(parent)
         row:SetScript("OnEnter", function(btn)
             if btn.waypoint then
                 GameTooltip:SetOwner(btn, "ANCHOR_TOP")
-                GameTooltip:AddLine(btn.waypoint.name or "Wegpunkt", 1, 0.82, 0)
+                GameTooltip:AddLine(btn.waypoint.name or RR.L["TOMTOM_WAYPOINT"], 1, 0.82, 0)
                 if btn.waypoint.zone and btn.waypoint.x and btn.waypoint.y then
                     GameTooltip:AddLine(string.format("%s (%.1f, %.1f)", btn.waypoint.zone, btn.waypoint.x, btn.waypoint.y), 1, 1, 1)
                 end
-                GameTooltip:AddLine("Klicken, um TomTom-Wegpunkt zu setzen", 0.2, 1, 0.2)
+                GameTooltip:AddLine(RR.L["TOMTOM_CLICK_TOOLTIP"], 0.2, 1, 0.2)
                 GameTooltip:Show()
             end
         end)
@@ -275,7 +275,7 @@ function instance:Display(recipeItem)
     
     local rName = recipeItem.name or "-"
     local phaseNum = tonumber(meta.phase or data.phase or 1)
-    local rPhase = RR.L["PHASE_" .. (phaseNum or 1)] or string.format("Phase %d", phaseNum or 1)
+    local rPhase = RR.L["PHASE_" .. (phaseNum or 1)] or string.format(RR.L["PHASE_FORMAT"] or "Phase %d", phaseNum or 1)
     local rSkill = tostring(recipeItem.skillReq or 1)
     
     local rRep = "-"
@@ -327,7 +327,7 @@ function instance:Display(recipeItem)
     if priceVal and priceVal > 0 then
         rPrice = (RR.Utils and RR.Utils.FormatMoney and RR.Utils:FormatMoney(priceVal)) or tostring(priceVal)
     elseif priceVal == 0 then
-        rPrice = RR.L["FREE"] or "Kostenlos"
+        rPrice = RR.L["FREE"]
     end
     local rLearnedFrom = "-"
 
@@ -364,7 +364,7 @@ function instance:Display(recipeItem)
     local function resolveNPC(npcId)
         local npc = RR.DB:GetNPC(npcId)
         if not npc then return nil end
-        local nName = (type(npc.name) == "table" and (npc.name[locale] or npc.name["German"] or npc.name["English"])) or npc.name or "NPC"
+        local nName = RR.DB:GetLocalizedText(npc.name) or "NPC"
         local zId = (npc.location and npc.location.zone_id) or npc.zone_id
         local zName = RR.DB:GetZoneName(zId)
         local nx = tonumber(npc.location and npc.location.x or npc.x)
@@ -447,7 +447,7 @@ function instance:Display(recipeItem)
             local nName, zName, nx, ny, isFactionMatch, isOtherFaction, effFaction = resolveNPC(id)
             if nName and not seenSources[id] then
                 seenSources[id] = true
-                local lineText, wp = formatNPC(nName, zName, nx, ny, "Händler")
+                local lineText, wp = formatNPC(nName, zName, nx, ny, RR.L["SOURCE_VENDOR"])
                 table.insert(allSources, {
                     text = lineText,
                     waypoint = wp,
@@ -465,7 +465,7 @@ function instance:Display(recipeItem)
             local nName, zName, nx, ny, isFactionMatch, isOtherFaction, effFaction = resolveNPC(id)
             if nName and not seenSources[id] then
                 seenSources[id] = true
-                local lineText, wp = formatNPC(nName, zName, nx, ny, "Lehrer")
+                local lineText, wp = formatNPC(nName, zName, nx, ny, RR.L["SOURCE_TRAINER"])
                 table.insert(allSources, {
                     text = lineText,
                     waypoint = wp,
@@ -492,7 +492,7 @@ function instance:Display(recipeItem)
                         if not qzId then qzId = (npc.location and npc.location.zone_id) or npc.zone_id end
                         if not qx then qx = tonumber(npc.location and npc.location.x or npc.x) end
                         if not qy then qy = tonumber(npc.location and npc.location.y or npc.y) end
-                        if not qNpcName then qNpcName = (type(npc.name) == "table" and (npc.name[locale] or npc.name["German"] or npc.name["English"])) or npc.name end
+                        if not qNpcName then qNpcName = RR.DB:GetLocalizedText(npc.name) end
                         qNpcReacts = npc.reacts or npc.faction
                     end
                 end
@@ -502,7 +502,7 @@ function instance:Display(recipeItem)
                         if not qzId then qzId = (npc.location and npc.location.zone_id) or npc.zone_id end
                         if not qx then qx = tonumber(npc.location and npc.location.x or npc.x) end
                         if not qy then qy = tonumber(npc.location and npc.location.y or npc.y) end
-                        if not qNpcName then qNpcName = (type(npc.name) == "table" and (npc.name[locale] or npc.name["German"] or npc.name["English"])) or npc.name end
+                        if not qNpcName then qNpcName = RR.DB:GetLocalizedText(npc.name) end
                         if not qNpcReacts then qNpcReacts = npc.reacts or npc.faction end
                     end
                 end
@@ -510,7 +510,7 @@ function instance:Display(recipeItem)
                 local zName = qzId and RR.DB:GetZoneName(qzId)
                 local lineText
                 local wp = nil
-                if zName and zName ~= "Unknown Zone" and zName ~= "" then
+                if zName and zName ~= (RR.L["ZONE_UNKNOWN"] or "Unknown Zone") and zName ~= "" then
                     if qx and qy and qx > 0 and qy > 0 then
                         lineText = string.format("%s (Quest) - %s (%.1f, %.1f)", qName, zName, qx, qy)
                         wp = { name = qNpcName or qName, zone = zName, x = qx, y = qy }
@@ -553,12 +553,12 @@ function instance:Display(recipeItem)
             local obj = RR.DB:GetObject(objId)
             if obj and not seenSources["obj_" .. objId] then
                 seenSources["obj_" .. objId] = true
-                local oName = (type(obj.name) == "table" and (obj.name[locale] or obj.name["German"] or obj.name["English"])) or obj.name or "Objekt"
+                local oName = RR.DB:GetLocalizedText(obj.name) or RR.L["SOURCE_OBJECT"]
                 local zId = (obj.location and obj.location.zone_id) or obj.zone_id
                 local zName = zId and RR.DB:GetZoneName(zId)
                 local ox = tonumber(obj.location and obj.location.x or obj.x)
                 local oy = tonumber(obj.location and obj.location.y or obj.y)
-                local lineText, wp = formatNPC(oName, zName, ox, oy, RR.L["LABEL_OBJECT"])
+                local lineText, wp = formatNPC(oName, zName, ox, oy, RR.L["SOURCE_OBJECT"])
                 table.insert(allSources, {
                     text = lineText,
                     waypoint = wp,
@@ -575,7 +575,7 @@ function instance:Display(recipeItem)
             local nName, zName, nx, ny, isFactionMatch, isOtherFaction, effFaction = resolveNPC(id)
             if nName and not seenSources[id] then
                 seenSources[id] = true
-                local lineText, wp = formatNPC(nName, zName, nx, ny, "Beute")
+                local lineText, wp = formatNPC(nName, zName, nx, ny, RR.L["SOURCE_DROP"])
                 table.insert(allSources, {
                     text = lineText,
                     waypoint = wp,
@@ -589,7 +589,7 @@ function instance:Display(recipeItem)
 
     if meta.dropRange then
         table.insert(allSources, {
-            text = string.format("Gegner-Beute (Stufe %d-%d)", meta.dropRange.min_xp_level or 1, meta.dropRange.max_xp_level or 60),
+            text = string.format(RR.L["SOURCE_DROP_LEVEL_RANGE"] or "Drop (Level %d-%d)", meta.dropRange.min_xp_level or 1, meta.dropRange.max_xp_level or 60),
             waypoint = nil,
             isPlayerFaction = true,
         })
@@ -719,9 +719,9 @@ function instance:Display(recipeItem)
 
         local statusStr
         if alt.isKnown then
-            statusStr = "|TInterface\\RAIDFRAME\\ReadyCheck-Ready:12:12:0:0|t |cff33ff33" .. (RR.L["LEARNED"] or "Gelernt") .. "|r"
+            statusStr = "|TInterface\\RAIDFRAME\\ReadyCheck-Ready:12:12:0:0|t |cff33ff33" .. (RR.L["LEARNED"] or RR.L["LEARNED"]) .. "|r"
         else
-            statusStr = "|TInterface\\RAIDFRAME\\ReadyCheck-NotReady:12:12:0:0|t |cffff4444" .. (RR.L["MODE_MISSING"] or "Fehlt") .. "|r"
+            statusStr = "|TInterface\\RAIDFRAME\\ReadyCheck-NotReady:12:12:0:0|t |cffff4444" .. (RR.L["MODE_MISSING"] or RR.L["MODE_MISSING"]) .. "|r"
         end
 
         altsStr = altsStr .. string.format("%s%s: %s\n", classIcon, coloredName, statusStr)
