@@ -63,25 +63,9 @@ def make_fill(name, top_rgb, bottom_rgb, top_a=1.0, bottom_a=1.0, sheen=0.0):
 
 def main():
     print("Generating RecipeRadar UI textures:")
-
-    # backgrounds
-    make_fill("fill_frame.tga", (0.055, 0.055, 0.060), (0.030, 0.030, 0.034),
-              top_a=0.96, bottom_a=0.96)
-    make_fill("fill_panel.tga", (0.035, 0.035, 0.040), (0.018, 0.018, 0.022),
-              top_a=0.97, bottom_a=0.97)
-
-    # buttons (only the dropdown arrow background still uses a fill texture,
-    # CreateDarkButton renders its own states by tinting art_button.tga instead)
-    make_fill("fill_btn_normal.tga", (0.120, 0.120, 0.135), (0.055, 0.055, 0.065),
-              top_a=0.95, bottom_a=0.95, sheen=0.030)
-
-    # list row selection + progress bar
+    # list row selection highlight (teal tint)
     make_fill("fill_row_selected.tga", (0.080, 0.260, 0.250), (0.040, 0.150, 0.145),
               top_a=0.75, bottom_a=0.75)
-    # deliberately muted: the prototype bar is understated, not neon green
-    make_fill("fill_progress.tga", (0.105, 0.300, 0.190), (0.055, 0.175, 0.110),
-              top_a=0.92, bottom_a=0.92, sheen=0.020)
-
     print("Done.")
 
 

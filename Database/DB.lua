@@ -37,6 +37,7 @@ local LOCALE_TO_DB_KEY = {
     ["zhTW"] = "Taiwanese",
     ["koKR"] = "Korean",
     ["ptBR"] = "Portuguese",
+    ["itIT"] = "Italian",
 }
 
 function RR.DB:GetLocalizedText(nameTable)
@@ -177,12 +178,12 @@ end
 
 function RR.DB:GetZonesInContinent(continentId)
     local zones = {}
-    local locale = GetLocale()
     if self.Raw.zones then
         for _, z in pairs(self.Raw.zones) do
             local cId = z.continent_id or z.cont_id
             if not continentId or continentId == "any" or cId == continentId then
-                local zName = (type(z.name) == "table" and (z.name[locale] or z.name["German"] or z.name["English"])) or z.name or "Zone"
+                local zName = self:GetLocalizedText(z.name)
+                if zName == "" then zName = "Zone" end
                 table.insert(zones, {
                     id = z.id,
                     name = zName,
@@ -199,8 +200,8 @@ function RR.DB:GetZoneName(zoneId)
     if not zoneId then return "Unknown Zone" end
     local z = self.zoneMap and self.zoneMap[zoneId]
     if z and z.name then
-        local locale = GetLocale()
-        return z.name[locale] or z.name["German"] or z.name["English"] or "Unknown Zone"
+        local name = self:GetLocalizedText(z.name)
+        if name ~= "" then return name end
     end
     return "Unknown Zone"
 end
@@ -414,13 +415,19 @@ end
 function RR.DB:GetCurrentZoneId()
     local zName = GetRealZoneText() or ""
     if zName == "" then return nil end
-    local locale = GetLocale()
 
     if self.zoneMap then
         for id, z in pairs(self.zoneMap) do
             if z.name then
-                if z.name[locale] == zName or z.name["German"] == zName or z.name["English"] == zName then
+                local locZName = self:GetLocalizedText(z.name)
+                if locZName == zName then
                     return id
+                end
+                -- Fallback check for raw match
+                if type(z.name) == "table" then
+                    for _, val in pairs(z.name) do
+                        if val == zName then return id end
+                    end
                 end
             end
         end
