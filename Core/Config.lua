@@ -112,3 +112,22 @@ function RR.Config:GetLastZoneForProfession(profName)
     end
     return nil
 end
+
+function RR.Config:GetButtonOffset()
+    local profile = self:GetProfile()
+    return profile and profile.buttonOffset
+end
+
+function RR.Config:SaveButtonOffset(x, y)
+    local profile = self:GetProfile()
+    if profile then
+        profile.buttonOffset = { x = x, y = y }
+    end
+end
+
+function RR.Config:ClearButtonOffset()
+    local profile = self:GetProfile()
+    if profile then
+        profile.buttonOffset = nil
+    end
+end
