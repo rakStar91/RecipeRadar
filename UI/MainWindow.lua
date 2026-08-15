@@ -405,13 +405,11 @@ function RR.UI.MainWindow:SelectTab(tabKey)
 end
 
 function RR.UI.MainWindow:UpdateFilterButtons()
-    local curMode = RR.Config:GetFilterSetting("mode")
-    for m, btn in pairs(self.modeBtns) do
-        btn:SetActive(m == curMode)
-    end
-    local curZone = RR.Config:GetFilterSetting("zoneMode")
-    for z, btn in pairs(self.zoneBtns) do
-        btn:SetActive(z == curZone)
+    local curMode = RR.Config:GetFilterSetting("mode") or "missing"
+    if self.modeBtns then
+        for m, btn in pairs(self.modeBtns) do
+            btn:SetActive(m == curMode)
+        end
     end
 end
 
