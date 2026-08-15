@@ -197,79 +197,55 @@ function RR.UI.MainWindow:Initialize()
         scrollbar:SetValue(cur - (delta * 2))
     end)
 
-    -- 4. Right Column: Details Pane
+    -- 4. Right Column: Details Pane (Authentic Structured Attribute Grid)
     local detailPane = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
     detailPane:SetPoint("TOPLEFT", listPane, "TOPRIGHT", 2, 0)
     detailPane:SetPoint("BOTTOMRIGHT", -4, 36)
     RR.UI.Theme:SkinPanel(detailPane, 0.95)
     self.detailPane = detailPane
 
-    -- Detail Header (Big icon & title)
-    self.detailIcon = detailPane:CreateTexture(nil, "ARTWORK")
-    self.detailIcon:SetSize(36, 36)
-    self.detailIcon:SetPoint("TOPLEFT", 12, -12)
-    self.detailIcon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+    -- Key-Value Attribute Grid Box
+    local attrBox = CreateFrame("Frame", nil, detailPane, BackdropTemplateMixin and "BackdropTemplate")
+    attrBox:SetPoint("TOPLEFT", 8, -8)
+    attrBox:SetPoint("TOPRIGHT", -8, -8)
+    attrBox:SetHeight(230)
+    RR.UI.Theme:SkinPanel(attrBox, 0.7)
 
-    self.detailTitle = detailPane:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    self.detailTitle:SetPoint("TOPLEFT", self.detailIcon, "TOPRIGHT", 10, 0)
-    self.detailTitle:SetText(RR.COLORS.GOLD .. RR.L["SELECT_A_RECIPE"])
+    self.detailLabels = attrBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    self.detailLabels:SetPoint("TOPLEFT", 10, -10)
+    self.detailLabels:SetJustifyH("LEFT")
+    self.detailLabels:SetJustifyV("TOP")
+    self.detailLabels:SetTextColor(1, 0.82, 0, 1) -- Gold labels
+    self.detailLabels:SetText("Name:\nPhase:\nBenötigter Skill:\nSpielerstufe:\nRuf:\nSpezialisierung:\nWeltereignis:\nPreis:\nErlernt von:\nFundort:")
 
-    self.detailSub = detailPane:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    self.detailSub:SetPoint("TOPLEFT", self.detailTitle, "BOTTOMLEFT", 0, -4)
-    self.detailSub:SetText(RR.COLORS.GREY .. RR.L["REQUIRES_PROFESSION"])
+    self.detailValues = attrBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    self.detailValues:SetPoint("TOPLEFT", 130, -10)
+    self.detailValues:SetPoint("RIGHT", -10, 0)
+    self.detailValues:SetJustifyH("LEFT")
+    self.detailValues:SetJustifyV("TOP")
+    self.detailValues:SetTextColor(1, 1, 1, 1) -- White values
+    self.detailValues:SetText("-\n-\n-\n-\n-\n-\n-\n-\n-\n-")
 
-    -- Materials Section
-    local matsBox = CreateFrame("Frame", nil, detailPane, BackdropTemplateMixin and "BackdropTemplate")
-    matsBox:SetPoint("TOPLEFT", self.detailIcon, "BOTTOMLEFT", 0, -14)
-    matsBox:SetPoint("RIGHT", -12, 0)
-    matsBox:SetHeight(75)
-    RR.UI.Theme:SkinPanel(matsBox, 0.8)
-    local matsTitle = matsBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    matsTitle:SetPoint("TOPLEFT", 6, -6)
-    matsTitle:SetText(RR.COLORS.GOLD .. RR.L["REAGENTS"])
-    self.matsText = matsBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    self.matsText:SetPoint("TOPLEFT", matsTitle, "BOTTOMLEFT", 0, -4)
-    self.matsText:SetPoint("BOTTOMRIGHT", -6, 6)
-    self.matsText:SetJustifyH("LEFT")
-    self.matsText:SetJustifyV("TOP")
-    self.matsText:SetText(RR.COLORS.GREY .. RR.L["NO_MATERIALS"])
-
-    -- Acquisition Source Section
-    local sourceBox = CreateFrame("Frame", nil, detailPane, BackdropTemplateMixin and "BackdropTemplate")
-    sourceBox:SetPoint("TOPLEFT", matsBox, "BOTTOMLEFT", 0, -10)
-    sourceBox:SetPoint("RIGHT", -12, 0)
-    sourceBox:SetHeight(85)
-    RR.UI.Theme:SkinPanel(sourceBox, 0.8)
-    local sourceTitle = sourceBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    sourceTitle:SetPoint("TOPLEFT", 6, -6)
-    sourceTitle:SetText(RR.COLORS.GOLD .. RR.L["ACQUISITION"])
-    self.sourceText = sourceBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    self.sourceText:SetPoint("TOPLEFT", sourceTitle, "BOTTOMLEFT", 0, -4)
-    self.sourceText:SetPoint("RIGHT", -6, 0)
-    self.sourceText:SetJustifyH("LEFT")
-    self.sourceText:SetText(RR.COLORS.WHITE .. RR.L["SOURCE_DETAILS"])
-
-    -- TomTom Button
-    self.tomtomBtn = RR.UI.Theme:CreateButton(sourceBox, "📍 " .. RR.L["TOMTOM_WAYPOINT"], 140, 20)
-    self.tomtomBtn:SetPoint("BOTTOMRIGHT", -6, 6)
-    self.tomtomBtn:SetScript("OnClick", function()
+    local tomtomBtn = RR.UI.Theme:CreateButton(attrBox, "📌 " .. RR.L["TOMTOM_WAYPOINT"], 150, 22)
+    tomtomBtn:SetPoint("BOTTOMRIGHT", -8, 8)
+    tomtomBtn:SetScript("OnClick", function()
         if self.selectedRecipe and self.selectedRecipe.waypoint then
             local wp = self.selectedRecipe.waypoint
-            RR.Utils:AddTomTomWaypoint(wp.zone, wp.x, wp.y, wp.name)
+            RR.Utils:AddTomTomWaypoint(wp.name, wp.zone, wp.x, wp.y)
         end
     end)
 
     -- Alt Character Knowledge Section
     local altsBox = CreateFrame("Frame", nil, detailPane, BackdropTemplateMixin and "BackdropTemplate")
-    altsBox:SetPoint("TOPLEFT", sourceBox, "BOTTOMLEFT", 0, -10)
-    altsBox:SetPoint("BOTTOMRIGHT", -12, 10)
-    RR.UI.Theme:SkinPanel(altsBox, 0.8)
+    altsBox:SetPoint("TOPLEFT", attrBox, "BOTTOMLEFT", 0, -8)
+    altsBox:SetPoint("BOTTOMRIGHT", -8, 8)
+    RR.UI.Theme:SkinPanel(altsBox, 0.7)
     local altsTitle = altsBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    altsTitle:SetPoint("TOPLEFT", 6, -6)
+    altsTitle:SetPoint("TOPLEFT", 8, -8)
     altsTitle:SetText(RR.COLORS.GOLD .. RR.L["ALTS_STATUS"])
     self.altsText = altsBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     self.altsText:SetPoint("TOPLEFT", altsTitle, "BOTTOMLEFT", 0, -4)
-    self.altsText:SetPoint("BOTTOMRIGHT", -6, 6)
+    self.altsText:SetPoint("BOTTOMRIGHT", -8, 8)
     self.altsText:SetJustifyH("LEFT")
     self.altsText:SetJustifyV("TOP")
 
