@@ -26,6 +26,7 @@ function RR.UI.MainWindow:Initialize()
 
     RR.UI.Theme:SkinWindow(f)
     self.frame = f
+    f:Hide()
 
     -- 1. Centered Title Plaque Banner
     self.titlePlaque = RR.UI.Theme:CreateTitlePlaque(f, 420, 38, RR.NAME)

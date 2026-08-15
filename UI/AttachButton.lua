@@ -157,11 +157,17 @@ function RR.UI.AttachButton:HookFrames()
                 C_Timer.After(0.05, function()
                     if not self:FindCraftWindow() then
                         if self.button then self.button:Hide() end
+                        if RR.UI.MainWindow and RR.UI.MainWindow.Hide then
+                            RR.UI.MainWindow:Hide()
+                        end
                     end
                 end)
             else
                 if not self:FindCraftWindow() then
                     if self.button then self.button:Hide() end
+                    if RR.UI.MainWindow and RR.UI.MainWindow.Hide then
+                        RR.UI.MainWindow:Hide()
+                    end
                 end
             end
         end
@@ -178,6 +184,9 @@ function RR.UI.AttachButton:HookFrames()
             f:HookScript("OnHide", function()
                 if not self:FindCraftWindow() then
                     if self.button then self.button:Hide() end
+                    if RR.UI.MainWindow and RR.UI.MainWindow.Hide then
+                        RR.UI.MainWindow:Hide()
+                    end
                 end
             end)
             f:HookScript("OnDragStop", function()
@@ -211,6 +220,9 @@ function RR.UI.AttachButton:PositionButton()
         parentFrame.rr_hooks_installed = true
         parentFrame:HookScript("OnHide", function()
             if self.button then self.button:Hide() end
+            if RR.UI.MainWindow and RR.UI.MainWindow.Hide then
+                RR.UI.MainWindow:Hide()
+            end
         end)
         parentFrame:HookScript("OnShow", function()
             if self.button then
