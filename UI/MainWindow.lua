@@ -12,7 +12,7 @@ function RR.UI.MainWindow:Initialize()
 
     -- 1. Main Container Window Frame
     local f = CreateFrame("Frame", "RecipeRadarFrame", UIParent, BackdropTemplateMixin and "BackdropTemplate")
-    f:SetSize(750, 520)
+    f:SetSize(840, 560)
     f:SetPoint("CENTER", 0, 0)
     f:SetFrameStrata("HIGH")
     f:SetMovable(true)
@@ -28,6 +28,7 @@ function RR.UI.MainWindow:Initialize()
 
     -- Centered Title Plaque Banner
     self.titlePlaque = RR.UI.Theme:CreateTitlePlaque(f, 420, 38, RR.NAME)
+    self.titlePlaque:SetPoint("TOP", f, "TOP", 0, 12)
 
     -- Close Button
     local closeBtn = CreateFrame("Button", nil, f, "UIPanelCloseButton")

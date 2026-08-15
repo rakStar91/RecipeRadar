@@ -16,7 +16,7 @@ function RR.UI.DetailPane:Create(parent)
 
     -- 4. Right Column: Details Pane (Authentic Key-Value Grid)
     local detailPane = CreateFrame("Frame", nil, parent, BackdropTemplateMixin and "BackdropTemplate")
-    detailPane:SetPoint("TOPLEFT", 432, -134)
+    detailPane:SetPoint("TOPLEFT", 448, -134)
     detailPane:SetPoint("BOTTOMRIGHT", -8, 32)
     RR.UI.Theme:SkinPanel(detailPane, 0.95)
     instance.detailPane = detailPane
@@ -57,7 +57,7 @@ function RR.UI.DetailPane:Create(parent)
 
         local val = rowF:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         val:SetPoint("TOPLEFT", 135, 0)
-        val:SetPoint("TOPRIGHT", 0, 0)
+        val:SetPoint("TOPRIGHT", (i <= 2) and -32 or 0, 0)
         val:SetJustifyH("LEFT")
         val:SetTextColor(1, 1, 1, 1)
         val:SetWordWrap(false)

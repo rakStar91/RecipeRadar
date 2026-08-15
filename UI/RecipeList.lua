@@ -7,14 +7,14 @@ local RR = RecipeRadar
 RR.UI = RR.UI or {}
 RR.UI.RecipeList = {}
 
-local NUM_VISIBLE_ROWS = 17
-local ROW_HEIGHT = 22
+local NUM_VISIBLE_ROWS = 19
+local ROW_HEIGHT = 20
 
 function RR.UI.RecipeList:Create(parent, onSelectRecipe)
     local listPane = CreateFrame("Frame", nil, parent, BackdropTemplateMixin and "BackdropTemplate")
     listPane:SetPoint("TOPLEFT", 8, -134)
     listPane:SetPoint("BOTTOMLEFT", 8, 32)
-    listPane:SetWidth(420)
+    listPane:SetWidth(434)
     RR.UI.Theme:SkinPanel(listPane, 0.95)
 
     local instance = {
