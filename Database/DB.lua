@@ -415,3 +415,13 @@ function RR.DB:GetReputationLevelName(levelId)
     end
     return nil
 end
+
+--- Returns localized description for a special action key
+function RR.DB:GetSpecialActionText(actionKey)
+    if not actionKey then return nil end
+    local sa = RR_DATA and RR_DATA["special_actions"] and RR_DATA["special_actions"][actionKey]
+    if sa and sa.name then
+        return self:GetLocalizedText(sa.name)
+    end
+    return actionKey
+end

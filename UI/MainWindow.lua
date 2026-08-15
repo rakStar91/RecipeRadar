@@ -1162,6 +1162,20 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         })
     end
 
+    -- 5. Special Actions (z. B. Buch auf dem Boden in Scholomance, Schrifttafel in ZG, Gedankenkontrolle in BWL)
+    local specActionKey = data.special_action or meta.special_action
+    if specActionKey then
+        local saText = RR.DB:GetSpecialActionText(specActionKey)
+        if saText then
+            table.insert(allSources, {
+                text = string.format("Hinweis: %s", saText),
+                waypoint = nil,
+                faction = "Neutral",
+                isPlayerFaction = true,
+            })
+        end
+    end
+
     -- Sort sources: player's faction first, then others!
     table.sort(allSources, function(a, b)
         if a.isPlayerFaction and not b.isPlayerFaction then return true end
