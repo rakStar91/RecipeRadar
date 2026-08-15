@@ -207,6 +207,8 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
         phase = recipe.phase or 1,
         reputationFactionId = nil,
         dropRange = nil,
+        special_action = recipe.special_action,
+        objects = recipe.objects,
     }
 
     local function addNPC(npcId, sType)
@@ -349,7 +351,13 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
                     meta.reputationFactionId = itm.reputation.faction_id
                 end
                 if itm.holiday then meta.sourceTypes["holiday"] = true end
-                if itm.objects then meta.sourceTypes["object"] = true end
+                if itm.objects then
+                    meta.sourceTypes["object"] = true
+                    meta.objects = itm.objects
+                end
+                if itm.special_action then
+                    meta.special_action = itm.special_action
+                end
             end
         end
     end
@@ -424,4 +432,18 @@ function RR.DB:GetSpecialActionText(actionKey)
         return self:GetLocalizedText(sa.name)
     end
     return actionKey
+end
+
+--- Returns object data by ID
+function RR.DB:GetObject(objectId)
+    if not objectId then return nil end
+    local objs = RR_DATA and RR_DATA["objects"]
+    if objs then
+        for _, obj in ipairs(objs) do
+            if obj.id == objectId then
+                return obj
+            end
+        end
+    end
+    return nil
 end

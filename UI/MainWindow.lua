@@ -1136,6 +1136,29 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         end
     end
 
+    -- 3b. Objects (z. B. Spektraler Kelch, Schrifttafel des Wahnsinns, Buch auf dem Boden)
+    local objectSources = meta.objects or data.objects
+    if objectSources and type(objectSources) == "table" then
+        for _, objId in ipairs(objectSources) do
+            local obj = RR.DB:GetObject(objId)
+            if obj and not seenSources["obj_" .. objId] then
+                seenSources["obj_" .. objId] = true
+                local oName = (type(obj.name) == "table" and (obj.name[locale] or obj.name["German"] or obj.name["English"])) or obj.name or "Objekt"
+                local zId = (obj.location and obj.location.zone_id) or obj.zone_id
+                local zName = zId and RR.DB:GetZoneName(zId)
+                local ox = tonumber(obj.location and obj.location.x or obj.x)
+                local oy = tonumber(obj.location and obj.location.y or obj.y)
+                local lineText, wp = formatNPC(oName, zName, ox, oy, "Objekt")
+                table.insert(allSources, {
+                    text = lineText,
+                    waypoint = wp,
+                    faction = "Neutral",
+                    isPlayerFaction = true,
+                })
+            end
+        end
+    end
+
     -- 4. Drops
     if dropSources and type(dropSources) == "table" then
         for _, id in ipairs(dropSources) do
