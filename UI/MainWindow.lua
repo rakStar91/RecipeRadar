@@ -383,15 +383,7 @@ function RR.UI.MainWindow:RenderList()
             row.name:SetText(item.name)
             row.skill:SetText(tostring(item.skillReq))
 
-            -- Load authentic spell or item icon
-            local iconTex = nil
-            if item.id and GetSpellTexture then
-                iconTex = GetSpellTexture(item.id)
-            end
-            if not iconTex and item.id and GetItemIcon then
-                iconTex = GetItemIcon(item.id)
-            end
-            row.icon:SetTexture(iconTex or "Interface\\Icons\\INV_Misc_QuestionMark")
+
 
             if item.isKnown then
                 row.name:SetTextColor(0.18, 0.83, 0.75, 1) -- Teal highlight for known
@@ -411,29 +403,25 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     if not recipeItem then return end
     self.selectedRecipe = recipeItem
     local data = recipeItem.data or {}
-
-    -- Set Big Icon
-    local bigTex = nil
-    if recipeItem.id and GetSpellTexture then bigTex = GetSpellTexture(recipeItem.id) end
-    if not bigTex and recipeItem.id and GetItemIcon then bigTex = GetItemIcon(recipeItem.id) end
-    self.detailIcon:SetTexture(bigTex or "Interface\\Icons\\INV_Misc_QuestionMark")
-
-    self.detailTitle:SetText(RR.COLORS.GOLD .. (recipeItem.name or "Recipe"))
-    self.detailSub:SetText(string.format(RR.L["REQUIRES_SKILL"], RR.Scanner.currentProfession or "Skill", recipeItem.skillReq or 1))
-
-    -- Reagents
-    local matsStr = ""
-    if data.reagents and type(data.reagents) == "table" then
-        for _, mat in ipairs(data.reagents) do
-            matsStr = matsStr .. "• " .. (mat.name or "Reagent") .. " x" .. (mat.amount or 1) .. "\n"
-        end
-    end
-    self.matsText:SetText(matsStr ~= "" and matsStr or (RR.COLORS.GREY .. RR.L["NO_REAGENTS"]))
-
-    -- Acquisition Source & TomTom
-    local srcStr = RR.L["UNKNOWN_SOURCE"]
-    self.selectedRecipe.waypoint = nil
     local locale = GetLocale()
+
+    local labels = "Name:\nPhase:\nBenötigter Skill:\nSpielerstufe:\nRuf:\nSpezialisierung:\nWeltereignis:\nPreis:\nErlernt von:\nFundort:"
+    
+    local rName = recipeItem.name or "-"
+    local rPhase = tostring(data.phase or 1)
+    local rSkill = tostring(recipeItem.skillReq or 1)
+    local rXp = tostring(data.min_xp_level or "-")
+    local rRep = "-"
+    if data.reputation then
+        rRep = tostring(data.reputation.faction_id or "-")
+    end
+    local rSpec = data.specialisation and tostring(data.specialisation) or "-"
+    local rHol = data.holiday and tostring(data.holiday) or "-"
+    local rPrice = "-"
+    local rLearnedFrom = "-"
+    local rObtainedFrom = "-"
+
+    self.selectedRecipe.waypoint = nil
 
     local function resolveNPC(npcId)
         local npc = RR.DB:GetNPC(npcId)
@@ -451,31 +439,46 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     local questSources = data.quests and (data.quests.sources or (type(data.quests) == "table" and data.quests))
     local dropSources = data.drops and (data.drops.sources or (type(data.drops) == "table" and data.drops))
 
+    if data.trainers and data.trainers.price then
+        rPrice = RR.Utils:FormatMoney(data.trainers.price)
+    elseif data.vendors and data.vendors.price then
+        rPrice = RR.Utils:FormatMoney(data.vendors.price)
+    end
+
     if trainerSources and type(trainerSources) == "table" and #trainerSources > 0 then
         local nName, zName, nx, ny = resolveNPC(trainerSources[1])
         if nName then
-            srcStr = string.format(RR.L["TRAINER_LOCATION"], nName, zName, string.format("%.1f", nx), string.format("%.1f", ny))
+            rLearnedFrom = nName .. " (Lehrer)"
+            rObtainedFrom = string.format("%s (%.1f, %.1f)", zName, nx, ny)
             self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
     elseif vendorSources and type(vendorSources) == "table" and #vendorSources > 0 then
         local nName, zName, nx, ny = resolveNPC(vendorSources[1])
         if nName then
-            srcStr = string.format(RR.L["VENDOR_LOCATION"], nName, zName, string.format("%.1f", nx), string.format("%.1f", ny))
+            rLearnedFrom = nName .. " (Händler)"
+            rObtainedFrom = string.format("%s (%.1f, %.1f)", zName, nx, ny)
             self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
     elseif questSources and type(questSources) == "table" and #questSources > 0 then
         local q = RR.DB:GetQuest(questSources[1])
         local qName = (q and type(q.name) == "table" and (q.name[locale] or q.name["German"] or q.name["English"])) or "Quest"
         local zName = q and RR.DB:GetZoneName(q.zone_id) or "World"
-        srcStr = string.format(RR.L["QUEST_LOCATION"], qName, zName)
+        rLearnedFrom = qName .. " (Quest)"
+        rObtainedFrom = zName
     elseif dropSources and type(dropSources) == "table" and #dropSources > 0 then
         local nName, zName, nx, ny = resolveNPC(dropSources[1])
         if nName then
-            srcStr = string.format(RR.L["DROP_LOCATION"], nName, zName, string.format("%.1f", nx), string.format("%.1f", ny))
+            rLearnedFrom = nName .. " (Beute)"
+            rObtainedFrom = string.format("%s (%.1f, %.1f)", zName, nx, ny)
             self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
     end
-    self.sourceText:SetText(srcStr)
+
+    local values = string.format("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s",
+        rName, rPhase, rSkill, rXp, rRep, rSpec, rHol, rPrice, rLearnedFrom, rObtainedFrom)
+
+    self.detailLabels:SetText(labels)
+    self.detailValues:SetText(values)
 
     -- Alt knowledge status
     local alts = RR.AltTracker:GetAltStatusForRecipe(RR.Scanner.currentProfession, recipeItem.id, recipeItem.name)
