@@ -145,6 +145,14 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     if not recipeItem then return end
     self.selectedRecipe = recipeItem
 
+    if RR.Debug then
+        local data = recipeItem.data or {}
+        local spellId = data.id or recipeItem.id
+        local craftedId = spellId and RR.DB and RR.DB:GetCraftedItemId(spellId)
+        local recName = data.name and RR.DB:GetLocalizedText(data.name) or "Unknown"
+        print(string.format("|cff00ccff[RecipeRadar Debug]|r Selected: '%s' | SpellID=%s | CraftedID=%s", tostring(recName), tostring(spellId), tostring(craftedId)))
+    end
+
     if self.detailPane then
         self.detailPane:Display(recipeItem)
     end

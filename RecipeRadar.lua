@@ -41,6 +41,10 @@ SlashCmdList["RECIPERADAR"] = function(msg)
     if cmd == "help" then
         print(RR.COLORS.TITLE .. (RR.L["CMD_HELP_HEADER"] or "RecipeRadar Commands:"))
         print(RR.COLORS.GOLD .. "/rr" .. RR.COLORS.WHITE .. (RR.L["CMD_HELP_TOGGLE"] or " - Toggle RecipeRadar window"))
+        print(RR.COLORS.GOLD .. "/rr debug" .. RR.COLORS.WHITE .. " - Toggle verbose debug logging")
+    elseif cmd == "debug" then
+        RR.Debug = not RR.Debug
+        print(RR.COLORS.TITLE .. "RecipeRadar: " .. RR.COLORS.WHITE .. "Debug logging is now " .. (RR.Debug and "|cff33ff33ENABLED|r" or "|cffff4444DISABLED|r"))
     else
         RR.UI.MainWindow:Toggle()
     end

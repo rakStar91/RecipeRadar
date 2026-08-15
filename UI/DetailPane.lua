@@ -74,7 +74,13 @@ function RR.UI.DetailPane:Create(parent)
                 if not rec or not rec.data then return end
                 local data = rec.data
                 local spellId = data.id or rec.id
-                local itemId = data.item_id or (data.items and data.items[1]) or (spellId and RR.DB and RR.DB:GetCraftedItemId(spellId))
+                local craftedId = spellId and RR.DB and RR.DB:GetCraftedItemId(spellId)
+                local itemId = data.item_id or (data.items and data.items[1]) or craftedId
+
+                if RR.Debug then
+                    local recName = data.name and RR.DB:GetLocalizedText(data.name) or "Unknown"
+                    print(string.format("|cff00ccff[RecipeRadar Debug]|r Hover: Recipe='%s' | SpellID=%s | CraftedID=%s | FinalItemID=%s", tostring(recName), tostring(spellId), tostring(craftedId), tostring(itemId)))
+                end
 
                 GameTooltip:SetOwner(selfBtn, "ANCHOR_RIGHT")
                 GameTooltip:ClearLines()
