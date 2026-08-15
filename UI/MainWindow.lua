@@ -107,9 +107,9 @@ function RR.UI.MainWindow:Initialize()
     local sourceMenu = {
         { text = "Alle Quellen", value = "any" },
         { text = "Lehrer", value = "trainer", icon = "Interface\\Icons\\INV_Misc_Book_09" },
-        { text = "Händler", value = "vendor", icon = "Interface\\Icons\\INV_Misc_Bag_08" },
+        { text = "Händler", value = "vendor", icon = "Interface\\Icons\\INV_Misc_Coin_01" },
         { text = "Quest", value = "quest", icon = "Interface\\GossipFrame\\AvailableQuestIcon" },
-        { text = "Gegner-Beute (Drop)", value = "drop", icon = "Interface\\Icons\\INV_Scroll_03" },
+        { text = "Gegner-Beute (Drop)", value = "drop", icon = "Interface\\GossipFrame\\VendorGossipIcon" },
         { text = "Weltereignis", value = "holiday", icon = "Interface\\Icons\\INV_Misc_Gift_01" },
         { text = "Ruf", value = "reputation", icon = "Interface\\Icons\\Achievement_Reputation_01" },
     }
@@ -517,10 +517,10 @@ function RR.UI.MainWindow:RenderList()
     local offset = self.scrollOffset or 0
 
     local iconMap = {
-        vendor  = "Interface\\Icons\\INV_Misc_Bag_08",
-        drop    = "Interface\\Icons\\INV_Scroll_03",
-        quest   = "Interface\\GossipFrame\\AvailableQuestIcon",
         trainer = "Interface\\Icons\\INV_Misc_Book_09",
+        vendor  = "Interface\\Icons\\INV_Misc_Coin_01",
+        drop    = "Interface\\GossipFrame\\VendorGossipIcon",
+        quest   = "Interface\\GossipFrame\\AvailableQuestIcon",
         holiday = "Interface\\Icons\\INV_Misc_Gift_01",
         object  = "Interface\\Icons\\INV_Box_01",
     }
