@@ -93,7 +93,7 @@ function RR.UI.AttachButton:FindCraftWindow()
         end
     end
 
-    -- 2. Dynamic scan of UIParent children (matching MTSL's robust detection)
+    -- 2. Dynamic scan of UIParent children (matching robust window detection)
     local screen_width = UIParent:GetWidth() or 1024
     local screen_height = UIParent:GetHeight() or 768
     local max_width = screen_width * 0.85

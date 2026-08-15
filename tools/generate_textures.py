@@ -62,7 +62,7 @@ def make_fill(name, top_rgb, bottom_rgb, top_a=1.0, bottom_a=1.0, sheen=0.0):
 
 
 def main():
-    print("Generating MTSL UI textures:")
+    print("Generating RecipeRadar UI textures:")
 
     # backgrounds
     make_fill("fill_frame.tga", (0.055, 0.055, 0.060), (0.030, 0.030, 0.034),
