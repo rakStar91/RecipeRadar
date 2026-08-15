@@ -33,6 +33,7 @@ Database\Classic\Reputations.lua
 Database\Classic\Skills.lua
 Database\Classic\SpecialActions.lua
 Database\Classic\Specialisations.lua
+Database\Classic\SpellItems.lua
 Database\Classic\Zones.lua
 Database\DB.lua
 

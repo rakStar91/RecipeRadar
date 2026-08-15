@@ -162,6 +162,14 @@ function RR.DB:GetQuest(questId)
     return self.questMap and self.questMap[questId]
 end
 
+function RR.DB:GetCraftedItemId(spellId)
+    if not spellId then return nil end
+    if RR_DATA and RR_DATA["spell_to_item"] then
+        return RR_DATA["spell_to_item"][spellId]
+    end
+    return nil
+end
+
 function RR.DB:GetItem(itemId)
     if not itemId then return nil end
     return self.itemMap and self.itemMap[itemId]

@@ -421,8 +421,8 @@ function RR.UI.MainWindow:Initialize()
         row:SetScript("OnClick", function(selfRow, mouseButton)
             if selfRow.recipeData then
                 local data = selfRow.recipeData.data
-                local itemId = data and (data.item_id or (data.items and data.items[1]))
                 local spellId = data and data.id
+                local itemId = data and (data.item_id or (data.items and data.items[1]) or (spellId and RR.DB and RR.DB:GetCraftedItemId(spellId)))
                 local itemLink = nil
                 if itemId and itemId > 0 then
                     local _, link = GetItemInfo(itemId)
@@ -528,8 +528,8 @@ function RR.UI.MainWindow:Initialize()
                 local rec = RR.UI.MainWindow.selectedRecipe
                 if not rec or not rec.data then return end
                 local data = rec.data
-                local itemId = data.item_id or (data.items and data.items[1])
                 local spellId = data.id or rec.id
+                local itemId = data.item_id or (data.items and data.items[1]) or (spellId and RR.DB and RR.DB:GetCraftedItemId(spellId))
 
                 GameTooltip:SetOwner(selfBtn, "ANCHOR_RIGHT")
                 GameTooltip:ClearLines()
@@ -547,6 +547,23 @@ function RR.UI.MainWindow:Initialize()
                         GameTooltip:SetHyperlink("spell:" .. spellId)
                     end)
                     if ok then shown = true end
+                end
+
+                -- Ensure no unwanted spell icon or placeholder texture (e.g. Samwise face) is displayed
+                for k = 1, 10 do
+                    local tex = _G["GameTooltipTexture" .. k]
+                    if tex then
+                        tex:SetTexture(nil)
+                        tex:Hide()
+                    end
+                end
+                if GameTooltip.Icon then
+                    GameTooltip.Icon:SetTexture(nil)
+                    GameTooltip.Icon:Hide()
+                end
+                if GameTooltip.icon then
+                    GameTooltip.icon:SetTexture(nil)
+                    GameTooltip.icon:Hide()
                 end
 
                 if shown then
@@ -570,13 +587,13 @@ function RR.UI.MainWindow:Initialize()
                 local rec = RR.UI.MainWindow.selectedRecipe
                 if not rec or not rec.data then return end
                 local data = rec.data
-                local itemId = data.item_id or (data.items and data.items[1])
                 local spellId = data.id or rec.id
+                local itemId = data.item_id or (data.items and data.items[1]) or (spellId and RR.DB and RR.DB:GetCraftedItemId(spellId))
 
                 local itemLink = nil
                 if itemId and itemId > 0 then
                     local _, link = GetItemInfo(itemId)
-                    itemLink = link
+                    itemLink = link or ("item:" .. itemId)
                 end
                 if not itemLink and spellId and spellId > 0 and GetSpellLink then
                     itemLink = GetSpellLink(spellId)
