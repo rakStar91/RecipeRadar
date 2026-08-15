@@ -119,7 +119,7 @@ RR_DATA["skills"]["Tailoring"] =
 	{
 		["expansion"] = 1,
 		["id"] = 2389,
-		["item_id"] = 2587,
+		["item_id"] = 2572,
 		["items"] = {
 			2598,
 		},
