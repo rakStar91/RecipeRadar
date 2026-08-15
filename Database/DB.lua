@@ -186,6 +186,7 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
         factions = {},
         phase = recipe.phase or 1,
         reputationFactionId = nil,
+        dropRange = nil,
     }
 
     local function addNPC(npcId, sType)
@@ -237,27 +238,42 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
     end
 
     -- Direct trainers
-    local tr = recipe.trainers and (recipe.trainers.sources or (type(recipe.trainers) == "table" and recipe.trainers))
-    if tr and type(tr) == "table" then
-        for _, id in ipairs(tr) do addNPC(id, "trainer") end
+    if recipe.trainers then
+        meta.sourceTypes["trainer"] = true
+        local tr = recipe.trainers.sources or (type(recipe.trainers) == "table" and recipe.trainers)
+        if type(tr) == "table" then
+            for _, id in ipairs(tr) do addNPC(id, "trainer") end
+        end
     end
 
     -- Direct vendors
-    local vn = recipe.vendors and (recipe.vendors.sources or (type(recipe.vendors) == "table" and recipe.vendors))
-    if vn and type(vn) == "table" then
-        for _, id in ipairs(vn) do addNPC(id, "vendor") end
+    if recipe.vendors then
+        meta.sourceTypes["vendor"] = true
+        local vn = recipe.vendors.sources or (type(recipe.vendors) == "table" and recipe.vendors)
+        if type(vn) == "table" then
+            for _, id in ipairs(vn) do addNPC(id, "vendor") end
+        end
     end
 
     -- Direct quests
-    local qs = recipe.quests and (recipe.quests.sources or (type(recipe.quests) == "table" and recipe.quests))
-    if qs and type(qs) == "table" then
-        for _, id in ipairs(qs) do addQuest(id) end
+    if recipe.quests then
+        meta.sourceTypes["quest"] = true
+        local qs = recipe.quests.sources or (type(recipe.quests) == "table" and recipe.quests)
+        if type(qs) == "table" then
+            for _, id in ipairs(qs) do addQuest(id) end
+        end
     end
 
     -- Direct drops
-    local dr = recipe.drops and (recipe.drops.sources or (type(recipe.drops) == "table" and recipe.drops))
-    if dr and type(dr) == "table" then
-        for _, id in ipairs(dr) do addNPC(id, "drop") end
+    if recipe.drops then
+        meta.sourceTypes["drop"] = true
+        if recipe.drops.range then
+            meta.dropRange = recipe.drops.range
+        end
+        local dr = recipe.drops.sources or (type(recipe.drops) == "table" and recipe.drops)
+        if type(dr) == "table" then
+            for _, id in ipairs(dr) do addNPC(id, "drop") end
+        end
     end
 
     -- Items (Teaching items / patterns / recipes)
@@ -267,18 +283,24 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
             if itm then
                 if itm.phase then meta.phase = itm.phase end
                 if itm.vendors then
+                    meta.sourceTypes["vendor"] = true
                     local iv = itm.vendors.sources or itm.vendors
                     if type(iv) == "table" then
                         for _, id in ipairs(iv) do addNPC(id, "vendor") end
                     end
                 end
                 if itm.quests then
+                    meta.sourceTypes["quest"] = true
                     local iq = itm.quests.sources or itm.quests
                     if type(iq) == "table" then
                         for _, id in ipairs(iq) do addQuest(id) end
                     end
                 end
                 if itm.drops then
+                    meta.sourceTypes["drop"] = true
+                    if itm.drops.range then
+                        meta.dropRange = itm.drops.range
+                    end
                     local idr = itm.drops.sources or itm.drops
                     if type(idr) == "table" then
                         for _, id in ipairs(idr) do addNPC(id, "drop") end
@@ -302,7 +324,7 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
     if recipe.holiday then meta.sourceTypes["holiday"] = true end
     if recipe.objects then meta.sourceTypes["object"] = true end
 
-    -- Fallback default
+    -- Fallback only if absolutely no source found
     if not next(meta.sourceTypes) then
         meta.sourceTypes["trainer"] = true
     end

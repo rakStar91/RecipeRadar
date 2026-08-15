@@ -699,6 +699,8 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
             rLearnedFrom = string.format("%s (Beute) - %s (%.1f, %.1f)", nName, zName, nx, ny)
             self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
+    elseif meta.dropRange then
+        rLearnedFrom = string.format("Gegner-Beute (Stufe %d-%d)", meta.dropRange.min_xp_level or 1, meta.dropRange.max_xp_level or 60)
     elseif questSources and type(questSources) == "table" and #questSources > 0 then
         local q = RR.DB:GetQuest(questSources[1])
         local qName = (q and type(q.name) == "table" and (q.name[locale] or q.name["German"] or q.name["English"])) or "Quest"
