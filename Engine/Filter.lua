@@ -1,36 +1,32 @@
 -- ============================================================================
 -- RecipeRadar: Engine/Filter.lua
--- High performance recipe filtering pipeline
+-- High performance multi-criteria recipe filtering pipeline
 -- ============================================================================
 
 local RR = RecipeRadar
 RR.Filter = {}
 
---- Filters a list of recipes based on current configuration
--- @param recipes table: Raw recipe list from Database
--- @param profName string: Name of profession
--- @param searchQuery string: Optional search filter text
--- @return table filtered recipes, table counts { missing = x, known = y, total = z }
 function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
     if not recipes then return {}, { missing = 0, known = 0, total = 0 } end
 
     local mode = RR.Config:GetFilterSetting("mode") or "missing"
-    local zoneMode = RR.Config:GetFilterSetting("zoneMode") or "any"
-    local sourceFilters = RR.Config:GetFilterSetting("sources") or {}
+    local sourceFilter = RR.Config:GetFilterSetting("sourceFilter") or "any"
+    local factionFilter = RR.Config:GetFilterSetting("factionFilter") or "any"
+    local zoneFilter = RR.Config:GetFilterSetting("zoneFilter") or "any"
+    local phaseFilter = RR.Config:GetFilterSetting("phaseFilter") or 0
+
     local playerFaction = UnitFactionGroup("player") or "Neutral"
-    local currentZone = GetRealZoneText() or ""
-    local lastZone = RR.Config:GetLastZone() or ""
+    local currentZoneId = RR.DB:GetCurrentZoneId()
 
     local filtered = {}
     local counts = { missing = 0, known = 0, total = 0 }
     local searchLower = searchQuery and string.lower(strtrim(searchQuery)) or ""
-    local locale = GetLocale()
 
     for _, recipe in ipairs(recipes) do
         local spellId = recipe.id or recipe.spell_id
         local recipeName = RR.DB:GetLocalizedText(recipe.name)
-
         local isKnown = RR.Scanner:IsRecipeKnown(profName, spellId, recipeName)
+        local meta = RR.DB:GetRecipeAcquisitionMetadata(recipe)
 
         -- Update stats count
         counts.total = counts.total + 1
@@ -40,7 +36,7 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
             counts.missing = counts.missing + 1
         end
 
-        -- 1. Mode Check
+        -- 1. Mode Check (Fehlend / Gelernt / Alle)
         local passMode = true
         if mode == "missing" and isKnown then
             passMode = false
@@ -48,7 +44,51 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
             passMode = false
         end
 
-        -- 2. Search Text Check
+        -- 2. Source Check (Trainer / Vendor / Quest / Drop / Object / Holiday / Reputation)
+        local passSource = true
+        if sourceFilter ~= "any" then
+            if not meta.sourceTypes[sourceFilter] then
+                passSource = false
+            end
+        end
+
+        -- 3. Faction & Reputation Check
+        local passFaction = true
+        if factionFilter == "Alliance" or factionFilter == "Horde" or factionFilter == "Neutral" then
+            if not meta.factions[factionFilter] and not meta.factions["Neutral"] then
+                passFaction = false
+            end
+        elseif type(factionFilter) == "number" and factionFilter > 0 then
+            if meta.reputationFactionId ~= factionFilter then
+                passFaction = false
+            end
+        end
+
+        -- 4. Zone / Region / Continent Check
+        local passZone = true
+        if zoneFilter == "current" then
+            if currentZoneId and not meta.zones[currentZoneId] then
+                passZone = false
+            end
+        elseif zoneFilter == "kalimdor" then
+            if not meta.continents[1] then passZone = false end
+        elseif zoneFilter == "eastern_kingdoms" then
+            if not meta.continents[2] then passZone = false end
+        elseif zoneFilter == "dungeons" then
+            if not meta.continents[3] then passZone = false end
+        elseif type(zoneFilter) == "number" and zoneFilter > 0 then
+            if not meta.zones[zoneFilter] then passZone = false end
+        end
+
+        -- 5. Phase Check
+        local passPhase = true
+        if phaseFilter and phaseFilter > 0 then
+            if meta.phase > phaseFilter then
+                passPhase = false
+            end
+        end
+
+        -- 6. Search Query Check
         local passSearch = true
         if searchLower ~= "" then
             local nameLower = string.lower(recipeName)
@@ -57,13 +97,7 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
             end
         end
 
-        -- 3. Faction Check
-        local passFaction = true
-        if recipe.faction and recipe.faction ~= "Neutral" and recipe.faction ~= playerFaction then
-            passFaction = false
-        end
-
-        if passMode and passSearch and passFaction then
+        if passMode and passSource and passFaction and passZone and passPhase and passSearch then
             table.insert(filtered, {
                 data = recipe,
                 id = spellId,

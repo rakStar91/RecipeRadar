@@ -88,24 +88,23 @@ function RR.UI.MainWindow:Initialize()
     close:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
     close:SetScript("OnClick", function() f:Hide() end)
 
-    -- 2. Sub-Filter Bar
+    -- 2. Sub-Filter Bar (Mode buttons + 4 MTSL-style Dropdowns)
     local filterBar = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
     filterBar:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -2)
     filterBar:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -2)
     filterBar:SetHeight(34)
-    RR.UI.Theme:SkinPanel(filterBar, 0.95)
+    RR.UI.Theme:SkinPanel(filterBar, 0.8)
 
-    -- Mode Buttons
     self.modeBtns = {}
     local modes = { "missing", "known", "all" }
     local modeLabels = { missing = "MODE_MISSING", known = "MODE_KNOWN", all = "MODE_ALL" }
     local prevMode = nil
     for _, m in ipairs(modes) do
-        local btn = RR.UI.Theme:CreateButton(filterBar, RR.L[modeLabels[m]], 80, 22)
+        local btn = RR.UI.Theme:CreateButton(filterBar, RR.L[modeLabels[m]], 65, 22)
         if prevMode then
-            btn:SetPoint("LEFT", prevMode, "RIGHT", 4, 0)
+            btn:SetPoint("LEFT", prevMode, "RIGHT", 3, 0)
         else
-            btn:SetPoint("LEFT", 8, 0)
+            btn:SetPoint("LEFT", 6, 0)
         end
         btn:SetScript("OnClick", function()
             RR.Config:SetFilterSetting("mode", m)
@@ -116,26 +115,126 @@ function RR.UI.MainWindow:Initialize()
         prevMode = btn
     end
 
-    -- Quick Zone Buttons
-    self.zoneBtns = {}
-    local zones = { "any", "current", "last" }
-    local zoneLabels = { any = "ZONE_ANY", current = "ZONE_CURRENT", last = "ZONE_LAST" }
-    local prevZone = nil
-    for _, z in ipairs(zones) do
-        local btn = RR.UI.Theme:CreateButton(filterBar, RR.L[zoneLabels[z]], 85, 22)
-        if prevZone then
-            btn:SetPoint("LEFT", prevZone, "RIGHT", 4, 0)
-        else
-            btn:SetPoint("LEFT", prevMode, "RIGHT", 20, 0)
-        end
-        btn:SetScript("OnClick", function()
-            RR.Config:SetFilterSetting("zoneMode", z)
-            self:UpdateFilterButtons()
-            self:Refresh()
-        end)
-        self.zoneBtns[z] = btn
-        prevZone = btn
+    -- Dropdown Helper
+    local function CreateDropdown(parent, width, title, onClick)
+        local btn = RR.UI.Theme:CreateButton(parent, title, width, 22)
+        btn.arrow = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        btn.arrow:SetPoint("RIGHT", -4, 0)
+        btn.arrow:SetText("▾")
+        btn:SetScript("OnClick", onClick)
+        return btn
     end
+
+    -- 1. Source Dropdown
+    local sourceMenu = {
+        { text = "Alle Quellen", value = "any" },
+        { text = "Lehrer", value = "trainer" },
+        { text = "Händler", value = "vendor" },
+        { text = "Quest", value = "quest" },
+        { text = "Gegner-Beute (Drop)", value = "drop" },
+        { text = "Weltereignis", value = "holiday" },
+        { text = "Ruf", value = "reputation" },
+    }
+    self.sourceBtn = CreateDropdown(filterBar, 95, "Quelle ▾", function(selfBtn)
+        local menu = {}
+        for _, itm in ipairs(sourceMenu) do
+            table.insert(menu, {
+                text = itm.text,
+                func = function()
+                    RR.Config:SetFilterSetting("sourceFilter", itm.value)
+                    selfBtn.text:SetText(itm.text)
+                    self:Refresh()
+                end,
+                checked = (RR.Config:GetFilterSetting("sourceFilter") or "any") == itm.value,
+            })
+        end
+        EasyMenu(menu, CreateFrame("Frame", "RR_SourceMenu", UIParent, "UIDropDownMenuTemplate"), selfBtn, 0, 0, "MENU")
+    end)
+    self.sourceBtn:SetPoint("LEFT", prevMode, "RIGHT", 8, 0)
+
+    -- 2. Faction & Reputation Dropdown
+    local factionMenu = {
+        { text = "Alle Fraktionen", value = "any" },
+        { text = "Allianz", value = "Alliance" },
+        { text = "Horde", value = "Horde" },
+        { text = "Neutral", value = "Neutral" },
+        { text = "Argentumdämmerung", value = 529 },
+        { text = "Thoriumbruderschaft", value = 59 },
+        { text = "Holzschlundfeste", value = 576 },
+        { text = "Stamm der Zandalari", value = 270 },
+        { text = "Hydraxianer", value = 749 },
+        { text = "Dunkelmond-Jahrmarkt", value = 909 },
+        { text = "Cenarischer Zirkel", value = 609 },
+    }
+    self.factionBtn = CreateDropdown(filterBar, 110, "Fraktion ▾", function(selfBtn)
+        local menu = {}
+        for _, itm in ipairs(factionMenu) do
+            table.insert(menu, {
+                text = itm.text,
+                func = function()
+                    RR.Config:SetFilterSetting("factionFilter", itm.value)
+                    selfBtn.text:SetText(itm.text)
+                    self:Refresh()
+                end,
+                checked = (RR.Config:GetFilterSetting("factionFilter") or "any") == itm.value,
+            })
+        end
+        EasyMenu(menu, CreateFrame("Frame", "RR_FactionMenu", UIParent, "UIDropDownMenuTemplate"), selfBtn, 0, 0, "MENU")
+    end)
+    self.factionBtn:SetPoint("LEFT", self.sourceBtn, "RIGHT", 4, 0)
+
+    -- 3. Zone & Region Dropdown
+    self.zoneBtn = CreateDropdown(filterBar, 125, "Zone / Region ▾", function(selfBtn)
+        local curZoneName = GetRealZoneText() or "Aktuelle Zone"
+        local zoneMenu = {
+            { text = "Alle Zonen", value = "any" },
+            { text = "Aktuelle Zone (" .. curZoneName .. ")", value = "current" },
+            { text = "Kalimdor", value = "kalimdor" },
+            { text = "Östliche Königreiche", value = "eastern_kingdoms" },
+            { text = "Instanzen & Schlachtzüge", value = "dungeons" },
+        }
+        local menu = {}
+        for _, itm in ipairs(zoneMenu) do
+            table.insert(menu, {
+                text = itm.text,
+                func = function()
+                    RR.Config:SetFilterSetting("zoneFilter", itm.value)
+                    selfBtn.text:SetText(itm.text)
+                    self:Refresh()
+                end,
+                checked = (RR.Config:GetFilterSetting("zoneFilter") or "any") == itm.value,
+            })
+        end
+        EasyMenu(menu, CreateFrame("Frame", "RR_ZoneMenu", UIParent, "UIDropDownMenuTemplate"), selfBtn, 0, 0, "MENU")
+    end)
+    self.zoneBtn:SetPoint("LEFT", self.factionBtn, "RIGHT", 4, 0)
+
+    -- 4. Phase Dropdown
+    local phaseMenu = {
+        { text = "Alle Phasen", value = 0 },
+        { text = "Phase 1", value = 1 },
+        { text = "Phase 2", value = 2 },
+        { text = "Phase 3", value = 3 },
+        { text = "Phase 4", value = 4 },
+        { text = "Phase 5", value = 5 },
+        { text = "Phase 6", value = 6 },
+    }
+    self.phaseBtn = CreateDropdown(filterBar, 85, "Phase ▾", function(selfBtn)
+        local menu = {}
+        for _, itm in ipairs(phaseMenu) do
+            table.insert(menu, {
+                text = itm.text,
+                func = function()
+                    RR.Config:SetFilterSetting("phaseFilter", itm.value)
+                    selfBtn.text:SetText(itm.text)
+                    self:Refresh()
+                end,
+                checked = (RR.Config:GetFilterSetting("phaseFilter") or 0) == itm.value,
+            })
+        end
+        EasyMenu(menu, CreateFrame("Frame", "RR_PhaseMenu", UIParent, "UIDropDownMenuTemplate"), selfBtn, 0, 0, "MENU")
+    end)
+    self.phaseBtn:SetPoint("LEFT", self.zoneBtn, "RIGHT", 4, 0)
 
     -- 3. Left Column: Recipe List Pane
     local listPane = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
