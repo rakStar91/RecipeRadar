@@ -151,20 +151,18 @@ function RR.UI.MainWindow:Initialize()
         row:SetPoint("TOPLEFT", 4, -((i - 1) * ROW_HEIGHT + 4))
         row:SetPoint("TOPRIGHT", -22, -((i - 1) * ROW_HEIGHT + 4))
         row:SetHeight(ROW_HEIGHT - 2)
-        RR.UI.Theme:SkinPanel(row, 0.8)
+        RR.UI.Theme:SkinPanel(row, 0.4)
 
-        row.icon = row:CreateTexture(nil, "ARTWORK")
-        row.icon:SetSize(20, 20)
-        row.icon:SetPoint("LEFT", 4, 0)
-        row.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
-
+        -- Clean list item without icon (MTSL style)
         row.name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-        row.name:SetPoint("LEFT", row.icon, "RIGHT", 8, 0)
+        row.name:SetPoint("LEFT", 8, 0)
+        row.name:SetPoint("RIGHT", -40, 0)
+        row.name:SetJustifyH("LEFT")
         row.name:SetText("Recipe Name")
 
         row.skill = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-        row.skill:SetPoint("RIGHT", -6, 0)
-        row.skill:SetText("300")
+        row.skill:SetPoint("RIGHT", -8, 0)
+        row.skill:SetTextColor(1, 0.82, 0, 1)
 
         row:SetScript("OnClick", function(selfRow)
             if selfRow.recipeData then

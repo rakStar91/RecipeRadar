@@ -28,10 +28,7 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
 
     for _, recipe in ipairs(recipes) do
         local spellId = recipe.id or recipe.spell_id
-        local recipeName = ""
-        if recipe.name then
-            recipeName = recipe.name[locale] or recipe.name["English"] or ""
-        end
+        local recipeName = RR.DB:GetLocalizedText(recipe.name)
 
         local isKnown = RR.Scanner:IsRecipeKnown(profName, spellId, recipeName)
 

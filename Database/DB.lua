@@ -25,6 +25,28 @@ RR.DB.itemMap = {}
 RR.DB.profNameToKey = {}
 
 -- Official Blizzard Profession Spell-IDs (Universal across all locales)
+local LOCALE_TO_DB_KEY = {
+    ["deDE"] = "German",
+    ["enUS"] = "English",
+    ["enGB"] = "English",
+    ["frFR"] = "French",
+    ["esES"] = "Spanish",
+    ["esMX"] = "Mexican",
+    ["ruRU"] = "Russian",
+    ["zhCN"] = "Chinese",
+    ["zhTW"] = "Taiwanese",
+    ["koKR"] = "Korean",
+    ["ptBR"] = "Portuguese",
+}
+
+function RR.DB:GetLocalizedText(nameTable)
+    if not nameTable then return "" end
+    if type(nameTable) == "string" then return nameTable end
+    local locale = GetLocale()
+    local dbKey = LOCALE_TO_DB_KEY[locale] or "English"
+    return nameTable[dbKey] or nameTable[locale] or nameTable["German"] or nameTable["English"] or ""
+end
+
 local PROFESSION_SPELL_IDS = {
     ["Alchemy"] = 2259,
     ["Blacksmithing"] = 2018,
