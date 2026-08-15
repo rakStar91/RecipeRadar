@@ -113,7 +113,7 @@ local defaultStrings = {
     ["UNKNOWN_SOURCE"] = "Unknown Source",
     ["SELECT_A_RECIPE"] = "Select a Recipe",
     ["REQUIRES_PROFESSION"] = "Requires Profession",
-    ["NO_ALTS_REALM"] = "No alts on this realm.",
+    ["NO_ALTS_REALM"] = "No alts with this profession on this realm.",
     ["FREE"] = "Free",
 
     -- Tooltips & Slash Commands
@@ -244,7 +244,7 @@ local translations = {
         ["UNKNOWN_SOURCE"] = "Unbekannte Quelle",
         ["SELECT_A_RECIPE"] = "Wähle ein Rezept aus",
         ["REQUIRES_PROFESSION"] = "Benötigt Beruf",
-        ["NO_ALTS_REALM"] = "Keine Twinks auf diesem Realm.",
+        ["NO_ALTS_REALM"] = "Keine Twinks mit diesem Beruf auf diesem Realm.",
         ["FREE"] = "Kostenlos",
         ["FACTION_ALLIANCE_ONLY"] = "Nur Allianz",
         ["FACTION_HORDE_ONLY"] = "Nur Horde",

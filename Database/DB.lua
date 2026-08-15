@@ -108,6 +108,44 @@ function RR.DB:Initialize()
             end
         end
 
+
+        -- 1b. Build comprehensive item-to-skill and spell-to-skill lookup maps
+        self.itemToSkillMap = {}
+        self.craftedItemToSkillMap = {}
+        self.spellToSkillMap = {}
+
+        local spellToItem = RR_DATA and RR_DATA["spell_to_item"]
+
+        if self.Raw.skills then
+            for profName, skillList in pairs(self.Raw.skills) do
+                if type(skillList) == "table" then
+                    for _, skill in ipairs(skillList) do
+                        local entry = {
+                            profession = profName,
+                            skill = skill,
+                            spellId = skill.id,
+                        }
+
+                        if skill.id then
+                            self.spellToSkillMap[skill.id] = entry
+                        end
+
+                        -- Map recipe / pattern items
+                        if skill.items and type(skill.items) == "table" then
+                            for _, itmId in ipairs(skill.items) do
+                                self.itemToSkillMap[itmId] = entry
+                            end
+                        end
+
+                        -- Map crafted items (from trainers, drops, quests, etc.)
+                        if spellToItem and skill.id and spellToItem[skill.id] then
+                            local craftedId = spellToItem[skill.id]
+                            self.craftedItemToSkillMap[craftedId] = entry
+                        end
+                    end
+                end
+            end
+        end
         -- 2. Build Dynamic Multilingual Profession Name Resolver via Blizzard API & DB
         self.profNameToKey = {}
         
@@ -531,4 +569,20 @@ function RR.DB:GetSpecialisationName(specId)
         end
     end
     return nil
+end
+
+function RR.DB:GetSkillByItemId(itemId)
+    if not itemId then return nil end
+    if self.itemToSkillMap and self.itemToSkillMap[itemId] then
+        return self.itemToSkillMap[itemId]
+    end
+    if self.craftedItemToSkillMap and self.craftedItemToSkillMap[itemId] then
+        return self.craftedItemToSkillMap[itemId]
+    end
+    return nil
+end
+
+function RR.DB:GetSkillBySpellId(spellId)
+    if not spellId then return nil end
+    return self.spellToSkillMap and self.spellToSkillMap[spellId]
 end

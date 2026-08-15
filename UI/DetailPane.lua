@@ -110,6 +110,15 @@ function RR.UI.DetailPane:Create(parent)
                     GameTooltip.icon:SetTexture(nil)
                     GameTooltip.icon:Hide()
                 end
+                for _, region in ipairs({GameTooltip:GetRegions()}) do
+                    if region and region:GetObjectType() == "Texture" then
+                        local tex = region:GetTexture()
+                        if tex and (type(tex) == "string" and (string.find(tex, "INV_Misc_QuestionMark") or string.find(tex, "Temp") or string.find(tex, "Spell_Shadow_DeathCoil") or string.find(tex, "134400")) or type(tex) == "number" and tex == 134400) then
+                            region:SetTexture(nil)
+                            region:Hide()
+                        end
+                    end
+                end
 
                 if shown then
                     GameTooltip:Show()
