@@ -710,6 +710,8 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
 
     self.selectedRecipe.waypoint = nil
 
+    local playerFaction = UnitFactionGroup("player") or "Alliance"
+
     local function resolveNPC(npcId)
         local npc = RR.DB:GetNPC(npcId)
         if not npc then return nil end
@@ -718,14 +720,50 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         local zName = RR.DB:GetZoneName(zId)
         local nx = tonumber(npc.location and npc.location.x or npc.x)
         local ny = tonumber(npc.location and npc.location.y or npc.y)
-        return nName, zName, nx, ny
+
+        local isFactionMatch = false
+        if npc.reacts then
+            if type(npc.reacts) == "table" then
+                for _, r in ipairs(npc.reacts) do
+                    if r == playerFaction then isFactionMatch = true end
+                end
+            elseif npc.reacts == playerFaction then
+                isFactionMatch = true
+            end
+        elseif npc.faction == playerFaction then
+            isFactionMatch = true
+        end
+
+        return nName, zName, nx, ny, isFactionMatch
     end
 
-    local function formatNPC(nName, zName, nx, ny, suffix)
+    local function findBestNPC(sourceList)
+        if not sourceList or type(sourceList) ~= "table" or #sourceList == 0 then return nil end
+        
+        -- 1. Try to find NPC matching the player's own faction
+        for _, id in ipairs(sourceList) do
+            local nName, zName, nx, ny, isMatch = resolveNPC(id)
+            if nName and isMatch then
+                return nName, zName, nx, ny, #sourceList
+            end
+        end
+
+        -- 2. Fallback to first valid NPC
+        for _, id in ipairs(sourceList) do
+            local nName, zName, nx, ny = resolveNPC(id)
+            if nName then
+                return nName, zName, nx, ny, #sourceList
+            end
+        end
+        return nil
+    end
+
+    local function formatNPC(nName, zName, nx, ny, suffix, totalCount)
+        local moreSuffix = (totalCount and totalCount > 1) and string.format(" (+%d)", totalCount - 1) or ""
         if nx and ny and nx > 0 and ny > 0 then
-            return string.format("%s (%s) - %s (%.1f, %.1f)", nName, suffix, zName, nx, ny), { name = nName, zone = zName, x = nx, y = ny }
+            return string.format("%s (%s) - %s (%.1f, %.1f)%s", nName, suffix, zName, nx, ny, moreSuffix), { name = nName, zone = zName, x = nx, y = ny }
         else
-            return string.format("%s (%s) - %s", nName, suffix, zName), (nx and ny and { name = nName, zone = zName, x = nx, y = ny } or nil)
+            return string.format("%s (%s) - %s%s", nName, suffix, zName, moreSuffix), (nx and ny and { name = nName, zone = zName, x = nx, y = ny } or nil)
         end
     end
 
@@ -753,26 +791,39 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     end
 
     if vendorSources and type(vendorSources) == "table" and #vendorSources > 0 then
-        local nName, zName, nx, ny = resolveNPC(vendorSources[1])
+        local nName, zName, nx, ny, count = findBestNPC(vendorSources)
         if nName then
-            rLearnedFrom, self.selectedRecipe.waypoint = formatNPC(nName, zName, nx, ny, "Händler")
+            rLearnedFrom, self.selectedRecipe.waypoint = formatNPC(nName, zName, nx, ny, "Händler", count)
         end
     elseif dropSources and type(dropSources) == "table" and #dropSources > 0 then
-        local nName, zName, nx, ny = resolveNPC(dropSources[1])
+        local nName, zName, nx, ny, count = findBestNPC(dropSources)
         if nName then
-            rLearnedFrom, self.selectedRecipe.waypoint = formatNPC(nName, zName, nx, ny, "Beute")
+            rLearnedFrom, self.selectedRecipe.waypoint = formatNPC(nName, zName, nx, ny, "Beute", count)
         end
     elseif meta.dropRange then
         rLearnedFrom = string.format("Gegner-Beute (Stufe %d-%d)", meta.dropRange.min_xp_level or 1, meta.dropRange.max_xp_level or 60)
     elseif questSources and type(questSources) == "table" and #questSources > 0 then
-        local q = RR.DB:GetQuest(questSources[1])
-        local qName = (q and type(q.name) == "table" and (q.name[locale] or q.name["German"] or q.name["English"])) or "Quest"
-        local zName = q and RR.DB:GetZoneName(q.zone_id) or "World"
-        rLearnedFrom = string.format("%s (Quest) - %s", qName, zName)
+        -- Find quest matching faction
+        local bestQ = nil
+        for _, qId in ipairs(questSources) do
+            local q = RR.DB:GetQuest(qId)
+            if q then
+                if not bestQ then bestQ = q end
+                if q.reacts and ((type(q.reacts) == "table" and q.reacts[1] == playerFaction) or q.reacts == playerFaction) then
+                    bestQ = q
+                    break
+                end
+            end
+        end
+        if bestQ then
+            local qName = (type(bestQ.name) == "table" and (bestQ.name[locale] or bestQ.name["German"] or bestQ.name["English"])) or "Quest"
+            local zName = RR.DB:GetZoneName(bestQ.zone_id) or "World"
+            rLearnedFrom = string.format("%s (Quest) - %s", qName, zName)
+        end
     elseif trainerSources and type(trainerSources) == "table" and #trainerSources > 0 then
-        local nName, zName, nx, ny = resolveNPC(trainerSources[1])
+        local nName, zName, nx, ny, count = findBestNPC(trainerSources)
         if nName then
-            rLearnedFrom, self.selectedRecipe.waypoint = formatNPC(nName, zName, nx, ny, "Lehrer")
+            rLearnedFrom, self.selectedRecipe.waypoint = formatNPC(nName, zName, nx, ny, "Lehrer", count)
         end
     end
 
