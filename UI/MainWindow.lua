@@ -405,14 +405,13 @@ function RR.UI.MainWindow:Initialize()
 
     -- Clickable area over "Erlernbar durch" to set TomTom waypoint
     local locBtn = CreateFrame("Button", nil, attrBox)
-    locBtn:SetPoint("TOPLEFT", self.detailValues, "TOPLEFT", 0, -18 * 9)
-    locBtn:SetPoint("BOTTOMRIGHT", self.detailValues, "BOTTOMRIGHT", 0, -18 * 10)
-    locBtn:SetHeight(20)
+    locBtn:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 136, -164)
+    locBtn:SetPoint("BOTTOMRIGHT", attrBox, "TOPRIGHT", -8, -196)
     locBtn:EnableMouse(true)
     locBtn:SetScript("OnEnter", function(selfB)
         if self.selectedRecipe and self.selectedRecipe.waypoint then
             GameTooltip:SetOwner(selfB, "ANCHOR_TOP")
-            GameTooltip:AddLine("📌 " .. (self.selectedRecipe.waypoint.name or "Wegpunkt"), 1, 0.82, 0)
+            GameTooltip:AddLine(self.selectedRecipe.waypoint.name or "Wegpunkt", 1, 0.82, 0)
             GameTooltip:AddLine("Klicken, um TomTom-Wegpunkt zu setzen", 0.2, 1, 0.2)
             GameTooltip:Show()
         end
