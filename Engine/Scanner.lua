@@ -75,7 +75,7 @@ function RR.Scanner:ScanTradeSkill()
     end
 
     -- Trigger UI refresh if main window is open
-    if RR.UI and RR.UI.MainWindow and RR.UI.MainWindow:IsShown() then
+    if RR.UI and RR.UI.MainWindow and RR.UI.MainWindow.IsShown and RR.UI.MainWindow:IsShown() then
         RR.UI.MainWindow:Refresh()
     end
 end
@@ -121,7 +121,7 @@ function RR.Scanner:ScanCraft()
     end
 
     -- Trigger UI refresh
-    if RR.UI and RR.UI.MainWindow and RR.UI.MainWindow:IsShown() then
+    if RR.UI and RR.UI.MainWindow and RR.UI.MainWindow.IsShown and RR.UI.MainWindow:IsShown() then
         RR.UI.MainWindow:Refresh()
     end
 end

@@ -307,6 +307,15 @@ function RR.UI.MainWindow:Toggle()
     end
 end
 
+
+function RR.UI.MainWindow:IsShown()
+    return (self.frame ~= nil and self.frame:IsShown() == true)
+end
+
+function RR.UI.MainWindow:Hide()
+    if self.frame then self.frame:Hide() end
+end
+
 function RR.UI.MainWindow:Show()
     if not self.frame then self:Initialize() end
     self.frame:Show()
