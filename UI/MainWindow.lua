@@ -127,15 +127,15 @@ function RR.UI.MainWindow:Initialize()
 
     -- 1. Source Dropdown
     local sourceMenu = {
-        { text = "Alle Quellen", value = "any" },
-        { text = "Lehrer", value = "trainer" },
-        { text = "Händler", value = "vendor" },
-        { text = "Quest", value = "quest" },
-        { text = "Gegner-Beute (Drop)", value = "drop" },
-        { text = "Weltereignis", value = "holiday" },
-        { text = "Ruf", value = "reputation" },
+        { text = RR.L["SOURCE_ALL"], value = "any" },
+        { text = RR.L["SOURCE_TRAINER"], value = "trainer" },
+        { text = RR.L["SOURCE_VENDOR"], value = "vendor" },
+        { text = RR.L["SOURCE_QUEST"], value = "quest" },
+        { text = RR.L["SOURCE_DROP"], value = "drop" },
+        { text = RR.L["SOURCE_HOLIDAY"], value = "holiday" },
+        { text = RR.L["SOURCE_REPUTATION"], value = "reputation" },
     }
-    self.sourceBtn = CreateDropdown(filterBar, 95, "Quelle ▾", function(selfBtn)
+    self.sourceBtn = CreateDropdown(filterBar, 95, RR.L["DROPDOWN_SOURCE"], function(selfBtn)
         local menu = {}
         for _, itm in ipairs(sourceMenu) do
             table.insert(menu, {
@@ -154,10 +154,10 @@ function RR.UI.MainWindow:Initialize()
 
     -- 2. Faction & Reputation Dropdown
     local factionMenu = {
-        { text = "Alle Fraktionen", value = "any" },
-        { text = "Allianz", value = "Alliance" },
-        { text = "Horde", value = "Horde" },
-        { text = "Neutral", value = "Neutral" },
+        { text = RR.L["FACTION_ALL"], value = "any" },
+        { text = RR.L["FACTION_ALLIANCE"], value = "Alliance" },
+        { text = RR.L["FACTION_HORDE"], value = "Horde" },
+        { text = RR.L["FACTION_NEUTRAL"], value = "Neutral" },
         { text = "Argentumdämmerung", value = 529 },
         { text = "Thoriumbruderschaft", value = 59 },
         { text = "Holzschlundfeste", value = 576 },
@@ -166,7 +166,7 @@ function RR.UI.MainWindow:Initialize()
         { text = "Dunkelmond-Jahrmarkt", value = 909 },
         { text = "Cenarischer Zirkel", value = 609 },
     }
-    self.factionBtn = CreateDropdown(filterBar, 110, "Fraktion ▾", function(selfBtn)
+    self.factionBtn = CreateDropdown(filterBar, 110, RR.L["DROPDOWN_FACTION"], function(selfBtn)
         local menu = {}
         for _, itm in ipairs(factionMenu) do
             table.insert(menu, {
@@ -184,14 +184,14 @@ function RR.UI.MainWindow:Initialize()
     self.factionBtn:SetPoint("LEFT", self.sourceBtn, "RIGHT", 4, 0)
 
     -- 3. Zone & Region Dropdown
-    self.zoneBtn = CreateDropdown(filterBar, 125, "Zone / Region ▾", function(selfBtn)
-        local curZoneName = GetRealZoneText() or "Aktuelle Zone"
+    self.zoneBtn = CreateDropdown(filterBar, 125, RR.L["DROPDOWN_ZONE"], function(selfBtn)
+        local curZoneName = GetRealZoneText() or RR.L["ZONE_CURRENT"]
         local zoneMenu = {
-            { text = "Alle Zonen", value = "any" },
-            { text = "Aktuelle Zone (" .. curZoneName .. ")", value = "current" },
-            { text = "Kalimdor", value = "kalimdor" },
-            { text = "Östliche Königreiche", value = "eastern_kingdoms" },
-            { text = "Instanzen & Schlachtzüge", value = "dungeons" },
+            { text = RR.L["ZONE_ALL"], value = "any" },
+            { text = RR.L["ZONE_CURRENT"] .. " (" .. curZoneName .. ")", value = "current" },
+            { text = RR.L["CONTINENT_KALIMDOR"], value = "kalimdor" },
+            { text = RR.L["CONTINENT_EASTERN_KINGDOMS"], value = "eastern_kingdoms" },
+            { text = RR.L["CONTINENT_DUNGEONS"], value = "dungeons" },
         }
         local menu = {}
         for _, itm in ipairs(zoneMenu) do
@@ -211,15 +211,15 @@ function RR.UI.MainWindow:Initialize()
 
     -- 4. Phase Dropdown
     local phaseMenu = {
-        { text = "Alle Phasen", value = 0 },
-        { text = "Phase 1", value = 1 },
-        { text = "Phase 2", value = 2 },
-        { text = "Phase 3", value = 3 },
-        { text = "Phase 4", value = 4 },
-        { text = "Phase 5", value = 5 },
-        { text = "Phase 6", value = 6 },
+        { text = RR.L["PHASE_ALL"], value = 0 },
+        { text = RR.L["PHASE_1"], value = 1 },
+        { text = RR.L["PHASE_2"], value = 2 },
+        { text = RR.L["PHASE_3"], value = 3 },
+        { text = RR.L["PHASE_4"], value = 4 },
+        { text = RR.L["PHASE_5"], value = 5 },
+        { text = RR.L["PHASE_6"], value = 6 },
     }
-    self.phaseBtn = CreateDropdown(filterBar, 85, "Phase ▾", function(selfBtn)
+    self.phaseBtn = CreateDropdown(filterBar, 85, RR.L["DROPDOWN_PHASE"], function(selfBtn)
         local menu = {}
         for _, itm in ipairs(phaseMenu) do
             table.insert(menu, {
@@ -313,7 +313,7 @@ function RR.UI.MainWindow:Initialize()
     self.detailLabels:SetJustifyH("LEFT")
     self.detailLabels:SetJustifyV("TOP")
     self.detailLabels:SetTextColor(1, 0.82, 0, 1) -- Gold labels
-    self.detailLabels:SetText("Name:\nPhase:\nBenötigter Skill:\nSpielerstufe:\nRuf:\nSpezialisierung:\nWeltereignis:\nPreis:\nErlernt von:\nFundort:")
+    self.detailLabels:SetText(RR.L["LABEL_NAME"] .. "\n" .. RR.L["LABEL_PHASE"] .. "\n" .. RR.L["LABEL_NEEDS_SKILL"] .. "\n" .. RR.L["LABEL_NEEDS_XP"] .. "\n" .. RR.L["LABEL_NEEDS_REP"] .. "\n" .. RR.L["LABEL_SPECIALISATION"] .. "\n" .. RR.L["LABEL_HOLIDAY"] .. "\n" .. RR.L["LABEL_PRICE"] .. "\n" .. RR.L["LABEL_LEARNED_FROM"] .. "\n" .. RR.L["LABEL_OBTAINED_FROM"])
 
     self.detailValues = attrBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     self.detailValues:SetPoint("TOPLEFT", 130, -10)
@@ -478,7 +478,7 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     local data = recipeItem.data or {}
     local locale = GetLocale()
 
-    local labels = "Name:\nPhase:\nBenötigter Skill:\nSpielerstufe:\nRuf:\nSpezialisierung:\nWeltereignis:\nPreis:\nErlernt von:\nFundort:"
+    local labels = RR.L["LABEL_NAME"] .. "\n" .. RR.L["LABEL_PHASE"] .. "\n" .. RR.L["LABEL_NEEDS_SKILL"] .. "\n" .. RR.L["LABEL_NEEDS_XP"] .. "\n" .. RR.L["LABEL_NEEDS_REP"] .. "\n" .. RR.L["LABEL_SPECIALISATION"] .. "\n" .. RR.L["LABEL_HOLIDAY"] .. "\n" .. RR.L["LABEL_PRICE"] .. "\n" .. RR.L["LABEL_LEARNED_FROM"] .. "\n" .. RR.L["LABEL_OBTAINED_FROM"]
     
     local rName = recipeItem.name or "-"
     local rPhase = tostring(data.phase or 1)
@@ -521,14 +521,14 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     if trainerSources and type(trainerSources) == "table" and #trainerSources > 0 then
         local nName, zName, nx, ny = resolveNPC(trainerSources[1])
         if nName then
-            rLearnedFrom = nName .. " (Lehrer)"
+            rLearnedFrom = nName .. " " .. RR.L["TAG_TRAINER"]
             rObtainedFrom = string.format("%s (%.1f, %.1f)", zName, nx, ny)
             self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
     elseif vendorSources and type(vendorSources) == "table" and #vendorSources > 0 then
         local nName, zName, nx, ny = resolveNPC(vendorSources[1])
         if nName then
-            rLearnedFrom = nName .. " (Händler)"
+            rLearnedFrom = nName .. " " .. RR.L["TAG_VENDOR"]
             rObtainedFrom = string.format("%s (%.1f, %.1f)", zName, nx, ny)
             self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
@@ -536,12 +536,12 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         local q = RR.DB:GetQuest(questSources[1])
         local qName = (q and type(q.name) == "table" and (q.name[locale] or q.name["German"] or q.name["English"])) or "Quest"
         local zName = q and RR.DB:GetZoneName(q.zone_id) or "World"
-        rLearnedFrom = qName .. " (Quest)"
+        rLearnedFrom = qName .. " " .. RR.L["TAG_QUEST"]
         rObtainedFrom = zName
     elseif dropSources and type(dropSources) == "table" and #dropSources > 0 then
         local nName, zName, nx, ny = resolveNPC(dropSources[1])
         if nName then
-            rLearnedFrom = nName .. " (Beute)"
+            rLearnedFrom = nName .. " " .. RR.L["TAG_DROP"]
             rObtainedFrom = string.format("%s (%.1f, %.1f)", zName, nx, ny)
             self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
