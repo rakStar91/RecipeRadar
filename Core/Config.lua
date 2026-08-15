@@ -95,3 +95,20 @@ end
 function RR.Config:GetLastZone()
     return (self.char and self.char.lastZone) or ""
 end
+function RR.Config:SaveLastZoneForProfession(profName, zoneData)
+    if not profName or profName == "" then return end
+    local charData = self:GetCurrentChar()
+    if charData then
+        charData.lastProfZones = charData.lastProfZones or {}
+        charData.lastProfZones[profName] = zoneData
+    end
+end
+
+function RR.Config:GetLastZoneForProfession(profName)
+    if not profName or profName == "" then return nil end
+    local charData = self:GetCurrentChar()
+    if charData and charData.lastProfZones then
+        return charData.lastProfZones[profName]
+    end
+    return nil
+end

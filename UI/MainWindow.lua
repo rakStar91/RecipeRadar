@@ -214,20 +214,7 @@ function RR.UI.MainWindow:Initialize()
     zoneLabel:SetTextColor(1, 0.82, 0, 1)
     zoneLabel:SetText("Zone:")
 
-    -- Restore saved Last Zone or default
-    local savedLastZoneName = RR.Config:GetFilterSetting("lastZoneName")
-    local savedLastZoneId = RR.Config:GetFilterSetting("lastZoneId")
-    local savedLastZoneCont = RR.Config:GetFilterSetting("lastZoneCont") or "any"
-    local savedLastZoneContName = RR.Config:GetFilterSetting("lastZoneContName") or "Jede Region"
-
-    if savedLastZoneId and savedLastZoneName then
-        self.lastCustomZone = { id = savedLastZoneId, name = savedLastZoneName, cont = savedLastZoneCont, contName = savedLastZoneContName }
-    else
-        self.lastCustomZone = { id = nil, name = "Letzte Zone", cont = "any", contName = "Jede Region" }
-    end
-
-    local initialContText = savedLastZoneContName or "Jede Region"
-    self.continentBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, initialContText, function(selfF)
+    self.continentBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Jede Region", function(selfF)
         local contMenu = {
             { text = "Jede Region", value = "any" },
             { text = "Kalimdor", value = 1 },
@@ -283,11 +270,9 @@ function RR.UI.MainWindow:Initialize()
                     RR.Config:SetFilterSetting("zoneFilter", z.id)
                     selfF.text:SetText(z.name)
                     local contLabel = (self.continentBtn and self.continentBtn.text and self.continentBtn.text:GetText()) or "Jede Region"
-                    self.lastCustomZone = { id = z.id, name = z.name, cont = curCont, contName = contLabel }
-                    RR.Config:SetFilterSetting("lastZoneId", z.id)
-                    RR.Config:SetFilterSetting("lastZoneName", z.name)
-                    RR.Config:SetFilterSetting("lastZoneCont", curCont)
-                    RR.Config:SetFilterSetting("lastZoneContName", contLabel)
+                    local prof = RR.Scanner.currentProfession or "Tailoring"
+                    local zoneData = { id = z.id, name = z.name, cont = curCont, contName = contLabel }
+                    RR.Config:SaveLastZoneForProfession(prof, zoneData)
                     if self.zoneBtns and self.zoneBtns.last then
                         self.zoneBtns.last:SetText(z.name)
                     end
@@ -329,18 +314,19 @@ function RR.UI.MainWindow:Initialize()
     RR.UI.Theme:AddTooltip(zBtnCurrent, RR.L["TOOLTIP_QUICK_CURRENT_TITLE"], RR.L["TOOLTIP_QUICK_CURRENT_DESC"])
     self.zoneBtns.current = zBtnCurrent
 
-    local lastLabel = self.lastCustomZone.name or "Letzte Zone"
-    local zBtnLast = RR.UI.Theme:CreateDarkButton(filterArea, lastLabel, 110, 24)
+    local zBtnLast = RR.UI.Theme:CreateDarkButton(filterArea, "Letzte Zone", 110, 24)
     zBtnLast:SetPoint("LEFT", zBtnCurrent, "RIGHT", 5, 0)
     zBtnLast:SetScript("OnClick", function()
-        if self.lastCustomZone and self.lastCustomZone.id then
-            RR.Config:SetFilterSetting("continentFilter", self.lastCustomZone.cont)
-            RR.Config:SetFilterSetting("zoneFilter", self.lastCustomZone.id)
-            if self.continentBtn and self.continentBtn.text then self.continentBtn.text:SetText(self.lastCustomZone.contName or "Jede Region") end
-            if self.zoneDropBtn and self.zoneDropBtn.text then self.zoneDropBtn.text:SetText(self.lastCustomZone.name) end
+        local prof = RR.Scanner.currentProfession or "Tailoring"
+        local lastZone = RR.Config:GetLastZoneForProfession(prof)
+        if lastZone and lastZone.id then
+            RR.Config:SetFilterSetting("continentFilter", lastZone.cont)
+            RR.Config:SetFilterSetting("zoneFilter", lastZone.id)
+            if self.continentBtn and self.continentBtn.text then self.continentBtn.text:SetText(lastZone.contName or "Jede Region") end
+            if self.zoneDropBtn and self.zoneDropBtn.text then self.zoneDropBtn.text:SetText(lastZone.name) end
+            self:UpdateFilterButtons()
+            self:Refresh()
         end
-        self:UpdateFilterButtons()
-        self:Refresh()
     end)
     RR.UI.Theme:AddTooltip(zBtnLast, RR.L["TOOLTIP_QUICK_LAST_TITLE"], RR.L["TOOLTIP_QUICK_LAST_DESC"])
     self.zoneBtns.last = zBtnLast
@@ -655,6 +641,20 @@ function RR.UI.MainWindow:Toggle()
     end
 end
 
+function RR.UI.MainWindow:UpdateLastZoneForCurrentProfession()
+    local prof = RR.Scanner.currentProfession or "Tailoring"
+    local saved = RR.Config:GetLastZoneForProfession(prof)
+    if saved and saved.id and saved.name then
+        if self.zoneBtns and self.zoneBtns.last then
+            self.zoneBtns.last:SetText(saved.name)
+        end
+    else
+        if self.zoneBtns and self.zoneBtns.last then
+            self.zoneBtns.last:SetText("Letzte Zone")
+        end
+    end
+end
+
 function RR.UI.MainWindow:UpdateFilterButtons()
     local curMode = RR.Config:GetFilterSetting("mode") or "missing"
     if self.modeBtns then
@@ -677,6 +677,9 @@ function RR.UI.MainWindow:Refresh()
     local prof = RR.Scanner.currentProfession or "Tailoring"
     local rawRecipes = RR.DB:GetRecipesForProfession(prof)
     
+    -- Update the 3rd zone button label to match current profession's stored last zone
+    self:UpdateLastZoneForCurrentProfession()
+
     -- Update Title Banner Plaque with profession name
     local locProfName = prof
     local spellId = RR.DB:GetEnglishProfessionName(prof)
