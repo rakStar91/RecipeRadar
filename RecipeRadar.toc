@@ -8,7 +8,7 @@
 ## Notes-ruRU: Полный трекер рецептов профессий с координатами TomTom.
 ## Notes-zhCN: 完整的专业技能与配方追踪插件，支持 TomTom 导航。
 ## Notes-esES: Rastreador completo de recetas de profesiones con coordenadas TomTom.
-## IconTexture: Interface\AddOns\RecipeRadar\images\icon.tga
+## IconTexture: Interface\Icons\INV_Misc_Book_09
 ## SavedVariables: RecipeRadarDB
 ## Version: 1.0.0
 
