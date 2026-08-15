@@ -997,22 +997,25 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
                 local qName = (type(q.name) == "table" and (q.name[locale] or q.name["German"] or q.name["English"])) or "Quest"
                 local qzId = q.zone_id
                 local qx, qy, qNpcName
-                if not qzId and q.npcs and q.npcs[1] then
+                local qNpcReacts = nil
+                if q.npcs and q.npcs[1] then
                     local npc = RR.DB:GetNPC(q.npcs[1])
                     if npc then
-                        qzId = (npc.location and npc.location.zone_id) or npc.zone_id
-                        qx = tonumber(npc.location and npc.location.x or npc.x)
-                        qy = tonumber(npc.location and npc.location.y or npc.y)
-                        qNpcName = (type(npc.name) == "table" and (npc.name[locale] or npc.name["German"] or npc.name["English"])) or npc.name
+                        if not qzId then qzId = (npc.location and npc.location.zone_id) or npc.zone_id end
+                        if not qx then qx = tonumber(npc.location and npc.location.x or npc.x) end
+                        if not qy then qy = tonumber(npc.location and npc.location.y or npc.y) end
+                        if not qNpcName then qNpcName = (type(npc.name) == "table" and (npc.name[locale] or npc.name["German"] or npc.name["English"])) or npc.name end
+                        qNpcReacts = npc.reacts or npc.faction
                     end
                 end
-                if not qzId and q.givers and q.givers.npcs and q.givers.npcs[1] then
+                if q.givers and q.givers.npcs and q.givers.npcs[1] then
                     local npc = RR.DB:GetNPC(q.givers.npcs[1])
                     if npc then
-                        qzId = (npc.location and npc.location.zone_id) or npc.zone_id
-                        qx = tonumber(npc.location and npc.location.x or npc.x)
-                        qy = tonumber(npc.location and npc.location.y or npc.y)
-                        qNpcName = (type(npc.name) == "table" and (npc.name[locale] or npc.name["German"] or npc.name["English"])) or npc.name
+                        if not qzId then qzId = (npc.location and npc.location.zone_id) or npc.zone_id end
+                        if not qx then qx = tonumber(npc.location and npc.location.x or npc.x) end
+                        if not qy then qy = tonumber(npc.location and npc.location.y or npc.y) end
+                        if not qNpcName then qNpcName = (type(npc.name) == "table" and (npc.name[locale] or npc.name["German"] or npc.name["English"])) or npc.name end
+                        if not qNpcReacts then qNpcReacts = npc.reacts or npc.faction end
                     end
                 end
 
@@ -1030,12 +1033,18 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
                     lineText = string.format("%s (Quest)", qName)
                 end
 
-                local qFaction = "Neutral"
+                local qFaction = nil
                 if q.reacts then
-                    if type(q.reacts) == "table" then qFaction = q.reacts[1] or "Neutral"
-                    else qFaction = q.reacts
+                    if type(q.reacts) == "table" then qFaction = q.reacts[1]
+                    elseif type(q.reacts) == "string" then qFaction = q.reacts
                     end
                 end
+                if not qFaction and qNpcReacts then
+                    if type(qNpcReacts) == "table" then qFaction = qNpcReacts[1]
+                    elseif type(qNpcReacts) == "string" then qFaction = qNpcReacts
+                    end
+                end
+                if not qFaction then qFaction = "Neutral" end
                 local isMatch = (qFaction == playerFaction or qFaction == "Neutral")
                 local isOther = (qFaction ~= playerFaction and qFaction ~= "Neutral")
                 table.insert(allSources, {
