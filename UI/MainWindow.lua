@@ -314,11 +314,17 @@ function RR.UI.MainWindow:Initialize()
             row.sourceIcons[iconIdx] = ic
         end
 
-        -- Hover Tooltip for source types (e.g. "Verkäufer, Drop")
+        -- Hover Tooltip showing Source and Faction restriction
         row:SetScript("OnEnter", function(selfR)
-            if selfR.sourceTooltipText and selfR.sourceTooltipText ~= "" then
+            if selfR.recipeData then
                 GameTooltip:SetOwner(selfR, "ANCHOR_RIGHT")
-                GameTooltip:SetText(selfR.sourceTooltipText, 1, 1, 1)
+                GameTooltip:AddLine(selfR.recipeData.name or "Rezept", 1, 0.82, 0)
+                if selfR.sourceTooltipSources and selfR.sourceTooltipSources ~= "" then
+                    GameTooltip:AddLine("Quelle: " .. selfR.sourceTooltipSources, 1, 1, 1)
+                end
+                if selfR.sourceTooltipFaction and selfR.sourceTooltipFaction ~= "" then
+                    GameTooltip:AddLine("Fraktion: " .. selfR.sourceTooltipFaction, 1, 1, 1)
+                end
                 GameTooltip:Show()
             end
         end)
@@ -511,11 +517,12 @@ function RR.UI.MainWindow:RenderList()
     local offset = self.scrollOffset or 0
 
     local iconMap = {
-        trainer = "Interface\\Icons\\INV_Misc_Book_09",
         vendor  = "Interface\\Icons\\INV_Misc_Bag_08",
         drop    = "Interface\\Icons\\INV_Scroll_03",
         quest   = "Interface\\GossipFrame\\AvailableQuestIcon",
+        trainer = "Interface\\Icons\\INV_Misc_Book_09",
         holiday = "Interface\\Icons\\INV_Misc_Gift_01",
+        object  = "Interface\\Icons\\INV_Box_01",
     }
 
     for i = 1, NUM_VISIBLE_ROWS do
@@ -538,28 +545,34 @@ function RR.UI.MainWindow:RenderList()
                 row.text:SetTextColor(0.95, 0.95, 0.95, 1)
             end
 
-            -- Resolve source icons & tooltip
+            -- Get comprehensive acquisition metadata
+            local meta = RR.DB:GetRecipeAcquisitionMetadata(rData)
+
             local sources = {}
             local sourceLabels = {}
-            if rData.trainers then
-                table.insert(sources, "trainer")
-                table.insert(sourceLabels, "Lehrer")
-            end
-            if rData.vendors then
+            if meta.sourceTypes["vendor"] then
                 table.insert(sources, "vendor")
                 table.insert(sourceLabels, "Verkäufer")
             end
-            if rData.quests then
-                table.insert(sources, "quest")
-                table.insert(sourceLabels, "Quest")
-            end
-            if rData.drops then
+            if meta.sourceTypes["drop"] then
                 table.insert(sources, "drop")
                 table.insert(sourceLabels, "Drop")
             end
-            if rData.holiday then
+            if meta.sourceTypes["quest"] then
+                table.insert(sources, "quest")
+                table.insert(sourceLabels, "Quest")
+            end
+            if meta.sourceTypes["trainer"] then
+                table.insert(sources, "trainer")
+                table.insert(sourceLabels, "Lehrer")
+            end
+            if meta.sourceTypes["holiday"] then
                 table.insert(sources, "holiday")
                 table.insert(sourceLabels, "Weltereignis")
+            end
+            if meta.sourceTypes["object"] then
+                table.insert(sources, "object")
+                table.insert(sourceLabels, "Objekt")
             end
 
             if #sources == 0 then
@@ -582,7 +595,21 @@ function RR.UI.MainWindow:RenderList()
             local reserved = (#sources > 0) and ((#sources * 16) + 8) or 8
             row.text:SetPoint("RIGHT", row, "RIGHT", -reserved, 0)
 
-            row.sourceTooltipText = table.concat(sourceLabels, ", ")
+            -- Faction restriction
+            local hasAlliance = meta.factions["Alliance"]
+            local hasHorde = meta.factions["Horde"]
+            local factionText = "Alle Fraktionen"
+            local factionColor = "|cffffff00"
+            if hasAlliance and not hasHorde then
+                factionText = "Nur Allianz"
+                factionColor = "|cff0070dd"
+            elseif hasHorde and not hasAlliance then
+                factionText = "Nur Horde"
+                factionColor = "|cffff2020"
+            end
+
+            row.sourceTooltipSources = table.concat(sourceLabels, ", ")
+            row.sourceTooltipFaction = factionColor .. factionText .. "|r"
 
             -- Selected highlight
             if self.selectedRecipe and self.selectedRecipe.id == item.id then
@@ -606,16 +633,18 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     self.selectedRecipe = recipeItem
     local data = recipeItem.data or {}
     local locale = GetLocale()
+    local meta = RR.DB:GetRecipeAcquisitionMetadata(data)
 
     local labels = "Name\nPhase\nMin. Fertigkeitsstufe\nBenötigt XP Level\nBenötigt Ruf\nSpezialisierung\nFeiertag\nSonderaktion\nKosten\nErlernbar durch"
     
     local rName = recipeItem.name or "-"
-    local rPhase = tostring(data.phase or 1)
+    local rPhase = tostring(meta.phase or data.phase or 1)
     local rSkill = tostring(recipeItem.skillReq or 1)
     local rXp = tostring(data.min_xp_level or "-")
     local rRep = "-"
-    if data.reputation then
-        rRep = tostring(data.reputation.faction_id or "-")
+    if meta.reputationFactionId then
+        local fName = RR.DB:GetFactionName and RR.DB:GetFactionName(meta.reputationFactionId)
+        rRep = fName or tostring(meta.reputationFactionId)
     end
     local rSpec = data.specialisation and tostring(data.specialisation) or "-"
     local rHol = data.holiday and tostring(data.holiday) or "-"
@@ -640,22 +669,34 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     local questSources = data.quests and (data.quests.sources or (type(data.quests) == "table" and data.quests))
     local dropSources = data.drops and (data.drops.sources or (type(data.drops) == "table" and data.drops))
 
+    if data.items and type(data.items) == "table" then
+        for _, itemId in ipairs(data.items) do
+            local itm = RR.DB:GetItem(itemId)
+            if itm then
+                if itm.vendors then vendorSources = itm.vendors.sources or itm.vendors end
+                if itm.quests then questSources = itm.quests.sources or itm.quests end
+                if itm.drops then dropSources = itm.drops.sources or itm.drops end
+                if itm.price then rPrice = RR.Utils:FormatMoney(itm.price) end
+            end
+        end
+    end
+
     if data.trainers and data.trainers.price then
         rPrice = RR.Utils:FormatMoney(data.trainers.price)
     elseif data.vendors and data.vendors.price then
         rPrice = RR.Utils:FormatMoney(data.vendors.price)
     end
 
-    if trainerSources and type(trainerSources) == "table" and #trainerSources > 0 then
-        local nName, zName, nx, ny = resolveNPC(trainerSources[1])
-        if nName then
-            rLearnedFrom = string.format("%s (Lehrer) - %s (%.1f, %.1f)", nName, zName, nx, ny)
-            self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
-        end
-    elseif vendorSources and type(vendorSources) == "table" and #vendorSources > 0 then
+    if vendorSources and type(vendorSources) == "table" and #vendorSources > 0 then
         local nName, zName, nx, ny = resolveNPC(vendorSources[1])
         if nName then
             rLearnedFrom = string.format("%s (Händler) - %s (%.1f, %.1f)", nName, zName, nx, ny)
+            self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
+        end
+    elseif dropSources and type(dropSources) == "table" and #dropSources > 0 then
+        local nName, zName, nx, ny = resolveNPC(dropSources[1])
+        if nName then
+            rLearnedFrom = string.format("%s (Beute) - %s (%.1f, %.1f)", nName, zName, nx, ny)
             self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
     elseif questSources and type(questSources) == "table" and #questSources > 0 then
@@ -663,10 +704,10 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         local qName = (q and type(q.name) == "table" and (q.name[locale] or q.name["German"] or q.name["English"])) or "Quest"
         local zName = q and RR.DB:GetZoneName(q.zone_id) or "World"
         rLearnedFrom = string.format("%s (Quest) - %s", qName, zName)
-    elseif dropSources and type(dropSources) == "table" and #dropSources > 0 then
-        local nName, zName, nx, ny = resolveNPC(dropSources[1])
+    elseif trainerSources and type(trainerSources) == "table" and #trainerSources > 0 then
+        local nName, zName, nx, ny = resolveNPC(trainerSources[1])
         if nName then
-            rLearnedFrom = string.format("%s (Beute) - %s (%.1f, %.1f)", nName, zName, nx, ny)
+            rLearnedFrom = string.format("%s (Lehrer) - %s (%.1f, %.1f)", nName, zName, nx, ny)
             self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
     end

@@ -200,7 +200,15 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
                 end
             end
             if sType then meta.sourceTypes[sType] = true end
-            if npc.faction then meta.factions[npc.faction] = true end
+            if npc.reacts then
+                if type(npc.reacts) == "table" then
+                    for _, r in ipairs(npc.reacts) do meta.factions[r] = true end
+                elseif type(npc.reacts) == "string" then
+                    meta.factions[npc.reacts] = true
+                end
+            elseif npc.faction then
+                meta.factions[npc.faction] = true
+            end
         end
     end
 
@@ -215,6 +223,13 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
                 end
             end
             meta.sourceTypes["quest"] = true
+            if q.reacts then
+                if type(q.reacts) == "table" then
+                    for _, r in ipairs(q.reacts) do meta.factions[r] = true end
+                elseif type(q.reacts) == "string" then
+                    meta.factions[q.reacts] = true
+                end
+            end
             if q.givers and q.givers.npcs then
                 for _, nId in ipairs(q.givers.npcs) do addNPC(nId, "quest") end
             end
@@ -245,7 +260,7 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
         for _, id in ipairs(dr) do addNPC(id, "drop") end
     end
 
-    -- Items (Teaching items)
+    -- Items (Teaching items / patterns / recipes)
     if recipe.items and type(recipe.items) == "table" then
         for _, itemId in ipairs(recipe.items) do
             local itm = self:GetItem(itemId)
@@ -274,15 +289,23 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
                     meta.reputationFactionId = itm.reputation.faction_id
                 end
                 if itm.holiday then meta.sourceTypes["holiday"] = true end
+                if itm.objects then meta.sourceTypes["object"] = true end
             end
         end
     end
 
+    -- Direct reputation / holiday / object
     if recipe.reputation then
         meta.sourceTypes["reputation"] = true
         meta.reputationFactionId = recipe.reputation.faction_id
     end
     if recipe.holiday then meta.sourceTypes["holiday"] = true end
+    if recipe.objects then meta.sourceTypes["object"] = true end
+
+    -- Fallback default
+    if not next(meta.sourceTypes) then
+        meta.sourceTypes["trainer"] = true
+    end
 
     return meta
 end
