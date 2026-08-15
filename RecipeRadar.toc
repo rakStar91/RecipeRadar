@@ -1,0 +1,45 @@
+## Interface: 11509
+## Title: RecipeRadar
+## Author: rakStar
+## Notes: Comprehensive profession recipe and skill tracker with TomTom waypoints.
+## SavedVariables: RecipeRadarDB
+## Version: 1.0.0
+
+# 1. Core Framework
+Core\Constants.lua
+Core\Localization.lua
+Core\Config.lua
+Core\Utils.lua
+
+# 2. Database (Classic Era)
+Database\Classic\Continents.lua
+Database\Classic\Factions.lua
+Database\Classic\Holidays.lua
+Database\Classic\Items.lua
+Database\Classic\Levels.lua
+Database\Classic\NPCs.lua
+Database\Classic\Objects.lua
+Database\Classic\ProfessionRanks.lua
+Database\Classic\Professions.lua
+Database\Classic\Quests.lua
+Database\Classic\Reputations.lua
+Database\Classic\Skills.lua
+Database\Classic\SpecialActions.lua
+Database\Classic\Specialisations.lua
+Database\Classic\Zones.lua
+Database\DB.lua
+
+# 3. Engine & Scanning
+Engine\Scanner.lua
+Engine\Filter.lua
+Engine\AltTracker.lua
+
+# 4. User Interface
+UI\Theme.lua
+UI\MainWindow.lua
+UI\AttachButton.lua
+UI\MinimapButton.lua
+UI\Tooltips.lua
+
+# 5. Main Entry Point
+RecipeRadar.lua

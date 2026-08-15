@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>RecipeRadar - Authentic WoW UI Prototype</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Open+Sans:wght@400;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+  body {
+    background: #08090b;
+    color: #e2e8f0;
+    font-family: 'Open Sans', -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  /* WoW Classic Addon Frame */
+  .wow-window {
+    width: 880px;
+    height: 590px;
+    background: #121316;
+    background: radial-gradient(circle at 50% 30%, #1f2228 0%, #101114 100%);
+    border: 3px solid #3c3b38;
+    border-radius: 4px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 0 1px #6b5c39, inset 0 0 30px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Authentic Gold/Bronze Border Trim */
+  .wow-window::before {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px; right: 2px; bottom: 2px;
+    border: 1px solid #2a251a;
+    pointer-events: none;
+  }
+
+  /* Header Bar with Plaque */
+  .wow-header {
+    height: 52px;
+    background: linear-gradient(180deg, #2b2e36 0%, #15171c 100%);
+    border-bottom: 2px solid #5a4b2a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    position: relative;
+  }
+  
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .addon-emblem {
+    width: 32px;
+    height: 32px;
+    background: radial-gradient(circle, #3d2a14 0%, #181108 100%);
+    border: 2px solid #c59b27;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.7), inset 0 0 4px #ffd700;
+    font-size: 16px;
+  }
+  .addon-title {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #f7d070;
+    text-shadow: 0 2px 4px #000, 0 0 10px rgba(247,208,112,0.4);
+    letter-spacing: 1px;
+  }
+
+  /* WoW Style Tab Navigation */
+  .wow-tabs {
+    display: flex;
+    gap: 6px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .wow-tab {
+    background: linear-gradient(180deg, #262930 0%, #131519 100%);
+    border: 1px solid #4a4538;
+    color: #a8a29e;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-shadow: 0 1px 2px #000;
+    transition: all 0.15s ease;
+  }
+  .wow-tab:hover {
+    color: #ffd700;
+    border-color: #927533;
+    background: linear-gradient(180deg, #353942 0%, #1c1e24 100%);
+  }
+  .wow-tab.active {
+    background: linear-gradient(180deg, #44371b 0%, #241c0a 100%);
+    color: #ffd700;
+    border: 1px solid #d4af37;
+    box-shadow: 0 0 8px rgba(212,175,55,0.4), inset 0 1px 0 #ffe082;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .wow-search {
+    background: #0b0c0e;
+    border: 1px solid #4a4538;
+    color: #fef08a;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 3px;
+    width: 150px;
+    outline: none;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+  }
+  .wow-search:focus { border-color: #d4af37; }
+  .wow-close {
+    width: 22px;
+    height: 22px;
+    background: linear-gradient(180deg, #8a1f1d 0%, #4a0d0c 100%);
+    border: 1px solid #c2410c;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px #000;
+  }
+  .wow-close:hover { background: #b91c1c; }
+
+  /* Sub Filter Bar */
+  .filter-bar {
+    background: #14161a;
+    border-bottom: 2px solid #2d291e;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: inset 0 3px 6px rgba(0,0,0,0.5);
+  }
+  .filter-group { display: flex; align-items: center; gap: 6px; }
+
+  .wow-btn {
+    background: linear-gradient(180deg, #2a2d34 0%, #16181d 100%);
+    border: 1px solid #4a4332;
+    color: #d6d3d1;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    text-shadow: 0 1px 2px #000;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  .wow-btn:hover {
+    background: linear-gradient(180deg, #373b45 0%, #20232a 100%);
+    border-color: #8c7335;
+    color: #fff;
+  }
+  .wow-btn.active {
+    background: linear-gradient(180deg, #4d3a14 0%, #2b1f06 100%);
+    border-color: #d4af37;
+    color: #ffd700;
+    box-shadow: 0 0 6px rgba(212,175,55,0.4), inset 0 1px 0 #ffe082;
+  }
+
+  /* Main Split Layout */
+  .main-body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* Left Column: Recipe List */
+  .list-pane {
+    flex: 1.15;
+    background: #0d0e11;
+    border-right: 2px solid #2d291e;
+    overflow-y: auto;
+    padding: 4px;
+  }
+  .recipe-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    margin-bottom: 2px;
+    background: #14161b;
+    border: 1px solid #24272f;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+  }
+  .recipe-row:hover {
+    background: #1e222b;
+    border-color: #475569;
+  }
+  .recipe-row.selected {
+    background: linear-gradient(90deg, #0e2a30 0%, #133940 100%);
+    border: 1px solid #14b8a6;
+    box-shadow: 0 0 10px rgba(20,184,166,0.3), inset 0 0 6px rgba(20,184,166,0.2);
+  }
+
+  .row-left { display: flex; align-items: center; gap: 10px; }
+  .spell-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 3px;
+    border: 1.5px solid #4a4332;
+    background: #1c1917;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 2px 4px #000;
+  }
+  .spell-icon.rare { border-color: #0070dd; box-shadow: 0 0 6px rgba(0,112,221,0.5); }
+  .spell-icon.epic { border-color: #a335ee; box-shadow: 0 0 8px rgba(163,53,238,0.6); }
+
+  .spell-meta { display: flex; flex-direction: column; gap: 1px; }
+  .spell-name { font-size: 13px; font-weight: 600; color: #ffd100; text-shadow: 0 1px 2px #000; }
+  .recipe-row.selected .spell-name { color: #5eead4; text-shadow: 0 0 6px rgba(94,234,212,0.6); }
+  .spell-sub { font-size: 11px; color: #9ca3af; }
+  .skill-num { color: #f59e0b; font-weight: bold; }
+
+  .faction-crest { font-size: 14px; display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: bold; }
+  .crest-ally { color: #60a5fa; }
+  .crest-horde { color: #f87171; }
+
+  /* Right Column: Inspection Details */
+  .detail-pane {
+    flex: 0.85;
+    background: #101216;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+  }
+
+  .detail-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #2d291e;
+  }
+  .big-icon {
+    width: 44px;
+    height: 44px;
+    border: 2px solid #a335ee;
+    border-radius: 4px;
+    background: #181124;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 0 12px rgba(163,53,238,0.5);
+  }
+  .big-name { font-size: 15px; font-weight: bold; color: #a335ee; text-shadow: 0 1px 3px #000; margin-bottom: 2px; }
+  .big-sub { font-size: 11px; color: #a8a29e; }
+
+  .wow-card {
+    background: #090a0d;
+    border: 1px solid #24221b;
+    border-radius: 3px;
+    padding: 8px 10px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+  }
+  .card-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #eab308;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .mats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .mat-item {
+    background: #15181e;
+    border: 1px solid #292e38;
+    padding: 3px 6px;
+    border-radius: 2px;
+    font-size: 11px;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .source-info { font-size: 11px; display: flex; flex-direction: column; gap: 4px; }
+  .source-boss { font-weight: bold; color: #38bdf8; }
+  .source-coords { color: #cbd5e1; display: flex; justify-content: space-between; align-items: center; }
+
+  .tomtom-action {
+    background: linear-gradient(180deg, #a16207 0%, #713f12 100%);
+    border: 1px solid #eab308;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px #000;
+  }
+  .tomtom-action:hover { background: #ca8a04; }
+
+  .alt-entry {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    padding: 2px 0;
+    border-bottom: 1px solid #1a1b20;
+  }
+  .alt-entry:last-child { border-bottom: none; }
+  .known-tag { color: #4ade80; font-weight: bold; }
+  .miss-tag { color: #f87171; font-weight: bold; }
+
+  /* Footer */
+  .wow-footer {
+    height: 36px;
+    background: linear-gradient(180deg, #181a20 0%, #0d0e11 100%);
+    border-top: 2px solid #3c3624;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    font-size: 11px;
+    color: #a8a29e;
+  }
+  .progress-container { display: flex; align-items: center; gap: 8px; width: 45%; }
+  .progress-frame {
+    flex: 1;
+    height: 12px;
+    background: #08090a;
+    border: 1px solid #4a4332;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px #000;
+  }
+  .progress-fill {
+    width: 79%;
+    height: 100%;
+    background: linear-gradient(180deg, #22c55e 0%, #15803d 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+</style>
+</head>
+<body>
+
+<div class="wow-window">
+  <!-- Header Bar -->
+  <div class="wow-header">
+    <div class="header-left">
+      <div class="addon-emblem">📜</div>
+      <div class="addon-title">RecipeRadar</div>
+    </div>
+    
+    <!-- Centered WoW Tabs -->
+    <div class="wow-tabs">
+      <button class="wow-tab active">Rezepte</button>
+      <button class="wow-tab">Twinks / Alts</button>
+      <button class="wow-tab">Welt & NPCs</button>
+      <button class="wow-tab">Optionen</button>
+    </div>
+
+    <div class="header-right">
+      <input type="text" class="wow-search" placeholder="🔍 Rezept suchen...">
+      <div class="wow-close">✕</div>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <button class="wow-btn">Fehlend (42)</button>
+      <button class="wow-btn active">Gelernt (158)</button>
+      <button class="wow-btn">Alle (200)</button>
+    </div>
+
+    <div class="filter-group">
+      <button class="wow-btn active">🌍 Alle Zonen</button>
+      <button class="wow-btn">📍 Winterspring</button>
+      <button class="wow-btn">⏳ Felwood</button>
+    </div>
+
+    <div class="filter-group">
+      <button class="wow-btn">⚙️ Quellen-Filter ▾</button>
+    </div>
+  </div>
+
+  <!-- Main Body Split -->
+  <div class="main-body">
+    <!-- Left: List -->
+    <div class="list-pane">
+      <div class="recipe-row selected">
+        <div class="row-left">
+          <div class="spell-icon epic">👘</div>
+          <div class="spell-meta">
+            <div class="spell-name">Robe of the Archmage</div>
+            <div class="spell-sub">Skill: <span class="skill-num">300</span> • Drop: Pyromancer Loregrain</div>
+          </div>
+        </div>
+        <div class="faction-crest crest-ally">🦁 Allianz</div>
+      </div>
+
+      <div class="recipe-row">
+        <div class="row-left">
+          <div class="spell-icon rare">🧤</div>
+          <div class="spell-meta">
+            <div class="spell-name">Mooncloth Gloves</div>
+            <div class="spell-sub">Skill: <span class="skill-num">275</span> • Händler: Qia (Winterspring)</div>
+          </div>
+        </div>
+        <div class="faction-crest" style="color: #94a3b8;">Neutral</div>
+      </div>
+
+      <div class="recipe-row">
+        <div class="row-left">
+          <div class="spell-icon">🎒</div>
+          <div class="spell-meta">
+            <div class="spell-name">Runecloth Bag</div>
+            <div class="spell-sub">Skill: <span class="skill-num">260</span> • Trainer: Timothy Worthington</div>
+          </div>
+        </div>
+        <div class="faction-crest crest-ally">🦁 Allianz</div>
+      </div>
+
+      <div class="recipe-row">
+        <div class="row-left">
+          <div class="spell-icon rare">🥾</div>
+          <div class="spell-meta">
+            <div class="spell-name">Felcloth Boots</div>
+            <div class="spell-sub">Skill: <span class="skill-num">285</span> • Drop: Dreadmaul Warlock</div>
+          </div>
+        </div>
+        <div class="faction-crest" style="color: #94a3b8;">Neutral</div>
+      </div>
+
+      <div class="recipe-row">
+        <div class="row-left">
+          <div class="spell-icon epic">🧙</div>
+          <div class="spell-meta">
+            <div class="spell-name">Robe of the Void</div>
+            <div class="spell-sub">Skill: <span class="skill-num">300</span> • Drop: Darkmaster Gandling</div>
+          </div>
+        </div>
+        <div class="faction-crest crest-horde">⚡ Horde</div>
+      </div>
+    </div>
+
+    <!-- Right: Details -->
+    <div class="detail-pane">
+      <div class="detail-top">
+        <div class="big-icon">👘</div>
+        <div>
+          <div class="big-name">Muster: Robe of the Archmage</div>
+          <div class="big-sub">Benötigt Schneiderei (300) • Seelengebunden</div>
+        </div>
+      </div>
+
+      <!-- Materials -->
+      <div class="wow-card">
+        <div class="card-title">Benötigte Materialien</div>
+        <div class="mats-grid">
+          <div class="mat-item">🧵 12x Runenstoffballen</div>
+          <div class="mat-item">💧 10x Essenz des Wassers</div>
+          <div class="mat-item">🔥 10x Essenz des Feuers</div>
+          <div class="mat-item">💨 10x Essenz der Luft</div>
+          <div class="mat-item">🧪 2x Geisterfarbstoff</div>
+          <div class="mat-item">🪡 2x Runenfaden</div>
+        </div>
+      </div>
+
+      <!-- Source -->
+      <div class="wow-card">
+        <div class="card-title">
+          <span>Bezugsquelle</span>
+          <span style="color: #f87171;">Dungeon Boss Drop</span>
+        </div>
+        <div class="source-info">
+          <div class="source-boss">Pyromancer Loregrain (Stufe 52 Elite)</div>
+          <div class="source-coords">
+            <span>Blackrocktiefen (BRD) - [ 48.2, 54.6 ]</span>
+            <button class="tomtom-action">📍 TomTom Ziel</button>
+          </div>
+          <span style="color: #94a3b8; font-size: 10px;">Droprate: ca. 12.5% • Verfügbar ab Phase 1</span>
+        </div>
+      </div>
+
+      <!-- Alts -->
+      <div class="wow-card">
+        <div class="card-title">Twink Status (Dieser Realm)</div>
+        <div class="alt-entry">
+          <span>Grograk (60 Magier)</span>
+          <span class="known-tag">✓ Gelernt</span>
+        </div>
+        <div class="alt-entry">
+          <span>Shadowclaw (42 Priester)</span>
+          <span class="miss-tag">✗ Fehlend</span>
+        </div>
+        <div class="alt-entry">
+          <span>Elasrrantiah (60 Hexenmeister)</span>
+          <span class="miss-tag">✗ Fehlend</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="wow-footer">
+    <div class="progress-container">
+      <span>Fortschritt:</span>
+      <div class="progress-frame">
+        <div class="progress-fill"></div>
+      </div>
+      <span style="font-weight: bold; color: #fff;">158 / 200 (79%)</span>
+    </div>
+    <div>Aktive Ansicht: <strong>Schneiderei</strong></div>
+  </div>
+</div>
+
+</body>
+</html>

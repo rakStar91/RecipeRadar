@@ -1,0 +1,88 @@
+## Interface: 20506
+## Title: RecipeRadar
+## Author: rakStar
+## Notes: Comprehensive profession recipe and skill tracker with TomTom waypoints for The Burning Crusade.
+## SavedVariables: RecipeRadarDB
+## Version: 1.0.0
+
+# 1. Core Framework
+Core\Constants.lua
+Core\Localization.lua
+Core\Config.lua
+Core\Utils.lua
+
+# 2. Database (TBC Outland Core)
+Database\TBC\global_variables.lua
+Database\TBC\expansions.lua
+Database\TBC\continents.lua
+Database\TBC\currencies.lua
+Database\TBC\factions.lua
+Database\TBC\reputation_levels.lua
+Database\TBC\holidays.lua
+Database\TBC\profession_ranks.lua
+Database\TBC\professions.lua
+Database\TBC\zones.lua
+Database\TBC\special_actions.lua
+Database\TBC\objects.lua
+Database\TBC\quests.lua
+Database\TBC\npcs.lua
+Database\TBC\Alchemy\levels.lua
+Database\TBC\Alchemy\skills.lua
+Database\TBC\Alchemy\items.lua
+Database\TBC\Alchemy\specialisations.lua
+Database\TBC\Blacksmithing\levels.lua
+Database\TBC\Blacksmithing\skills.lua
+Database\TBC\Blacksmithing\items.lua
+Database\TBC\Blacksmithing\specialisations.lua
+Database\TBC\Cooking\levels.lua
+Database\TBC\Cooking\skills.lua
+Database\TBC\Cooking\items.lua
+Database\TBC\Enchanting\levels.lua
+Database\TBC\Enchanting\skills.lua
+Database\TBC\Enchanting\items.lua
+Database\TBC\Engineering\levels.lua
+Database\TBC\Engineering\skills.lua
+Database\TBC\Engineering\items.lua
+Database\TBC\Engineering\specialisations.lua
+Database\TBC\FirstAid\levels.lua
+Database\TBC\FirstAid\skills.lua
+Database\TBC\FirstAid\items.lua
+Database\TBC\Fishing\levels.lua
+Database\TBC\Fishing\skills.lua
+Database\TBC\Fishing\items.lua
+Database\TBC\Herbalism\levels.lua
+Database\TBC\Jewelcrafting\levels.lua
+Database\TBC\Jewelcrafting\skills.lua
+Database\TBC\Jewelcrafting\items.lua
+Database\TBC\Leatherworking\levels.lua
+Database\TBC\Leatherworking\skills.lua
+Database\TBC\Leatherworking\items.lua
+Database\TBC\Leatherworking\specialisations.lua
+Database\TBC\Mining\levels.lua
+Database\TBC\Mining\skills.lua
+Database\TBC\Mining\items.lua
+Database\TBC\Poisons\levels.lua
+Database\TBC\Poisons\skills.lua
+Database\TBC\Poisons\items.lua
+Database\TBC\Skinning\levels.lua
+Database\TBC\Tailoring\levels.lua
+Database\TBC\Tailoring\skills.lua
+Database\TBC\Tailoring\items.lua
+Database\TBC\Tailoring\specialisations.lua
+Database\TBC\data_tbc.lua
+Database\DB.lua
+
+# 3. Engine & Scanning
+Engine\Scanner.lua
+Engine\Filter.lua
+Engine\AltTracker.lua
+
+# 4. User Interface
+UI\Theme.lua
+UI\MainWindow.lua
+UI\AttachButton.lua
+UI\MinimapButton.lua
+UI\Tooltips.lua
+
+# 5. Main Entry Point
+RecipeRadar.lua
