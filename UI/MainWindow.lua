@@ -643,7 +643,7 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     local rXp = tostring(data.min_xp_level or "-")
     local rRep = "-"
     if meta.reputationFactionId then
-        local fName = RR.DB:GetFactionName and RR.DB:GetFactionName(meta.reputationFactionId)
+        local fName = RR.DB.GetFactionName and RR.DB:GetFactionName(meta.reputationFactionId)
         rRep = fName or tostring(meta.reputationFactionId)
     end
     local rSpec = data.specialisation and tostring(data.specialisation) or "-"
