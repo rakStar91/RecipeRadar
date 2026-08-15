@@ -418,8 +418,28 @@ function RR.UI.MainWindow:Initialize()
             GameTooltip:Hide()
         end)
 
-        row:SetScript("OnClick", function(selfRow)
+        row:SetScript("OnClick", function(selfRow, mouseButton)
             if selfRow.recipeData then
+                local data = selfRow.recipeData.data
+                local itemId = data and (data.item_id or (data.items and data.items[1]))
+                local spellId = data and data.id
+                local itemLink = nil
+                if itemId and itemId > 0 then
+                    local _, link = GetItemInfo(itemId)
+                    itemLink = link
+                end
+                if not itemLink and spellId and spellId > 0 and GetSpellLink then
+                    itemLink = GetSpellLink(spellId)
+                end
+
+                if itemLink and (IsModifiedClick("CHATLINK") or IsShiftKeyDown()) then
+                    if ChatEdit_InsertLink then ChatEdit_InsertLink(itemLink) end
+                    return
+                elseif itemLink and (IsModifiedClick("DRESSUP") or IsControlKeyDown()) then
+                    if DressUpItemLink then DressUpItemLink(itemLink) end
+                    return
+                end
+
                 RR.UI.MainWindow:SelectRecipe(selfRow.recipeData)
             end
         end)
@@ -479,10 +499,11 @@ function RR.UI.MainWindow:Initialize()
     }
     local attrY = -6
     for i, labelText in ipairs(attrKeys) do
-        local rowF = CreateFrame("Frame", nil, attrBox)
+        local rowF = CreateFrame(i == 1 and "Button" or "Frame", nil, attrBox)
         rowF:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 8, attrY)
         rowF:SetPoint("TOPRIGHT", attrBox, "TOPRIGHT", -8, attrY)
         rowF:SetHeight(13)
+        rowF:EnableMouse(true)
 
         local lbl = rowF:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         lbl:SetPoint("TOPLEFT", 0, 0)
@@ -499,6 +520,82 @@ function RR.UI.MainWindow:Initialize()
 
         rowF.label = lbl
         rowF.value = val
+
+        if i == 1 then
+            -- Interactive Item Tooltip on Hover for Recipe / Item Name
+            rowF:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+            rowF:SetScript("OnEnter", function(selfBtn)
+                local rec = RR.UI.MainWindow.selectedRecipe
+                if not rec or not rec.data then return end
+                local data = rec.data
+                local itemId = data.item_id or (data.items and data.items[1])
+                local spellId = data.id or rec.id
+
+                GameTooltip:SetOwner(selfBtn, "ANCHOR_RIGHT")
+                GameTooltip:ClearLines()
+
+                local shown = false
+                if itemId and itemId > 0 then
+                    local ok = pcall(function()
+                        GameTooltip:SetHyperlink("item:" .. itemId)
+                    end)
+                    if ok then shown = true end
+                end
+
+                if not shown and spellId and spellId > 0 then
+                    local ok = pcall(function()
+                        GameTooltip:SetHyperlink("spell:" .. spellId)
+                    end)
+                    if ok then shown = true end
+                end
+
+                if shown then
+                    GameTooltip:Show()
+                    if selfBtn.value then
+                        selfBtn.value:SetTextColor(1, 0.85, 0.2, 1)
+                    end
+                else
+                    GameTooltip:Hide()
+                end
+            end)
+
+            rowF:SetScript("OnLeave", function(selfBtn)
+                GameTooltip:Hide()
+                if selfBtn.value then
+                    selfBtn.value:SetTextColor(1, 1, 1, 1)
+                end
+            end)
+
+            rowF:SetScript("OnClick", function(selfBtn, mouseButton)
+                local rec = RR.UI.MainWindow.selectedRecipe
+                if not rec or not rec.data then return end
+                local data = rec.data
+                local itemId = data.item_id or (data.items and data.items[1])
+                local spellId = data.id or rec.id
+
+                local itemLink = nil
+                if itemId and itemId > 0 then
+                    local _, link = GetItemInfo(itemId)
+                    itemLink = link
+                end
+                if not itemLink and spellId and spellId > 0 and GetSpellLink then
+                    itemLink = GetSpellLink(spellId)
+                end
+
+                if itemLink then
+                    if IsModifiedClick("CHATLINK") or IsShiftKeyDown() then
+                        if ChatEdit_InsertLink then
+                            ChatEdit_InsertLink(itemLink)
+                        end
+                    elseif IsModifiedClick("DRESSUP") or IsControlKeyDown() then
+                        if DressUpItemLink then
+                            DressUpItemLink(itemLink)
+                        end
+                    end
+                end
+            end)
+        end
+
         table.insert(self.attrRows, rowF)
         attrY = attrY - 14
     end
@@ -864,6 +961,9 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     if not recipeItem then return end
     self.selectedRecipe = recipeItem
     local data = recipeItem.data or {}
+    if data.item_id and data.item_id > 0 then
+        pcall(function() GetItemInfo(data.item_id) end)
+    end
     local locale = GetLocale()
     local meta = RR.DB:GetRecipeAcquisitionMetadata(data)
 
