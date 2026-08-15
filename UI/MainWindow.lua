@@ -507,8 +507,19 @@ function RR.UI.MainWindow:Refresh()
 
     self:RenderList()
 
-    if #filtered > 0 and not self.selectedRecipe then
-        self:SelectRecipe(filtered[1])
+    if #filtered > 0 then
+        local needReselect = true
+        if self.selectedRecipe then
+            for _, item in ipairs(filtered) do
+                if item.id == self.selectedRecipe.id then
+                    needReselect = false
+                    break
+                end
+            end
+        end
+        if needReselect then
+            self:SelectRecipe(filtered[1])
+        end
     end
 end
 
