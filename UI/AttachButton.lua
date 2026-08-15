@@ -20,7 +20,7 @@ local CANDIDATE_FRAMES = {
 function RR.UI.AttachButton:Initialize()
     if self.button then return end
 
-    local btn = CreateFrame("Button", "RecipeRadarAttachButton", UIParent)
+    local btn = CreateFrame("Button", "RecipeRadarAttachButton", UIParent, BackdropTemplateMixin and "BackdropTemplate")
     btn:SetSize(32, 22)
     btn:SetFrameStrata("HIGH")
     btn:SetMovable(true)

@@ -13,7 +13,7 @@ local ROW_HEIGHT = 28
 function RR.UI.MainWindow:Initialize()
     if self.frame then return end
 
-    local f = CreateFrame("Frame", "RecipeRadarFrame", UIParent)
+    local f = CreateFrame("Frame", "RecipeRadarFrame", UIParent, BackdropTemplateMixin and "BackdropTemplate")
     f:SetSize(840, 560)
     f:SetPoint("CENTER", 0, 0)
     f:SetMovable(true)
@@ -29,7 +29,7 @@ function RR.UI.MainWindow:Initialize()
     self.frame = f
 
     -- 1. Header Bar
-    local header = CreateFrame("Frame", nil, f)
+    local header = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
     header:SetPoint("TOPLEFT", 4, -4)
     header:SetPoint("TOPRIGHT", -4, -4)
     header:SetHeight(44)
@@ -65,7 +65,7 @@ function RR.UI.MainWindow:Initialize()
     self.tabs["recipes"]:SetActive(true)
 
     -- Search Box
-    local search = CreateFrame("EditBox", nil, header)
+    local search = CreateFrame("EditBox", nil, header, BackdropTemplateMixin and "BackdropTemplate")
     search:SetSize(140, 20)
     search:SetPoint("RIGHT", -32, 0)
     search:SetAutoFocus(false)
@@ -89,7 +89,7 @@ function RR.UI.MainWindow:Initialize()
     close:SetScript("OnClick", function() f:Hide() end)
 
     -- 2. Sub-Filter Bar
-    local filterBar = CreateFrame("Frame", nil, f)
+    local filterBar = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
     filterBar:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -2)
     filterBar:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -2)
     filterBar:SetHeight(34)
@@ -138,7 +138,7 @@ function RR.UI.MainWindow:Initialize()
     end
 
     -- 3. Left Column: Recipe List Pane
-    local listPane = CreateFrame("Frame", nil, f)
+    local listPane = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
     listPane:SetPoint("TOPLEFT", filterBar, "BOTTOMLEFT", 0, -2)
     listPane:SetPoint("BOTTOMLEFT", 4, 36)
     listPane:SetWidth(460)
@@ -147,7 +147,7 @@ function RR.UI.MainWindow:Initialize()
 
     self.rows = {}
     for i = 1, NUM_VISIBLE_ROWS do
-        local row = CreateFrame("Button", nil, listPane)
+        local row = CreateFrame("Button", nil, listPane, BackdropTemplateMixin and "BackdropTemplate")
         row:SetPoint("TOPLEFT", 4, -((i - 1) * ROW_HEIGHT + 4))
         row:SetPoint("TOPRIGHT", -22, -((i - 1) * ROW_HEIGHT + 4))
         row:SetHeight(ROW_HEIGHT - 2)
@@ -197,7 +197,7 @@ function RR.UI.MainWindow:Initialize()
     end)
 
     -- 4. Right Column: Details Pane
-    local detailPane = CreateFrame("Frame", nil, f)
+    local detailPane = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
     detailPane:SetPoint("TOPLEFT", listPane, "TOPRIGHT", 2, 0)
     detailPane:SetPoint("BOTTOMRIGHT", -4, 36)
     RR.UI.Theme:SkinPanel(detailPane, 0.95)
@@ -218,7 +218,7 @@ function RR.UI.MainWindow:Initialize()
     self.detailSub:SetText(RR.COLORS.GREY .. "Requires Profession")
 
     -- Materials Section
-    local matsBox = CreateFrame("Frame", nil, detailPane)
+    local matsBox = CreateFrame("Frame", nil, detailPane, BackdropTemplateMixin and "BackdropTemplate")
     matsBox:SetPoint("TOPLEFT", self.detailIcon, "BOTTOMLEFT", 0, -14)
     matsBox:SetPoint("RIGHT", -12, 0)
     matsBox:SetHeight(75)
@@ -234,7 +234,7 @@ function RR.UI.MainWindow:Initialize()
     self.matsText:SetText(RR.COLORS.GREY .. "No materials data available.")
 
     -- Acquisition Source Section
-    local sourceBox = CreateFrame("Frame", nil, detailPane)
+    local sourceBox = CreateFrame("Frame", nil, detailPane, BackdropTemplateMixin and "BackdropTemplate")
     sourceBox:SetPoint("TOPLEFT", matsBox, "BOTTOMLEFT", 0, -10)
     sourceBox:SetPoint("RIGHT", -12, 0)
     sourceBox:SetHeight(85)
@@ -259,7 +259,7 @@ function RR.UI.MainWindow:Initialize()
     end)
 
     -- Alt Character Knowledge Section
-    local altsBox = CreateFrame("Frame", nil, detailPane)
+    local altsBox = CreateFrame("Frame", nil, detailPane, BackdropTemplateMixin and "BackdropTemplate")
     altsBox:SetPoint("TOPLEFT", sourceBox, "BOTTOMLEFT", 0, -10)
     altsBox:SetPoint("BOTTOMRIGHT", -12, 10)
     RR.UI.Theme:SkinPanel(altsBox, 0.8)
@@ -273,13 +273,13 @@ function RR.UI.MainWindow:Initialize()
     self.altsText:SetJustifyV("TOP")
 
     -- 5. Footer Progress Bar
-    local footer = CreateFrame("Frame", nil, f)
+    local footer = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
     footer:SetPoint("BOTTOMLEFT", 4, 4)
     footer:SetPoint("BOTTOMRIGHT", -4, 4)
     footer:SetHeight(30)
     RR.UI.Theme:SkinPanel(footer, 0.98)
 
-    self.progressBar = CreateFrame("StatusBar", nil, footer)
+    self.progressBar = CreateFrame("StatusBar", nil, footer, BackdropTemplateMixin and "BackdropTemplate")
     self.progressBar:SetPoint("LEFT", 12, 0)
     self.progressBar:SetSize(350, 14)
     self.progressBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")

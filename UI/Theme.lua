@@ -48,7 +48,7 @@ end
 
 --- Creates a WoW-styled dark button
 function RR.UI.Theme:CreateButton(parent, text, width, height)
-    local btn = CreateFrame("Button", nil, parent)
+    local btn = CreateFrame("Button", nil, parent, BackdropTemplateMixin and "BackdropTemplate")
     btn:SetSize(width or 80, height or 24)
     
     if btn.SetBackdrop then
@@ -64,13 +64,13 @@ function RR.UI.Theme:CreateButton(parent, text, width, height)
 
     btn:SetScript("OnEnter", function(self)
         if not self.isActive then
-            self:SetBackdropColor(0.20, 0.22, 0.28, 1)
+            if self.SetBackdropColor then self:SetBackdropColor(0.20, 0.22, 0.28, 1) end
             self.text:SetTextColor(1, 0.85, 0.2, 1)
         end
     end)
     btn:SetScript("OnLeave", function(self)
         if not self.isActive then
-            self:SetBackdropColor(0.12, 0.14, 0.18, 0.95)
+            if self.SetBackdropColor then self:SetBackdropColor(0.12, 0.14, 0.18, 0.95) end
             self.text:SetTextColor(0.95, 0.90, 0.70, 1)
         end
     end)
@@ -78,12 +78,12 @@ function RR.UI.Theme:CreateButton(parent, text, width, height)
     btn.SetActive = function(self, active)
         self.isActive = active
         if active then
-            self:SetBackdropColor(0.30, 0.22, 0.08, 1)
-            self:SetBackdropBorderColor(0.85, 0.70, 0.25, 1)
+            if self.SetBackdropColor then self:SetBackdropColor(0.30, 0.22, 0.08, 1) end
+            if self.SetBackdropBorderColor then self:SetBackdropBorderColor(0.85, 0.70, 0.25, 1) end
             self.text:SetTextColor(1, 0.85, 0.2, 1)
         else
-            self:SetBackdropColor(0.12, 0.14, 0.18, 0.95)
-            self:SetBackdropBorderColor(0.35, 0.30, 0.20, 0.9)
+            if self.SetBackdropColor then self:SetBackdropColor(0.12, 0.14, 0.18, 0.95) end
+            if self.SetBackdropBorderColor then self:SetBackdropBorderColor(0.35, 0.30, 0.20, 0.9) end
             self.text:SetTextColor(0.95, 0.90, 0.70, 1)
         end
     end
