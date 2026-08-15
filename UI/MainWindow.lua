@@ -28,71 +28,70 @@ function RR.UI.MainWindow:Initialize()
     RR.UI.Theme:SkinWindow(f)
     self.frame = f
 
-    -- 1. Header Bar
+    -- 1. Header Bar with Authentic Title Plaque Banner
     local header = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
     header:SetPoint("TOPLEFT", 4, -4)
     header:SetPoint("TOPRIGHT", -4, -4)
-    header:SetHeight(44)
-    RR.UI.Theme:SkinPanel(header, 0.98)
+    header:SetHeight(48)
+    RR.UI.Theme:SkinPanel(header, 0.8)
 
-    -- Emblem & Title
-    local emblem = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    emblem:SetPoint("LEFT", 10, 0)
-    emblem:SetText("📜")
-
-    local title = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    title:SetPoint("LEFT", emblem, "RIGHT", 8, 0)
-    title:SetText(RR.COLORS.TITLE .. "RecipeRadar")
+    -- Decorative Plaque Banner
+    self.titlePlaque = RR.UI.Theme:CreateTitlePlaque(header, 320, 42, RR.NAME)
+    self.titlePlaque:SetPoint("LEFT", 8, 0)
 
     -- Navigation Tabs
     self.tabs = {}
-    local tabNames = { { "RECIPES", "recipes" }, { "ALTS", "alts" }, { "NPCS", "npcs" }, { "OPTIONS", "options" } }
+    local tabDefs = {
+        { id = "recipes", label = "RECIPES" },
+        { id = "alts", label = "ALTS" },
+        { id = "npcs", label = "NPCS" },
+        { id = "options", label = "OPTIONS" },
+    }
     local prevTab = nil
-    for i, t in ipairs(tabNames) do
-        local tabBtn = RR.UI.Theme:CreateButton(header, RR.L[t[1]], 85, 22)
+    for _, tabDef in ipairs(tabDefs) do
+        local tabBtn = RR.UI.Theme:CreateButton(header, RR.L[tabDef.label], 85, 24)
         if prevTab then
             tabBtn:SetPoint("LEFT", prevTab, "RIGHT", 4, 0)
         else
-            tabBtn:SetPoint("LEFT", title, "RIGHT", 24, 0)
+            tabBtn:SetPoint("LEFT", self.titlePlaque, "RIGHT", 14, 0)
         end
         tabBtn:SetScript("OnClick", function()
-            self:SelectTab(t[2])
+            self:SelectTab(tabDef.id)
         end)
-        self.tabs[t[2]] = tabBtn
+        self.tabs[tabDef.id] = tabBtn
         prevTab = tabBtn
     end
-    self.activeTab = "recipes"
     self.tabs["recipes"]:SetActive(true)
 
     -- Search Box
     local search = CreateFrame("EditBox", nil, header, BackdropTemplateMixin and "BackdropTemplate")
-    search:SetSize(140, 20)
+    search:SetSize(130, 22)
     search:SetPoint("RIGHT", -32, 0)
     search:SetAutoFocus(false)
     search:SetFontObject("GameFontHighlightSmall")
-    RR.UI.Theme:SkinPanel(search, 0.9)
     search:SetTextInsets(6, 6, 0, 0)
-    search:SetScript("OnTextChanged", function(eb)
-        self.searchQuery = eb:GetText()
+    RR.UI.Theme:SkinPanel(search, 0.9)
+
+    search:SetScript("OnTextChanged", function(selfBox)
+        self.searchQuery = selfBox:GetText()
         self:Refresh()
     end)
-    search:SetScript("OnEscapePressed", function(eb) eb:ClearFocus() end)
+    search:SetScript("OnEscapePressed", function(selfBox)
+        selfBox:SetText("")
+        selfBox:ClearFocus()
+    end)
     self.searchBox = search
 
     -- Close Button
-    local close = CreateFrame("Button", nil, header)
-    close:SetSize(20, 20)
-    close:SetPoint("RIGHT", -6, 0)
-    close:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
-    close:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
-    close:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
+    local close = CreateFrame("Button", nil, header, "UIPanelCloseButton")
+    close:SetPoint("TOPRIGHT", 2, 2)
     close:SetScript("OnClick", function() f:Hide() end)
 
-    -- 2. Sub-Filter Bar: Quick Mode + Quick Zone + Detailed Dropdowns
+    -- 2. Sub-Filter Bar: Mode + Quick Zone + Authentic WoW Dropdown Frames
     local filterBar = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
     filterBar:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -2)
     filterBar:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -2)
-    filterBar:SetHeight(34)
+    filterBar:SetHeight(36)
     RR.UI.Theme:SkinPanel(filterBar, 0.8)
 
     -- A) Mode Buttons (Fehlend / Gelernt / Alle)
@@ -125,11 +124,11 @@ function RR.UI.MainWindow:Initialize()
     }
     local prevZone = nil
     for _, z in ipairs(quickZones) do
-        local btn = RR.UI.Theme:CreateButton(filterBar, RR.L[z.label], 82, 22)
+        local btn = RR.UI.Theme:CreateButton(filterBar, RR.L[z.label], 80, 22)
         if prevZone then
             btn:SetPoint("LEFT", prevZone, "RIGHT", 3, 0)
         else
-            btn:SetPoint("LEFT", prevMode, "RIGHT", 10, 0)
+            btn:SetPoint("LEFT", prevMode, "RIGHT", 8, 0)
         end
         btn:SetScript("OnClick", function()
             RR.Config:SetFilterSetting("zoneFilter", z.key)
@@ -140,14 +139,7 @@ function RR.UI.MainWindow:Initialize()
         prevZone = btn
     end
 
-    -- Dropdown Button Helper (Clean ASCII arrow, no missing glyph boxes)
-    local function CreateDropdown(parent, width, title, onClick)
-        local btn = RR.UI.Theme:CreateButton(parent, title, width, 22)
-        btn:SetScript("OnClick", onClick)
-        return btn
-    end
-
-    -- C) Source Dropdown
+    -- C) Authentic Source DropDown Frame
     local sourceMenu = {
         { text = RR.L["SOURCE_ALL"], value = "any" },
         { text = RR.L["SOURCE_TRAINER"], value = "trainer" },
@@ -157,24 +149,24 @@ function RR.UI.MainWindow:Initialize()
         { text = RR.L["SOURCE_HOLIDAY"], value = "holiday" },
         { text = RR.L["SOURCE_REPUTATION"], value = "reputation" },
     }
-    self.sourceBtn = CreateDropdown(filterBar, 85, RR.L["DROPDOWN_SOURCE"], function(selfBtn)
+    self.sourceBtn = RR.UI.Theme:CreateDropDownFrame(filterBar, 90, "Quelle", function(selfF)
         local menu = {}
         for _, itm in ipairs(sourceMenu) do
             table.insert(menu, {
                 text = itm.text,
                 func = function()
                     RR.Config:SetFilterSetting("sourceFilter", itm.value)
-                    selfBtn.text:SetText(itm.text)
+                    selfF.text:SetText(itm.text)
                     self:Refresh()
                 end,
                 checked = (RR.Config:GetFilterSetting("sourceFilter") or "any") == itm.value,
             })
         end
-        self:ShowDropdown(selfBtn, menu)
+        self:ShowDropdown(selfF, menu)
     end)
-    self.sourceBtn:SetPoint("LEFT", prevZone, "RIGHT", 10, 0)
+    self.sourceBtn:SetPoint("LEFT", prevZone, "RIGHT", 14, 0)
 
-    -- D) Faction & Reputation Dropdown
+    -- D) Authentic Faction & Reputation DropDown Frame
     local factionMenu = {
         { text = RR.L["FACTION_ALL"], value = "any" },
         { text = RR.L["FACTION_ALLIANCE"], value = "Alliance" },
@@ -188,24 +180,24 @@ function RR.UI.MainWindow:Initialize()
         { text = "Dunkelmond-Jahrmarkt", value = 909 },
         { text = "Cenarischer Zirkel", value = 609 },
     }
-    self.factionBtn = CreateDropdown(filterBar, 95, RR.L["DROPDOWN_FACTION"], function(selfBtn)
+    self.factionBtn = RR.UI.Theme:CreateDropDownFrame(filterBar, 100, "Fraktion", function(selfF)
         local menu = {}
         for _, itm in ipairs(factionMenu) do
             table.insert(menu, {
                 text = itm.text,
                 func = function()
                     RR.Config:SetFilterSetting("factionFilter", itm.value)
-                    selfBtn.text:SetText(itm.text)
+                    selfF.text:SetText(itm.text)
                     self:Refresh()
                 end,
                 checked = (RR.Config:GetFilterSetting("factionFilter") or "any") == itm.value,
             })
         end
-        self:ShowDropdown(selfBtn, menu)
+        self:ShowDropdown(selfF, menu)
     end)
-    self.factionBtn:SetPoint("LEFT", self.sourceBtn, "RIGHT", 4, 0)
+    self.factionBtn:SetPoint("LEFT", self.sourceBtn, "RIGHT", 14, 0)
 
-    -- E) Phase Dropdown
+    -- E) Authentic Phase DropDown Frame
     local phaseMenu = {
         { text = RR.L["PHASE_ALL"], value = 0 },
         { text = RR.L["PHASE_1"], value = 1 },
@@ -215,23 +207,22 @@ function RR.UI.MainWindow:Initialize()
         { text = RR.L["PHASE_5"], value = 5 },
         { text = RR.L["PHASE_6"], value = 6 },
     }
-    self.phaseBtn = CreateDropdown(filterBar, 75, RR.L["DROPDOWN_PHASE"], function(selfBtn)
+    self.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterBar, 80, "Phase", function(selfF)
         local menu = {}
         for _, itm in ipairs(phaseMenu) do
             table.insert(menu, {
                 text = itm.text,
                 func = function()
                     RR.Config:SetFilterSetting("phaseFilter", itm.value)
-                    selfBtn.text:SetText(itm.text)
+                    selfF.text:SetText(itm.text)
                     self:Refresh()
                 end,
                 checked = (RR.Config:GetFilterSetting("phaseFilter") or 0) == itm.value,
             })
         end
-        self:ShowDropdown(selfBtn, menu)
+        self:ShowDropdown(selfF, menu)
     end)
-    self.phaseBtn:SetPoint("LEFT", self.factionBtn, "RIGHT", 4, 0)
-
+    self.phaseBtn:SetPoint("LEFT", self.factionBtn, "RIGHT", 14, 0)
     -- 3. Left Column: Recipe List Pane
     local listPane = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
     listPane:SetPoint("TOPLEFT", filterBar, "BOTTOMLEFT", 0, -2)
