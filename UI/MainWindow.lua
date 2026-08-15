@@ -176,17 +176,18 @@ function RR.UI.MainWindow:Initialize()
     end
 
     -- Scrollbar for list
+    listPane.SetVerticalScroll = function() end -- Dummy to prevent Blizzard template errors
     local scrollbar = CreateFrame("Slider", "RecipeRadarScroll", listPane, "UIPanelScrollBarTemplate")
     scrollbar:SetPoint("TOPRIGHT", -4, -18)
     scrollbar:SetPoint("BOTTOMRIGHT", -4, 18)
+    scrollbar:SetWidth(16)
+    scrollbar:SetScript("OnValueChanged", function(_, val)
+        self.scrollOffset = math.floor(val or 0)
+        self:RenderList()
+    end)
     scrollbar:SetMinMaxValues(0, 0)
     scrollbar:SetValue(0)
     scrollbar:SetValueStep(1)
-    scrollbar:SetWidth(16)
-    scrollbar:SetScript("OnValueChanged", function(_, val)
-        self.scrollOffset = math.floor(val)
-        self:RenderList()
-    end)
     self.scrollbar = scrollbar
     self.scrollOffset = 0
 
