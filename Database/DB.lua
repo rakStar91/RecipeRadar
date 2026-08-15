@@ -234,12 +234,26 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
             if sType then meta.sourceTypes[sType] = true end
             if npc.reacts then
                 if type(npc.reacts) == "table" then
-                    for _, r in ipairs(npc.reacts) do meta.factions[r] = true end
+                    for _, r in ipairs(npc.reacts) do
+                        meta.factions[r] = true
+                        if r == "Neutral" then
+                            meta.factions["Alliance"] = true
+                            meta.factions["Horde"] = true
+                        end
+                    end
                 elseif type(npc.reacts) == "string" then
                     meta.factions[npc.reacts] = true
+                    if npc.reacts == "Neutral" then
+                        meta.factions["Alliance"] = true
+                        meta.factions["Horde"] = true
+                    end
                 end
             elseif npc.faction then
                 meta.factions[npc.faction] = true
+                if npc.faction == "Neutral" then
+                    meta.factions["Alliance"] = true
+                    meta.factions["Horde"] = true
+                end
             end
         end
     end
@@ -271,9 +285,19 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
             meta.sourceTypes["quest"] = true
             if q.reacts then
                 if type(q.reacts) == "table" then
-                    for _, r in ipairs(q.reacts) do meta.factions[r] = true end
+                    for _, r in ipairs(q.reacts) do
+                        meta.factions[r] = true
+                        if r == "Neutral" then
+                            meta.factions["Alliance"] = true
+                            meta.factions["Horde"] = true
+                        end
+                    end
                 elseif type(q.reacts) == "string" then
                     meta.factions[q.reacts] = true
+                    if q.reacts == "Neutral" then
+                        meta.factions["Alliance"] = true
+                        meta.factions["Horde"] = true
+                    end
                 end
             end
             if q.npcs then
