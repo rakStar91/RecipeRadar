@@ -482,11 +482,9 @@ function RR.UI.MainWindow:Initialize()
         "Name",
         "Phase",
         "Min. Fertigkeitsstufe",
-        "Benötigt XP Level",
         "Benötigt Ruf",
         "Spezialisierung",
         "Feiertag",
-        "Sonderaktion",
         "Kosten",
     }
     local attrY = -6
@@ -517,14 +515,14 @@ function RR.UI.MainWindow:Initialize()
 
     -- "Erlernbar durch:" Header
     local srcHeader = attrBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    srcHeader:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 8, attrY - 2)
+    srcHeader:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 8, attrY - 4)
     srcHeader:SetTextColor(1, 0.82, 0, 1)
     srcHeader:SetText("Erlernbar durch:")
     self.srcHeader = srcHeader
 
     -- Scrollable frame for sources to prevent overflow into Twink status
     local srcScrollFrame = CreateFrame("ScrollFrame", "RecipeRadarSourceScroll", attrBox)
-    srcScrollFrame:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 6, attrY - 18)
+    srcScrollFrame:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 6, attrY - 20)
     srcScrollFrame:SetPoint("BOTTOMRIGHT", attrBox, "BOTTOMRIGHT", -6, 6)
     srcScrollFrame:EnableMouse(true)
     srcScrollFrame:EnableMouseWheel(true)
@@ -869,15 +867,58 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     local phaseNum = tonumber(meta.phase or data.phase or 1)
     local rPhase = RR.L["PHASE_" .. (phaseNum or 1)] or string.format("Phase %d", phaseNum or 1)
     local rSkill = tostring(recipeItem.skillReq or 1)
-    local rXp = tostring(data.min_xp_level or "-")
+    
     local rRep = "-"
-    if meta.reputationFactionId then
-        local fName = RR.DB.GetFactionName and RR.DB:GetFactionName(meta.reputationFactionId)
-        rRep = fName or tostring(meta.reputationFactionId)
+    local repFactionId = meta.reputationFactionId or (data.reputation and data.reputation.faction_id)
+    local repLvlId = meta.reputationLevel or (data.reputation and data.reputation.level)
+    if repFactionId then
+        local fName = RR.DB:GetFactionName(repFactionId)
+        local lvlName = repLvlId and RR.DB:GetReputationLevelName(repLvlId)
+        if fName and lvlName then
+            rRep = string.format("%s (%s)", fName, lvlName)
+        elseif fName then
+            rRep = fName
+        else
+            rRep = tostring(repFactionId)
+        end
     end
-    local rSpec = data.specialisation and tostring(data.specialisation) or "-"
-    local rHol = data.holiday and tostring(data.holiday) or "-"
+
+    local prof = RR.Scanner.currentProfession or "Tailoring"
+    local rSpec = "-"
+    if data.specialisation then
+        local specName = nil
+        if RR_DATA and RR_DATA["specialisations"] and RR_DATA["specialisations"][prof] then
+            for _, sp in ipairs(RR_DATA["specialisations"][prof]) do
+                if sp.id == data.specialisation or sp.name == data.specialisation then
+                    specName = RR.DB:GetLocalizedText(sp.name)
+                    break
+                end
+            end
+        end
+        rSpec = specName or tostring(data.specialisation)
+    end
+
+    local rHol = "-"
+    if data.holiday then
+        local holName = nil
+        if RR_DATA and RR_DATA["holidays"] then
+            for _, h in ipairs(RR_DATA["holidays"]) do
+                if h.id == data.holiday then
+                    holName = RR.DB:GetLocalizedText(h.name)
+                    break
+                end
+            end
+        end
+        rHol = holName or tostring(data.holiday)
+    end
+
     local rPrice = "-"
+    local priceVal = tonumber(meta.price or data.price)
+    if priceVal and priceVal > 0 then
+        rPrice = (RR.Utils and RR.Utils.FormatMoney and RR.Utils:FormatMoney(priceVal)) or tostring(priceVal)
+    elseif priceVal == 0 then
+        rPrice = RR.L["FREE"] or "Kostenlos"
+    end
     local rLearnedFrom = "-"
 
     self.selectedRecipe.waypoint = nil
@@ -1132,11 +1173,9 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         rName,
         rPhase,
         rSkill,
-        rXp,
         rRep,
         rSpec,
         rHol,
-        "-",
         rPrice,
     }
     if self.attrRows then

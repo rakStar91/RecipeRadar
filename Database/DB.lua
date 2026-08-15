@@ -387,3 +387,31 @@ function RR.DB:GetCurrentZoneId()
     end
     return nil
 end
+
+--- Returns localized faction name by faction ID
+function RR.DB:GetFactionName(factionId)
+    if not factionId then return nil end
+    local facs = RR_DATA and RR_DATA["factions"]
+    if facs then
+        for _, f in ipairs(facs) do
+            if f.id == factionId then
+                return self:GetLocalizedText(f.name)
+            end
+        end
+    end
+    return nil
+end
+
+--- Returns localized reputation level name (e.g. Friendly, Honored, Revered, Exalted)
+function RR.DB:GetReputationLevelName(levelId)
+    if not levelId then return nil end
+    local lvls = RR_DATA and RR_DATA["reputation_levels"]
+    if lvls then
+        for _, l in ipairs(lvls) do
+            if l.id == levelId then
+                return self:GetLocalizedText(l.name)
+            end
+        end
+    end
+    return nil
+end
