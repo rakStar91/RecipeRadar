@@ -1213,6 +1213,50 @@ function RR.UI.MainWindow:ShowDropdown(anchorBtn, items)
         RR.UI.Theme:SkinWindow(dropdownPopup)
         dropdownPopup.buttons = {}
 
+        -- ScrollFrame container
+        local scrollFrame = CreateFrame("ScrollFrame", "RecipeRadarDropdownScroll", dropdownPopup)
+        scrollFrame:SetPoint("TOPLEFT", 4, -4)
+        scrollFrame:SetPoint("BOTTOMRIGHT", -4, 4)
+        dropdownPopup.scrollFrame = scrollFrame
+
+        local scrollChild = CreateFrame("Frame", nil, scrollFrame)
+        scrollChild:SetSize(100, 100)
+        scrollFrame:SetScrollChild(scrollChild)
+        dropdownPopup.scrollChild = scrollChild
+
+        -- ScrollBar slider
+        local scrollBar = CreateFrame("Slider", "RecipeRadarDropdownScrollBar", dropdownPopup, BackdropTemplateMixin and "BackdropTemplate")
+        scrollBar:SetWidth(10)
+        scrollBar:SetPoint("TOPRIGHT", -4, -4)
+        scrollBar:SetPoint("BOTTOMRIGHT", -4, 4)
+        RR.UI.Theme:SkinPanel(scrollBar, 0.8)
+        scrollBar:SetThumbTexture("Interface\\Buttons\\UI-SliderBar-Button-Vertical")
+        scrollBar:SetOrientation("VERTICAL")
+        scrollBar:SetMinMaxValues(0, 100)
+        scrollBar:SetValue(0)
+        scrollBar:SetValueStep(22)
+        scrollBar:SetScript("OnValueChanged", function(selfSB, val)
+            scrollFrame:SetVerticalScroll(val)
+        end)
+        dropdownPopup.scrollBar = scrollBar
+
+        local function onMouseWheel(selfF, delta)
+        dropdownPopup.onMouseWheel = onMouseWheel
+            local current = scrollBar:GetValue() or 0
+            local minVal, maxVal = scrollBar:GetMinMaxValues()
+            local step = 22 * 2
+            if delta < 0 then
+                scrollBar:SetValue(math.min(maxVal, current + step))
+            else
+                scrollBar:SetValue(math.max(minVal, current - step))
+            end
+        end
+
+        dropdownPopup:EnableMouseWheel(true)
+        dropdownPopup:SetScript("OnMouseWheel", onMouseWheel)
+        scrollFrame:EnableMouseWheel(true)
+        scrollFrame:SetScript("OnMouseWheel", onMouseWheel)
+
         local clickWatcher = CreateFrame("Frame", nil, dropdownPopup)
         clickWatcher:SetScript("OnUpdate", function()
             if dropdownPopup:IsShown() and not dropdownPopup:IsMouseOver() and (not dropdownPopup.currentAnchor or not dropdownPopup.currentAnchor:IsMouseOver()) then
@@ -1235,11 +1279,16 @@ function RR.UI.MainWindow:ShowDropdown(anchorBtn, items)
     local maxWidth = (anchorBtn:GetWidth() or 120) + 20
     local itemHeight = 22
     local count = #items
+    local maxVisible = 14
+    local visibleCount = math.min(count, maxVisible)
+    local totalContentHeight = count * itemHeight
+    local viewHeight = visibleCount * itemHeight
+    local needsScroll = count > maxVisible
 
     for i, itm in ipairs(items) do
         local btn = dropdownPopup.buttons[i]
         if not btn then
-            btn = CreateFrame("Button", nil, dropdownPopup, BackdropTemplateMixin and "BackdropTemplate")
+            btn = CreateFrame("Button", nil, dropdownPopup.scrollChild, BackdropTemplateMixin and "BackdropTemplate")
             btn:SetHeight(itemHeight)
             RR.UI.Theme:SkinPanel(btn, 0.6)
 
@@ -1261,12 +1310,16 @@ function RR.UI.MainWindow:ShowDropdown(anchorBtn, items)
             btn:SetScript("OnLeave", function(selfB)
                 if selfB.SetBackdropColor then selfB:SetBackdropColor(0.04, 0.05, 0.06, 0.6) end
             end)
+            btn:EnableMouseWheel(true)
+            btn:SetScript("OnMouseWheel", function(selfB, delta)
+                if dropdownPopup and dropdownPopup.onMouseWheel then
+                    dropdownPopup.onMouseWheel(selfB, delta)
+                end
+            end)
 
             dropdownPopup.buttons[i] = btn
         end
 
-        btn:SetPoint("TOPLEFT", 4, -((i - 1) * itemHeight + 4))
-        btn:SetPoint("TOPRIGHT", -4, -((i - 1) * itemHeight + 4))
         btn.text:SetText(itm.text)
 
         if itm.icon then
@@ -1300,6 +1353,34 @@ function RR.UI.MainWindow:ShowDropdown(anchorBtn, items)
         dropdownPopup.buttons[i]:Hide()
     end
 
-    dropdownPopup:SetSize(maxWidth + 8, count * itemHeight + 8)
+    -- Update scroll child width and button widths
+    local childWidth = maxWidth
+    dropdownPopup.scrollChild:SetSize(childWidth, totalContentHeight)
+    for i = 1, count do
+        local btn = dropdownPopup.buttons[i]
+        btn:ClearAllPoints()
+        btn:SetPoint("TOPLEFT", dropdownPopup.scrollChild, "TOPLEFT", 0, -((i - 1) * itemHeight))
+        btn:SetSize(childWidth, itemHeight)
+    end
+
+    dropdownPopup.scrollFrame:ClearAllPoints()
+    if needsScroll then
+        dropdownPopup.scrollFrame:SetPoint("TOPLEFT", 4, -4)
+        dropdownPopup.scrollFrame:SetPoint("BOTTOMRIGHT", -16, 4)
+        dropdownPopup.scrollBar:Show()
+        local maxScroll = math.max(0, totalContentHeight - viewHeight)
+        dropdownPopup.scrollBar:SetMinMaxValues(0, maxScroll)
+        dropdownPopup.scrollBar:SetValue(0)
+    else
+        dropdownPopup.scrollFrame:SetPoint("TOPLEFT", 4, -4)
+        dropdownPopup.scrollFrame:SetPoint("BOTTOMRIGHT", -4, 4)
+        dropdownPopup.scrollBar:Hide()
+        dropdownPopup.scrollFrame:SetVerticalScroll(0)
+    end
+
+    local finalPopupWidth = maxWidth + (needsScroll and 20 or 8)
+    local finalPopupHeight = viewHeight + 8
+
+    dropdownPopup:SetSize(finalPopupWidth, finalPopupHeight)
     dropdownPopup:Show()
 end
