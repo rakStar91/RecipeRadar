@@ -37,6 +37,9 @@ local defaultStrings = {
     ["LEARNED"] = "Learned",
     ["REQUIRES_SKILL"] = "Requires %s (%d)",
     ["NO_RECIPES_FOUND"] = "No recipes found matching current filters.",
+    ["TOOLTIP_TOGGLE"] = "Left Click: Toggle RecipeRadar tracker",
+    ["TOOLTIP_DRAG"] = "Right Drag: Move button position",
+    ["TOOLTIP_MINIMAP_DRAG"] = "Left Drag: Move around minimap",
 }
 
 local translations = {
@@ -67,6 +70,9 @@ local translations = {
         ["LEARNED"] = "Gelernt",
         ["REQUIRES_SKILL"] = "Benötigt %s (%d)",
         ["NO_RECIPES_FOUND"] = "Keine Rezepte für die aktuellen Filter gefunden.",
+        ["TOOLTIP_TOGGLE"] = "Linksklick: RecipeRadar öffnen / schließen",
+        ["TOOLTIP_DRAG"] = "Rechtsklick + Ziehen: Position verschieben",
+        ["TOOLTIP_MINIMAP_DRAG"] = "Linksklick + Ziehen: Um Minimap bewegen",
     },
     frFR = {
         ["RECIPES"] = "Recettes",
