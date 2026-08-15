@@ -237,9 +237,22 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
     local function addQuest(qId)
         local q = self:GetQuest(qId)
         if q then
-            if q.zone_id then
-                meta.zones[q.zone_id] = true
-                local z = self.zoneMap and self.zoneMap[q.zone_id]
+            local qzId = q.zone_id
+            if not qzId and q.npcs and q.npcs[1] then
+                local npc = self:GetNPC(q.npcs[1])
+                if npc then
+                    qzId = (npc.location and npc.location.zone_id) or npc.zone_id
+                end
+            end
+            if not qzId and q.givers and q.givers.npcs and q.givers.npcs[1] then
+                local npc = self:GetNPC(q.givers.npcs[1])
+                if npc then
+                    qzId = (npc.location and npc.location.zone_id) or npc.zone_id
+                end
+            end
+            if qzId then
+                meta.zones[qzId] = true
+                local z = self.zoneMap and self.zoneMap[qzId]
                 if z then
                     local cId = z.continent_id or z.cont_id
                     if cId then meta.continents[cId] = true end
@@ -252,6 +265,9 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
                 elseif type(q.reacts) == "string" then
                     meta.factions[q.reacts] = true
                 end
+            end
+            if q.npcs then
+                for _, nId in ipairs(q.npcs) do addNPC(nId, "quest") end
             end
             if q.givers and q.givers.npcs then
                 for _, nId in ipairs(q.givers.npcs) do addNPC(nId, "quest") end

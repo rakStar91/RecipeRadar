@@ -200,6 +200,8 @@ function RR.UI.MainWindow:Initialize()
     zoneLabel:SetTextColor(1, 0.82, 0, 1)
     zoneLabel:SetText("Zone:")
 
+    self.lastCustomZone = { id = nil, name = "Letzte Zone", cont = "any", contName = "Jede Region" }
+
     self.continentBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Jede Region", function(selfF)
         local contMenu = {
             { text = "Jede Region", value = "any" },
@@ -220,6 +222,7 @@ function RR.UI.MainWindow:Initialize()
                     if self.zoneDropBtn and self.zoneDropBtn.text then
                         self.zoneDropBtn.text:SetText("Zone")
                     end
+                    self:UpdateFilterButtons()
                     self:Refresh()
                 end,
                 checked = (RR.Config:GetFilterSetting("continentFilter") or "any") == itm.value,
@@ -230,7 +233,7 @@ function RR.UI.MainWindow:Initialize()
     self.continentBtn:SetPoint("LEFT", zoneLabel, "RIGHT", 14, 0)
 
     self.zoneDropBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Zone", function(selfF)
-        local curCont = RR.Config:GetFilterSetting("continentFilter")
+        local curCont = RR.Config:GetFilterSetting("continentFilter") or "any"
         local zones = RR.DB:GetZonesInContinent(curCont)
         local curZone = RR.Config:GetFilterSetting("zoneFilter") or "any"
 
@@ -240,6 +243,7 @@ function RR.UI.MainWindow:Initialize()
                 func = function()
                     RR.Config:SetFilterSetting("zoneFilter", "any")
                     selfF.text:SetText("Zone")
+                    self:UpdateFilterButtons()
                     self:Refresh()
                 end,
                 checked = (curZone == "any"),
@@ -252,6 +256,12 @@ function RR.UI.MainWindow:Initialize()
                 func = function()
                     RR.Config:SetFilterSetting("zoneFilter", z.id)
                     selfF.text:SetText(z.name)
+                    local contLabel = (self.continentBtn and self.continentBtn.text and self.continentBtn.text:GetText()) or "Jede Region"
+                    self.lastCustomZone = { id = z.id, name = z.name, cont = curCont, contName = contLabel }
+                    if self.zoneBtns and self.zoneBtns.last then
+                        self.zoneBtns.last:SetText(z.name)
+                    end
+                    self:UpdateFilterButtons()
                     self:Refresh()
                 end,
                 checked = (curZone == z.id),
@@ -261,31 +271,42 @@ function RR.UI.MainWindow:Initialize()
     end)
     self.zoneDropBtn:SetPoint("LEFT", self.continentBtn, "RIGHT", 8, 0)
 
-    -- Quick Zone Buttons
+    -- Quick Zone Buttons (Jede Zone, Aktuelle Zone, Letzte Zone)
     self.zoneBtns = {}
-    local curZName = GetRealZoneText() or "Aktuelle Zone"
-    local quickZones = {
-        { key = "any", label = "Jede Zone", width = 80 },
-        { key = "current", label = "Aktuelle Zone", width = 95 },
-        { key = "current_name", label = curZName, width = 110 },
-    }
-    local prevZBtn = nil
-    for _, zDef in ipairs(quickZones) do
-        local zBtn = RR.UI.Theme:CreateDarkButton(filterArea, zDef.label, zDef.width, 24)
-        if prevZBtn then
-            zBtn:SetPoint("LEFT", prevZBtn, "RIGHT", 5, 0)
-        else
-            zBtn:SetPoint("LEFT", self.zoneDropBtn, "RIGHT", 10, 0)
+    local zBtnAny = RR.UI.Theme:CreateDarkButton(filterArea, "Jede Zone", 80, 24)
+    zBtnAny:SetPoint("LEFT", self.zoneDropBtn, "RIGHT", 10, 0)
+    zBtnAny:SetScript("OnClick", function()
+        RR.Config:SetFilterSetting("continentFilter", "any")
+        RR.Config:SetFilterSetting("zoneFilter", "any")
+        if self.continentBtn and self.continentBtn.text then self.continentBtn.text:SetText("Jede Region") end
+        if self.zoneDropBtn and self.zoneDropBtn.text then self.zoneDropBtn.text:SetText("Zone") end
+        self:UpdateFilterButtons()
+        self:Refresh()
+    end)
+    self.zoneBtns.any = zBtnAny
+
+    local zBtnCurrent = RR.UI.Theme:CreateDarkButton(filterArea, "Aktuelle Zone", 95, 24)
+    zBtnCurrent:SetPoint("LEFT", zBtnAny, "RIGHT", 5, 0)
+    zBtnCurrent:SetScript("OnClick", function()
+        RR.Config:SetFilterSetting("zoneFilter", "current")
+        self:UpdateFilterButtons()
+        self:Refresh()
+    end)
+    self.zoneBtns.current = zBtnCurrent
+
+    local zBtnLast = RR.UI.Theme:CreateDarkButton(filterArea, "Letzte Zone", 110, 24)
+    zBtnLast:SetPoint("LEFT", zBtnCurrent, "RIGHT", 5, 0)
+    zBtnLast:SetScript("OnClick", function()
+        if self.lastCustomZone and self.lastCustomZone.id then
+            RR.Config:SetFilterSetting("continentFilter", self.lastCustomZone.cont)
+            RR.Config:SetFilterSetting("zoneFilter", self.lastCustomZone.id)
+            if self.continentBtn and self.continentBtn.text then self.continentBtn.text:SetText(self.lastCustomZone.contName or "Jede Region") end
+            if self.zoneDropBtn and self.zoneDropBtn.text then self.zoneDropBtn.text:SetText(self.lastCustomZone.name) end
         end
-        zBtn:SetScript("OnClick", function()
-            local zKey = (zDef.key == "current_name") and "current" or zDef.key
-            RR.Config:SetFilterSetting("zoneFilter", zKey)
-            self:UpdateFilterButtons()
-            self:Refresh()
-        end)
-        self.zoneBtns[zDef.key] = zBtn
-        prevZBtn = zBtn
-    end
+        self:UpdateFilterButtons()
+        self:Refresh()
+    end)
+    self.zoneBtns.last = zBtnLast
 
     -- 3. Left Column: Recipe List Pane (Authentic Alternating Rows, Icons & Tooltips)
     local listPane = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
@@ -974,8 +995,41 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
             local q = RR.DB:GetQuest(qId)
             if q then
                 local qName = (type(q.name) == "table" and (q.name[locale] or q.name["German"] or q.name["English"])) or "Quest"
-                local zName = RR.DB:GetZoneName(q.zone_id) or "World"
-                local lineText = string.format("%s (Quest) - %s", qName, zName)
+                local qzId = q.zone_id
+                local qx, qy, qNpcName
+                if not qzId and q.npcs and q.npcs[1] then
+                    local npc = RR.DB:GetNPC(q.npcs[1])
+                    if npc then
+                        qzId = (npc.location and npc.location.zone_id) or npc.zone_id
+                        qx = tonumber(npc.location and npc.location.x or npc.x)
+                        qy = tonumber(npc.location and npc.location.y or npc.y)
+                        qNpcName = (type(npc.name) == "table" and (npc.name[locale] or npc.name["German"] or npc.name["English"])) or npc.name
+                    end
+                end
+                if not qzId and q.givers and q.givers.npcs and q.givers.npcs[1] then
+                    local npc = RR.DB:GetNPC(q.givers.npcs[1])
+                    if npc then
+                        qzId = (npc.location and npc.location.zone_id) or npc.zone_id
+                        qx = tonumber(npc.location and npc.location.x or npc.x)
+                        qy = tonumber(npc.location and npc.location.y or npc.y)
+                        qNpcName = (type(npc.name) == "table" and (npc.name[locale] or npc.name["German"] or npc.name["English"])) or npc.name
+                    end
+                end
+
+                local zName = qzId and RR.DB:GetZoneName(qzId)
+                local lineText
+                local wp = nil
+                if zName and zName ~= "Unknown Zone" and zName ~= "" then
+                    if qx and qy and qx > 0 and qy > 0 then
+                        lineText = string.format("%s (Quest) - %s (%.1f, %.1f)", qName, zName, qx, qy)
+                        wp = { name = qNpcName or qName, zone = zName, x = qx, y = qy }
+                    else
+                        lineText = string.format("%s (Quest) - %s", qName, zName)
+                    end
+                else
+                    lineText = string.format("%s (Quest)", qName)
+                end
+
                 local qFaction = "Neutral"
                 if q.reacts then
                     if type(q.reacts) == "table" then qFaction = q.reacts[1] or "Neutral"
@@ -986,7 +1040,7 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
                 local isOther = (qFaction ~= playerFaction and qFaction ~= "Neutral")
                 table.insert(allSources, {
                     text = lineText,
-                    waypoint = nil,
+                    waypoint = wp,
                     faction = qFaction,
                     isPlayerFaction = isMatch,
                     isOtherFaction = isOther,
