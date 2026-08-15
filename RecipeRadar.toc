@@ -1,7 +1,14 @@
 ## Interface: 11509
 ## Title: RecipeRadar
+## Title-deDE: RecipeRadar
 ## Author: rakStar
 ## Notes: Comprehensive profession recipe and skill tracker with TomTom waypoints.
+## Notes-deDE: Umfassender Berufe- und Rezept-Tracker mit TomTom-Wegpunkten.
+## Notes-frFR: Traqueur complet de recettes et compétences de métiers avec points de cheminement TomTom.
+## Notes-ruRU: Полный трекер рецептов профессий с координатами TomTom.
+## Notes-zhCN: 完整的专业技能与配方追踪插件，支持 TomTom 导航。
+## Notes-esES: Rastreador completo de recetas de profesiones con coordenadas TomTom.
+## IconTexture: Interface\\AddOns\\RecipeRadar\\images\\icon.tga
 ## SavedVariables: RecipeRadarDB
 ## Version: 1.0.0
 
