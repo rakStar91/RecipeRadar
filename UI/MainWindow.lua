@@ -403,14 +403,30 @@ function RR.UI.MainWindow:Initialize()
     self.detailValues:SetTextColor(1, 1, 1, 1)
     self.detailValues:SetText("-\n-\n-\n-\n-\n-\n-\n-\n-\n-")
 
-    local tomtomBtn = RR.UI.Theme:CreateDarkButton(attrBox, "📌 TomTom Wegpunkt", 150, 22)
-    tomtomBtn:SetPoint("BOTTOMRIGHT", -8, 8)
-    tomtomBtn:SetScript("OnClick", function()
+    -- Clickable area over "Erlernbar durch" to set TomTom waypoint
+    local locBtn = CreateFrame("Button", nil, attrBox)
+    locBtn:SetPoint("TOPLEFT", self.detailValues, "TOPLEFT", 0, -18 * 9)
+    locBtn:SetPoint("BOTTOMRIGHT", self.detailValues, "BOTTOMRIGHT", 0, -18 * 10)
+    locBtn:SetHeight(20)
+    locBtn:EnableMouse(true)
+    locBtn:SetScript("OnEnter", function(selfB)
+        if self.selectedRecipe and self.selectedRecipe.waypoint then
+            GameTooltip:SetOwner(selfB, "ANCHOR_TOP")
+            GameTooltip:AddLine("📌 " .. (self.selectedRecipe.waypoint.name or "Wegpunkt"), 1, 0.82, 0)
+            GameTooltip:AddLine("Klicken, um TomTom-Wegpunkt zu setzen", 0.2, 1, 0.2)
+            GameTooltip:Show()
+        end
+    end)
+    locBtn:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
+    locBtn:SetScript("OnClick", function()
         if self.selectedRecipe and self.selectedRecipe.waypoint then
             local wp = self.selectedRecipe.waypoint
             RR.Utils:AddTomTomWaypoint(wp.name, wp.zone, wp.x, wp.y)
         end
     end)
+    self.locBtn = locBtn
 
     -- Alt Character Knowledge Section
     local altsBox = CreateFrame("Frame", nil, detailPane, BackdropTemplateMixin and "BackdropTemplate")
@@ -678,7 +694,8 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     local labels = "Name\nPhase\nMin. Fertigkeitsstufe\nBenötigt XP Level\nBenötigt Ruf\nSpezialisierung\nFeiertag\nSonderaktion\nKosten\nErlernbar durch"
     
     local rName = recipeItem.name or "-"
-    local rPhase = tostring(meta.phase or data.phase or 1)
+    local phaseNum = tonumber(meta.phase or data.phase or 1)
+    local rPhase = RR.L["PHASE_" .. (phaseNum or 1)] or string.format("Phase %d", phaseNum or 1)
     local rSkill = tostring(recipeItem.skillReq or 1)
     local rXp = tostring(data.min_xp_level or "-")
     local rRep = "-"
@@ -760,7 +777,7 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     end
 
     local values = string.format("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s",
-        rName, rPhase, rSkill, rXp, rRep, rSpec, rHol, rPrice, rLearnedFrom, "-")
+        rName, rPhase, rSkill, rXp, rRep, rSpec, rHol, "-", rPrice, rLearnedFrom)
 
     self.detailLabels:SetText(labels)
     self.detailValues:SetText(values)
