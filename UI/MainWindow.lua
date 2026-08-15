@@ -212,11 +212,11 @@ function RR.UI.MainWindow:Initialize()
 
     self.detailTitle = detailPane:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     self.detailTitle:SetPoint("TOPLEFT", self.detailIcon, "TOPRIGHT", 10, 0)
-    self.detailTitle:SetText(RR.COLORS.GOLD .. "Select a Recipe")
+    self.detailTitle:SetText(RR.COLORS.GOLD .. RR.L["SELECT_A_RECIPE"])
 
     self.detailSub = detailPane:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     self.detailSub:SetPoint("TOPLEFT", self.detailTitle, "BOTTOMLEFT", 0, -4)
-    self.detailSub:SetText(RR.COLORS.GREY .. "Requires Profession")
+    self.detailSub:SetText(RR.COLORS.GREY .. RR.L["REQUIRES_PROFESSION"])
 
     -- Materials Section
     local matsBox = CreateFrame("Frame", nil, detailPane, BackdropTemplateMixin and "BackdropTemplate")
@@ -232,7 +232,7 @@ function RR.UI.MainWindow:Initialize()
     self.matsText:SetPoint("BOTTOMRIGHT", -6, 6)
     self.matsText:SetJustifyH("LEFT")
     self.matsText:SetJustifyV("TOP")
-    self.matsText:SetText(RR.COLORS.GREY .. "No materials data available.")
+    self.matsText:SetText(RR.COLORS.GREY .. RR.L["NO_MATERIALS"])
 
     -- Acquisition Source Section
     local sourceBox = CreateFrame("Frame", nil, detailPane, BackdropTemplateMixin and "BackdropTemplate")
@@ -247,7 +247,7 @@ function RR.UI.MainWindow:Initialize()
     self.sourceText:SetPoint("TOPLEFT", sourceTitle, "BOTTOMLEFT", 0, -4)
     self.sourceText:SetPoint("RIGHT", -6, 0)
     self.sourceText:SetJustifyH("LEFT")
-    self.sourceText:SetText(RR.COLORS.WHITE .. "Source details")
+    self.sourceText:SetText(RR.COLORS.WHITE .. RR.L["SOURCE_DETAILS"])
 
     -- TomTom Button
     self.tomtomBtn = RR.UI.Theme:CreateButton(sourceBox, "📍 " .. RR.L["TOMTOM_WAYPOINT"], 140, 20)
@@ -412,24 +412,24 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
             matsStr = matsStr .. "• " .. (mat.name or "Reagent") .. " x" .. (mat.amount or 1) .. "\n"
         end
     end
-    self.matsText:SetText(matsStr ~= "" and matsStr or (RR.COLORS.GREY .. "No reagents required."))
+    self.matsText:SetText(matsStr ~= "" and matsStr or (RR.COLORS.GREY .. RR.L["NO_REAGENTS"]))
 
     -- Acquisition Source & TomTom
-    local srcStr = "Unknown Source"
+    local srcStr = RR.L["UNKNOWN_SOURCE"]
     self.selectedRecipe.waypoint = nil
 
     if data.trainers and #data.trainers > 0 then
         local npc = RR.DB:GetNPC(data.trainers[1])
         if npc then
             local zone = RR.DB:GetZoneName(npc.zone_id)
-            srcStr = string.format("Trainer: %s\nLocation: %s (%s, %s)", npc.name or "Trainer", zone, tostring(npc.x or 0), tostring(npc.y or 0))
+            srcStr = string.format(RR.L["TRAINER_LOCATION"], npc.name or "Trainer", zone, tostring(npc.x or 0), tostring(npc.y or 0))
             self.selectedRecipe.waypoint = { name = npc.name, zone = zone, x = npc.x, y = npc.y }
         end
     elseif data.vendors and #data.vendors > 0 then
         local npc = RR.DB:GetNPC(data.vendors[1])
         if npc then
             local zone = RR.DB:GetZoneName(npc.zone_id)
-            srcStr = string.format("Vendor: %s\nLocation: %s (%s, %s)", npc.name or "Vendor", zone, tostring(npc.x or 0), tostring(npc.y or 0))
+            srcStr = string.format(RR.L["VENDOR_LOCATION"], npc.name or "Vendor", zone, tostring(npc.x or 0), tostring(npc.y or 0))
             self.selectedRecipe.waypoint = { name = npc.name, zone = zone, x = npc.x, y = npc.y }
         end
     end
@@ -442,5 +442,5 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         local statusStr = alt.isKnown and (RR.COLORS.GREEN .. "✓ " .. RR.L["LEARNED"]) or (RR.COLORS.RED .. "✗ " .. RR.L["MODE_MISSING"])
         altsStr = altsStr .. string.format("%s (%s): %s\n", alt.name, alt.class, statusStr)
     end
-    self.altsText:SetText(altsStr ~= "" and altsStr or (RR.COLORS.GREY .. "No alts on this realm."))
+    self.altsText:SetText(altsStr ~= "" and altsStr or (RR.COLORS.GREY .. RR.L["NO_ALTS_REALM"]))
 end

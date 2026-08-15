@@ -21,7 +21,7 @@ function RR.Utils:AddTomTomWaypoint(zoneName, x, y, title)
         end
         print(RR.COLORS.TEAL .. "RecipeRadar: " .. RR.COLORS.WHITE .. string.format(RR.L["TOMTOM_ADDED"], title or "NPC", zoneName, tostring(x), tostring(y)))
     else
-        print(RR.COLORS.ORANGE .. "RecipeRadar: " .. RR.COLORS.WHITE .. "TomTom is not installed! Location: " .. zoneName .. " (" .. tostring(x) .. ", " .. tostring(y) .. ")")
+        print(RR.COLORS.ORANGE .. "RecipeRadar: " .. RR.COLORS.WHITE .. RR.L["TOMTOM_NOT_INSTALLED"] .. zoneName .. " (" .. tostring(x) .. ", " .. tostring(y) .. ")")
     end
 end
 
@@ -29,7 +29,7 @@ end
 -- @param copper number: Amount in copper
 -- @return string formatted
 function RR.Utils:FormatMoney(copper)
-    if not copper or copper <= 0 then return "Free" end
+    if not copper or copper <= 0 then return RR.L["FREE"] end
     local g = math.floor(copper / 10000)
     local s = math.floor((copper % 10000) / 100)
     local c = copper % 100

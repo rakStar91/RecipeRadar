@@ -25,7 +25,7 @@ coreFrame:SetScript("OnEvent", function(_, event, arg1)
         RR.UI.Tooltips:Initialize()
 
     elseif event == "PLAYER_LOGIN" then
-        print(RR.COLORS.TITLE .. "RecipeRadar " .. RR.COLORS.WHITE .. "v" .. RR.VERSION .. RR.COLORS.GREY .. " (by " .. RR.AUTHOR .. ") loaded! Type " .. RR.COLORS.GOLD .. "/rr" .. RR.COLORS.GREY .. " to open.")
+        print(RR.COLORS.TITLE .. "RecipeRadar " .. RR.COLORS.WHITE .. "v" .. RR.VERSION .. RR.COLORS.GREY .. " (by " .. RR.AUTHOR .. ") " .. RR.L["LOADED_WELCOME"])
     end
 end)
 
@@ -48,11 +48,11 @@ SlashCmdList["RECIPERADAR"] = function(msg)
         RR.UI.MainWindow:Show()
         RR.UI.MainWindow:SelectTab("npcs")
     elseif cmd == "help" then
-        print(RR.COLORS.TITLE .. "RecipeRadar Commands:")
-        print(RR.COLORS.GOLD .. "/rr" .. RR.COLORS.WHITE .. " - Toggle RecipeRadar window")
-        print(RR.COLORS.GOLD .. "/rr opt" .. RR.COLORS.WHITE .. " - Open options")
-        print(RR.COLORS.GOLD .. "/rr alts" .. RR.COLORS.WHITE .. " - Open alt character tracker")
-        print(RR.COLORS.GOLD .. "/rr npc" .. RR.COLORS.WHITE .. " - Open NPC / World explorer")
+        print(RR.COLORS.TITLE .. RR.L["CMD_HELP_HEADER"])
+        print(RR.COLORS.GOLD .. "/rr" .. RR.COLORS.WHITE .. RR.L["CMD_HELP_TOGGLE"])
+        print(RR.COLORS.GOLD .. "/rr opt" .. RR.COLORS.WHITE .. RR.L["CMD_HELP_OPT"])
+        print(RR.COLORS.GOLD .. "/rr alts" .. RR.COLORS.WHITE .. RR.L["CMD_HELP_ALTS"])
+        print(RR.COLORS.GOLD .. "/rr npc" .. RR.COLORS.WHITE .. RR.L["CMD_HELP_NPC"])
     else
         RR.UI.MainWindow:Toggle()
     end
