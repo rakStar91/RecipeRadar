@@ -132,6 +132,7 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
     end
 
     -- Scrollbar for list
+    instance.scrollOffset = 0
     listPane.SetVerticalScroll = function() end
     local scrollbar = CreateFrame("Slider", "RecipeRadarScroll", listPane, "UIPanelScrollBarTemplate")
     scrollbar:SetPoint("TOPRIGHT", -4, -18)
@@ -139,13 +140,14 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
     scrollbar:SetWidth(16)
     scrollbar:SetScript("OnValueChanged", function(_, val)
         instance.scrollOffset = math.floor(val or 0)
-        instance:Render()
+        if instance.Render then
+            instance:Render()
+        end
     end)
     scrollbar:SetMinMaxValues(0, 0)
     scrollbar:SetValue(0)
     scrollbar:SetValueStep(1)
     instance.scrollbar = scrollbar
-    instance.scrollOffset = 0
 
     listPane:EnableMouseWheel(true)
     listPane:SetScript("OnMouseWheel", function(_, delta)
