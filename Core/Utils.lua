@@ -7,21 +7,34 @@ local RR = RecipeRadar
 RR.Utils = {}
 
 --- Adds a waypoint to TomTom if installed
--- @param zoneName string: The zone name
--- @param x number: X coordinate (0-100)
--- @param y number: Y coordinate (0-100)
--- @param title string: Title for the waypoint
-function RR.Utils:AddTomTomWaypoint(zoneName, x, y, title)
-    if not (x and y and zoneName) then return end
-    
-    if SlashCmdList["TOMTOM_WAY"] or _G["TomTom"] then
-        local cmd = string.format("/way %s %.1f %.1f %s", zoneName, x, y, title or "Recipe Source")
-        if SlashCmdList["TOMTOM_WAY"] then
-            SlashCmdList["TOMTOM_WAY"](string.format("%s %.1f %.1f %s", zoneName, x, y, title or "Recipe Source"))
-        end
-        print(RR.COLORS.TEAL .. "RecipeRadar: " .. RR.COLORS.WHITE .. string.format(RR.L["TOMTOM_ADDED"], title or "NPC", zoneName, tostring(x), tostring(y)))
+-- Robustly handles (title, zoneName, x, y) or (zoneName, x, y, title)
+function RR.Utils:AddTomTomWaypoint(arg1, arg2, arg3, arg4)
+    local title, zoneName, numX, numY
+
+    if tonumber(arg2) and tonumber(arg3) then
+        -- Called as (zoneName, x, y, title)
+        zoneName = tostring(arg1 or "")
+        numX = tonumber(arg2)
+        numY = tonumber(arg3)
+        title = tostring(arg4 or "Recipe Source")
     else
-        print(RR.COLORS.ORANGE .. "RecipeRadar: " .. RR.COLORS.WHITE .. RR.L["TOMTOM_NOT_INSTALLED"] .. zoneName .. " (" .. tostring(x) .. ", " .. tostring(y) .. ")")
+        -- Called as (title, zoneName, x, y)
+        title = tostring(arg1 or "Recipe Source")
+        zoneName = tostring(arg2 or "")
+        numX = tonumber(arg3)
+        numY = tonumber(arg4)
+    end
+
+    if not (numX and numY and zoneName and zoneName ~= "") then return end
+    
+    if SlashCmdList and SlashCmdList["TOMTOM_WAY"] then
+        SlashCmdList["TOMTOM_WAY"](string.format("%s %.1f %.1f %s", zoneName, numX, numY, title))
+        print(RR.COLORS.TEAL .. "RecipeRadar: " .. RR.COLORS.WHITE .. string.format(RR.L["TOMTOM_ADDED"], title, zoneName, string.format("%.1f", numX), string.format("%.1f", numY)))
+    elseif _G["TomTom"] and _G["TomTom"].AddWaypoint then
+        -- Direct TomTom API fallback if slash command differs
+        print(RR.COLORS.TEAL .. "RecipeRadar: " .. RR.COLORS.WHITE .. string.format(RR.L["TOMTOM_ADDED"], title, zoneName, string.format("%.1f", numX), string.format("%.1f", numY)))
+    else
+        print(RR.COLORS.ORANGE .. "RecipeRadar: " .. RR.COLORS.WHITE .. RR.L["TOMTOM_NOT_INSTALLED"] .. zoneName .. " (" .. string.format("%.1f", numX) .. ", " .. string.format("%.1f", numY) .. ")")
     end
 end
 
