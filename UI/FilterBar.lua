@@ -201,7 +201,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         { text = RR.L["PHASE_3"], value = 3, icon = "Interface\\Icons\\INV_Misc_Head_Dragon_Black" },
         { text = RR.L["PHASE_4"], value = 4, icon = "Interface\\Icons\\Ability_Hunter_Pet_Bat" },
         { text = RR.L["PHASE_5"], value = 5, icon = "Interface\\Icons\\INV_Misc_AhnQirajTrinket_03" },
-        { text = RR.L["PHASE_6"], value = 6, icon = "Interface\\Icons\\INV_Trinket_Naxxramas_01" },
+        { text = RR.L["PHASE_6"], value = 6, icon = "Interface\\Icons\\Spell_Shadow_DeathPact" },
     }
     instance.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 105, RR.L["DROPDOWN_PHASE"], function(selfF)
         local menu = {}
