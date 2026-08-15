@@ -119,7 +119,7 @@ function RR.UI.MainWindow:Initialize()
         { text = RR.L["SOURCE_TRAINER"], value = "trainer", icon = "Interface\\Icons\\INV_Misc_Book_09" },
         { text = RR.L["SOURCE_VENDOR"], value = "vendor", icon = "Interface\\Icons\\INV_Misc_Coin_01" },
         { text = RR.L["SOURCE_QUEST"], value = "quest", icon = "Interface\\GossipFrame\\AvailableQuestIcon" },
-        { text = RR.L["SOURCE_DROP"], value = "drop", icon = "Interface\\Icons\\INV_Sword_04" },
+        { text = RR.L["SOURCE_DROP"], value = "drop", icon = "Interface\\GossipFrame\\VendorGossipIcon" },
         { text = RR.L["SOURCE_HOLIDAY"], value = "holiday", icon = "Interface\\Icons\\INV_Misc_Gift_01" },
         { text = RR.L["SOURCE_REPUTATION"], value = "reputation", icon = "Interface\\Icons\\INV_BannerPVP_02" },
     }
