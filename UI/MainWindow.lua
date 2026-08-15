@@ -1,14 +1,14 @@
 -- ============================================================================
 -- RecipeRadar: UI/MainWindow.lua
--- Main interface matching the authentic dark WoW prototype
+-- Main tracker interface matching the exact custom 3-row layout and artwork
 -- ============================================================================
 
 local RR = RecipeRadar
 RR.UI = RR.UI or {}
 RR.UI.MainWindow = {}
 
-local NUM_VISIBLE_ROWS = 14
-local ROW_HEIGHT = 28
+local NUM_VISIBLE_ROWS = 19
+local ROW_HEIGHT = 20
 
 function RR.UI.MainWindow:Initialize()
     if self.frame then return end
@@ -17,139 +17,103 @@ function RR.UI.MainWindow:Initialize()
     f:SetSize(840, 560)
     f:SetPoint("CENTER", 0, 0)
     f:SetMovable(true)
+    f:SetClampedToScreen(true)
     f:EnableMouse(true)
     f:RegisterForDrag("LeftButton")
-    f:SetScript("OnDragStart", f.StartMoving)
-    f:SetScript("OnDragStop", f.StopMovingOrSizing)
+    f:SetScript("OnDragStart", function(selfF) selfF:StartMoving() end)
+    f:SetScript("OnDragStop", function(selfF) selfF:StopMovingOrSizing() end)
     f:SetFrameStrata("HIGH")
-    f:SetToplevel(true)
-    f:Hide()
 
     RR.UI.Theme:SkinWindow(f)
     self.frame = f
 
-    -- 1. Header Bar with Authentic Title Plaque Banner
-    local header = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
-    header:SetPoint("TOPLEFT", 4, -4)
-    header:SetPoint("TOPRIGHT", -4, -4)
-    header:SetHeight(48)
-    RR.UI.Theme:SkinPanel(header, 0.8)
+    -- 1. Centered Title Plaque Banner
+    self.titlePlaque = RR.UI.Theme:CreateTitlePlaque(f, 420, 38, RR.NAME)
+    self.titlePlaque:SetPoint("TOP", f, "TOP", 0, 12)
 
-    -- Decorative Plaque Banner
-    self.titlePlaque = RR.UI.Theme:CreateTitlePlaque(header, 320, 42, RR.NAME)
-    self.titlePlaque:SetPoint("LEFT", 8, 0)
+    -- Close Button
+    local close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
+    close:SetPoint("TOPRIGHT", -2, -2)
+    close:SetScript("OnClick", function() f:Hide() end)
 
-    -- Navigation Tabs
-    self.tabs = {}
-    local tabDefs = {
-        { id = "recipes", label = "RECIPES" },
-        { id = "alts", label = "ALTS" },
-        { id = "npcs", label = "NPCS" },
-        { id = "options", label = "OPTIONS" },
+    -- 2. Compact 3-Row Filter Area
+    local filterArea = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
+    filterArea:SetPoint("TOPLEFT", 8, -32)
+    filterArea:SetPoint("TOPRIGHT", -8, -32)
+    filterArea:SetHeight(92)
+    RR.UI.Theme:SkinPanel(filterArea, 0.4)
+    self.filterArea = filterArea
+
+    -- Mode Buttons (Fehlend, Bekannt, Alle) placed on the far right column
+    self.modeBtns = {}
+    local modeDefs = {
+        { id = "missing", text = "Fehlend", top = 0 },
+        { id = "known", text = "Bekannt", top = -28 },
+        { id = "all", text = "Alle", top = -56 },
     }
-    local prevTab = nil
-    for _, tabDef in ipairs(tabDefs) do
-        local tabBtn = RR.UI.Theme:CreateButton(header, RR.L[tabDef.label], 85, 24)
-        if prevTab then
-            tabBtn:SetPoint("LEFT", prevTab, "RIGHT", 4, 0)
-        else
-            tabBtn:SetPoint("LEFT", self.titlePlaque, "RIGHT", 14, 0)
-        end
-        tabBtn:SetScript("OnClick", function()
-            self:SelectTab(tabDef.id)
+    for _, md in ipairs(modeDefs) do
+        local mBtn = RR.UI.Theme:CreateDarkButton(filterArea, md.text, 90, 22)
+        mBtn:SetPoint("TOPRIGHT", -4, md.top)
+        mBtn:SetScript("OnClick", function()
+            RR.Config:SetFilterSetting("mode", md.id)
+            self:UpdateFilterButtons()
+            self:Refresh()
         end)
-        self.tabs[tabDef.id] = tabBtn
-        prevTab = tabBtn
+        self.modeBtns[md.id] = mBtn
     end
-    self.tabs["recipes"]:SetActive(true)
 
-    -- Search Box
-    local search = CreateFrame("EditBox", nil, header, BackdropTemplateMixin and "BackdropTemplate")
-    search:SetSize(130, 22)
-    search:SetPoint("RIGHT", -32, 0)
-    search:SetAutoFocus(false)
-    search:SetFontObject("GameFontHighlightSmall")
-    search:SetTextInsets(6, 6, 0, 0)
-    RR.UI.Theme:SkinPanel(search, 0.9)
+    -- ROW 1: Name: [ Search EditBox ] [ Suche ]
+    local nameLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    nameLabel:SetPoint("TOPLEFT", 6, -4)
+    nameLabel:SetTextColor(1, 0.82, 0, 1)
+    nameLabel:SetText("Name:")
 
-    search:SetScript("OnTextChanged", function(selfBox)
+    local searchBox = CreateFrame("EditBox", nil, filterArea, BackdropTemplateMixin and "BackdropTemplate")
+    searchBox:SetPoint("TOPLEFT", nameLabel, "TOPRIGHT", 14, 2)
+    searchBox:SetSize(470, 22)
+    searchBox:SetAutoFocus(false)
+    searchBox:SetFontObject("GameFontHighlightSmall")
+    searchBox:SetTextInsets(6, 6, 0, 0)
+    RR.UI.Theme:SkinPanel(searchBox, 0.9)
+
+    searchBox:SetScript("OnTextChanged", function(selfBox)
         self.searchQuery = selfBox:GetText()
         self:Refresh()
     end)
-    search:SetScript("OnEscapePressed", function(selfBox)
+    searchBox:SetScript("OnEnterPressed", function(selfBox)
+        selfBox:ClearFocus()
+        self:Refresh()
+    end)
+    searchBox:SetScript("OnEscapePressed", function(selfBox)
         selfBox:SetText("")
         selfBox:ClearFocus()
+        self:Refresh()
     end)
-    self.searchBox = search
+    self.searchBox = searchBox
 
-    -- Close Button
-    local close = CreateFrame("Button", nil, header, "UIPanelCloseButton")
-    close:SetPoint("TOPRIGHT", 2, 2)
-    close:SetScript("OnClick", function() f:Hide() end)
+    local searchBtn = RR.UI.Theme:CreateDarkButton(filterArea, "Suche", 75, 22)
+    searchBtn:SetPoint("LEFT", searchBox, "RIGHT", 6, 0)
+    searchBtn:SetScript("OnClick", function()
+        self.searchBox:ClearFocus()
+        self:Refresh()
+    end)
 
-    -- 2. Sub-Filter Bar: Mode + Quick Zone + Authentic WoW Dropdown Frames
-    local filterBar = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
-    filterBar:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -2)
-    filterBar:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -2)
-    filterBar:SetHeight(36)
-    RR.UI.Theme:SkinPanel(filterBar, 0.8)
+    -- ROW 2: Quelle: [ Quelle (6/6) v ] [ Fraktion v ] [ Spezialisierung v ] [ Phase v ]
+    local sourceLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    sourceLabel:SetPoint("TOPLEFT", 6, -32)
+    sourceLabel:SetTextColor(1, 0.82, 0, 1)
+    sourceLabel:SetText("Quelle:")
 
-    -- A) Mode Buttons (Fehlend / Gelernt / Alle)
-    self.modeBtns = {}
-    local modes = { "missing", "known", "all" }
-    local modeLabels = { missing = "MODE_MISSING", known = "MODE_KNOWN", all = "MODE_ALL" }
-    local prevMode = nil
-    for _, m in ipairs(modes) do
-        local btn = RR.UI.Theme:CreateButton(filterBar, RR.L[modeLabels[m]], 58, 22)
-        if prevMode then
-            btn:SetPoint("LEFT", prevMode, "RIGHT", 3, 0)
-        else
-            btn:SetPoint("LEFT", 6, 0)
-        end
-        btn:SetScript("OnClick", function()
-            RR.Config:SetFilterSetting("mode", m)
-            self:UpdateFilterButtons()
-            self:Refresh()
-        end)
-        self.modeBtns[m] = btn
-        prevMode = btn
-    end
-
-    -- B) Quick Zone Buttons (Alle Zonen / Aktuelle Zone / Letzte Zone)
-    self.zoneBtns = {}
-    local quickZones = {
-        { key = "any", label = "ZONE_ALL" },
-        { key = "current", label = "ZONE_CURRENT" },
-        { key = "last", label = "ZONE_LAST" },
-    }
-    local prevZone = nil
-    for _, z in ipairs(quickZones) do
-        local btn = RR.UI.Theme:CreateButton(filterBar, RR.L[z.label], 80, 22)
-        if prevZone then
-            btn:SetPoint("LEFT", prevZone, "RIGHT", 3, 0)
-        else
-            btn:SetPoint("LEFT", prevMode, "RIGHT", 8, 0)
-        end
-        btn:SetScript("OnClick", function()
-            RR.Config:SetFilterSetting("zoneFilter", z.key)
-            self:UpdateFilterButtons()
-            self:Refresh()
-        end)
-        self.zoneBtns[z.key] = btn
-        prevZone = btn
-    end
-
-    -- C) Authentic Source DropDown Frame
     local sourceMenu = {
-        { text = RR.L["SOURCE_ALL"], value = "any" },
-        { text = RR.L["SOURCE_TRAINER"], value = "trainer" },
-        { text = RR.L["SOURCE_VENDOR"], value = "vendor" },
-        { text = RR.L["SOURCE_QUEST"], value = "quest" },
-        { text = RR.L["SOURCE_DROP"], value = "drop" },
-        { text = RR.L["SOURCE_HOLIDAY"], value = "holiday" },
-        { text = RR.L["SOURCE_REPUTATION"], value = "reputation" },
+        { text = "Alle Quellen", value = "any" },
+        { text = "Lehrer", value = "trainer" },
+        { text = "Händler", value = "vendor" },
+        { text = "Quest", value = "quest" },
+        { text = "Gegner-Beute (Drop)", value = "drop" },
+        { text = "Weltereignis", value = "holiday" },
+        { text = "Ruf", value = "reputation" },
     }
-    self.sourceBtn = RR.UI.Theme:CreateDropDownFrame(filterBar, 90, "Quelle", function(selfF)
+    self.sourceBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Quelle", function(selfF)
         local menu = {}
         for _, itm in ipairs(sourceMenu) do
             table.insert(menu, {
@@ -164,14 +128,13 @@ function RR.UI.MainWindow:Initialize()
         end
         self:ShowDropdown(selfF, menu)
     end)
-    self.sourceBtn:SetPoint("LEFT", prevZone, "RIGHT", 14, 0)
+    self.sourceBtn:SetPoint("LEFT", sourceLabel, "RIGHT", 8, 0)
 
-    -- D) Authentic Faction & Reputation DropDown Frame
     local factionMenu = {
-        { text = RR.L["FACTION_ALL"], value = "any" },
-        { text = RR.L["FACTION_ALLIANCE"], value = "Alliance" },
-        { text = RR.L["FACTION_HORDE"], value = "Horde" },
-        { text = RR.L["FACTION_NEUTRAL"], value = "Neutral" },
+        { text = "Alle Fraktionen", value = "any" },
+        { text = "Allianz", value = "Alliance" },
+        { text = "Horde", value = "Horde" },
+        { text = "Neutral", value = "Neutral" },
         { text = "Argentumdämmerung", value = 529 },
         { text = "Thoriumbruderschaft", value = 59 },
         { text = "Holzschlundfeste", value = 576 },
@@ -180,7 +143,7 @@ function RR.UI.MainWindow:Initialize()
         { text = "Dunkelmond-Jahrmarkt", value = 909 },
         { text = "Cenarischer Zirkel", value = 609 },
     }
-    self.factionBtn = RR.UI.Theme:CreateDropDownFrame(filterBar, 100, "Fraktion", function(selfF)
+    self.factionBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Fraktion", function(selfF)
         local menu = {}
         for _, itm in ipairs(factionMenu) do
             table.insert(menu, {
@@ -195,19 +158,26 @@ function RR.UI.MainWindow:Initialize()
         end
         self:ShowDropdown(selfF, menu)
     end)
-    self.factionBtn:SetPoint("LEFT", self.sourceBtn, "RIGHT", 14, 0)
+    self.factionBtn:SetPoint("LEFT", self.sourceBtn, "RIGHT", 6, 0)
 
-    -- E) Authentic Phase DropDown Frame
+    self.specBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 135, "Spezialisierung", function(selfF)
+        local menu = {
+            { text = "Alle Spezialisierungen", value = "any" },
+        }
+        self:ShowDropdown(selfF, menu)
+    end)
+    self.specBtn:SetPoint("LEFT", self.factionBtn, "RIGHT", 6, 0)
+
     local phaseMenu = {
-        { text = RR.L["PHASE_ALL"], value = 0 },
-        { text = RR.L["PHASE_1"], value = 1 },
-        { text = RR.L["PHASE_2"], value = 2 },
-        { text = RR.L["PHASE_3"], value = 3 },
-        { text = RR.L["PHASE_4"], value = 4 },
-        { text = RR.L["PHASE_5"], value = 5 },
-        { text = RR.L["PHASE_6"], value = 6 },
+        { text = "Alle Phasen", value = 0 },
+        { text = "Phase 1", value = 1 },
+        { text = "Phase 2", value = 2 },
+        { text = "Phase 3", value = 3 },
+        { text = "Phase 4", value = 4 },
+        { text = "Phase 5", value = 5 },
+        { text = "Phase 6", value = 6 },
     }
-    self.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterBar, 80, "Phase", function(selfF)
+    self.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 110, "Phase", function(selfF)
         local menu = {}
         for _, itm in ipairs(phaseMenu) do
             table.insert(menu, {
@@ -222,12 +192,76 @@ function RR.UI.MainWindow:Initialize()
         end
         self:ShowDropdown(selfF, menu)
     end)
-    self.phaseBtn:SetPoint("LEFT", self.factionBtn, "RIGHT", 14, 0)
+    self.phaseBtn:SetPoint("LEFT", self.specBtn, "RIGHT", 6, 0)
+
+    -- ROW 3: Zone: [ Jede Zone v ] [ Zone v ] [ Jede Zone ] [ Aktuelle Zone ] [ <ZoneName> ]
+    local zoneLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    zoneLabel:SetPoint("TOPLEFT", 6, -60)
+    zoneLabel:SetTextColor(1, 0.82, 0, 1)
+    zoneLabel:SetText("Zone:")
+
+    self.continentBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Jede Zone", function(selfF)
+        local contMenu = {
+            { text = "Jede Zone", value = "any" },
+            { text = "Kalimdor", value = "kalimdor" },
+            { text = "Östliche Königreiche", value = "eastern_kingdoms" },
+            { text = "Instanzen & Schlachtzüge", value = "dungeons" },
+        }
+        local menu = {}
+        for _, itm in ipairs(contMenu) do
+            table.insert(menu, {
+                text = itm.text,
+                func = function()
+                    RR.Config:SetFilterSetting("zoneFilter", itm.value)
+                    selfF.text:SetText(itm.text)
+                    self:Refresh()
+                end,
+                checked = (RR.Config:GetFilterSetting("zoneFilter") or "any") == itm.value,
+            })
+        end
+        self:ShowDropdown(selfF, menu)
+    end)
+    self.continentBtn:SetPoint("LEFT", zoneLabel, "RIGHT", 14, 0)
+
+    self.zoneDropBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Zone", function(selfF)
+        local menu = {
+            { text = "Alle Zonen", value = "any" },
+        }
+        self:ShowDropdown(selfF, menu)
+    end)
+    self.zoneDropBtn:SetPoint("LEFT", self.continentBtn, "RIGHT", 6, 0)
+
+    -- Quick Zone Buttons
+    self.zoneBtns = {}
+    local curZName = GetRealZoneText() or "Aktuelle Zone"
+    local quickZones = {
+        { key = "any", label = "Jede Zone", width = 80 },
+        { key = "current", label = "Aktuelle Zone", width = 95 },
+        { key = "current_name", label = curZName, width = 110 },
+    }
+    local prevZBtn = nil
+    for _, zDef in ipairs(quickZones) do
+        local zBtn = RR.UI.Theme:CreateDarkButton(filterArea, zDef.label, zDef.width, 22)
+        if prevZBtn then
+            zBtn:SetPoint("LEFT", prevZBtn, "RIGHT", 4, 0)
+        else
+            zBtn:SetPoint("LEFT", self.zoneDropBtn, "RIGHT", 8, 0)
+        end
+        zBtn:SetScript("OnClick", function()
+            local zKey = (zDef.key == "current_name") and "current" or zDef.key
+            RR.Config:SetFilterSetting("zoneFilter", zKey)
+            self:UpdateFilterButtons()
+            self:Refresh()
+        end)
+        self.zoneBtns[zDef.key] = zBtn
+        prevZBtn = zBtn
+    end
+
     -- 3. Left Column: Recipe List Pane
     local listPane = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
-    listPane:SetPoint("TOPLEFT", filterBar, "BOTTOMLEFT", 0, -2)
-    listPane:SetPoint("BOTTOMLEFT", 4, 36)
-    listPane:SetWidth(460)
+    listPane:SetPoint("TOPLEFT", filterArea, "BOTTOMLEFT", 0, -4)
+    listPane:SetPoint("BOTTOMLEFT", 8, 32)
+    listPane:SetWidth(420)
     RR.UI.Theme:SkinPanel(listPane, 0.95)
     self.listPane = listPane
 
@@ -236,19 +270,22 @@ function RR.UI.MainWindow:Initialize()
         local row = CreateFrame("Button", nil, listPane, BackdropTemplateMixin and "BackdropTemplate")
         row:SetPoint("TOPLEFT", 4, -((i - 1) * ROW_HEIGHT + 4))
         row:SetPoint("TOPRIGHT", -22, -((i - 1) * ROW_HEIGHT + 4))
-        row:SetHeight(ROW_HEIGHT - 2)
+        row:SetHeight(ROW_HEIGHT)
         RR.UI.Theme:SkinPanel(row, 0.4)
 
-        -- Clean list item without icon (MTSL style)
-        row.name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-        row.name:SetPoint("LEFT", 8, 0)
-        row.name:SetPoint("RIGHT", -40, 0)
-        row.name:SetJustifyH("LEFT")
-        row.name:SetText("Recipe Name")
+        row.text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        row.text:SetPoint("LEFT", 6, 0)
+        row.text:SetPoint("RIGHT", -55, 0)
+        row.text:SetJustifyH("LEFT")
+        row.text:SetText("Recipe Name")
 
-        row.skill = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-        row.skill:SetPoint("RIGHT", -8, 0)
-        row.skill:SetTextColor(1, 0.82, 0, 1)
+        row.iconSource = row:CreateTexture(nil, "ARTWORK")
+        row.iconSource:SetSize(16, 16)
+        row.iconSource:SetPoint("RIGHT", -4, 0)
+
+        row.iconItem = row:CreateTexture(nil, "ARTWORK")
+        row.iconItem:SetSize(16, 16)
+        row.iconItem:SetPoint("RIGHT", row.iconSource, "LEFT", -2, 0)
 
         row:SetScript("OnClick", function(selfRow)
             if selfRow.recipeData then
@@ -260,7 +297,7 @@ function RR.UI.MainWindow:Initialize()
     end
 
     -- Scrollbar for list
-    listPane.SetVerticalScroll = function() end -- Dummy to prevent Blizzard template errors
+    listPane.SetVerticalScroll = function() end
     local scrollbar = CreateFrame("Slider", "RecipeRadarScroll", listPane, "UIPanelScrollBarTemplate")
     scrollbar:SetPoint("TOPRIGHT", -4, -18)
     scrollbar:SetPoint("BOTTOMRIGHT", -4, 18)
@@ -281,36 +318,35 @@ function RR.UI.MainWindow:Initialize()
         scrollbar:SetValue(cur - (delta * 2))
     end)
 
-    -- 4. Right Column: Details Pane (Authentic Structured Attribute Grid)
+    -- 4. Right Column: Details Pane (Authentic Key-Value Grid)
     local detailPane = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
-    detailPane:SetPoint("TOPLEFT", listPane, "TOPRIGHT", 2, 0)
-    detailPane:SetPoint("BOTTOMRIGHT", -4, 36)
+    detailPane:SetPoint("TOPLEFT", listPane, "TOPRIGHT", 4, 0)
+    detailPane:SetPoint("BOTTOMRIGHT", -8, 32)
     RR.UI.Theme:SkinPanel(detailPane, 0.95)
     self.detailPane = detailPane
 
-    -- Key-Value Attribute Grid Box
     local attrBox = CreateFrame("Frame", nil, detailPane, BackdropTemplateMixin and "BackdropTemplate")
-    attrBox:SetPoint("TOPLEFT", 8, -8)
-    attrBox:SetPoint("TOPRIGHT", -8, -8)
-    attrBox:SetHeight(230)
+    attrBox:SetPoint("TOPLEFT", 6, -6)
+    attrBox:SetPoint("TOPRIGHT", -6, -6)
+    attrBox:SetHeight(270)
     RR.UI.Theme:SkinPanel(attrBox, 0.7)
 
     self.detailLabels = attrBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    self.detailLabels:SetPoint("TOPLEFT", 10, -10)
+    self.detailLabels:SetPoint("TOPLEFT", 8, -8)
     self.detailLabels:SetJustifyH("LEFT")
     self.detailLabels:SetJustifyV("TOP")
-    self.detailLabels:SetTextColor(1, 0.82, 0, 1) -- Gold labels
-    self.detailLabels:SetText(RR.L["LABEL_NAME"] .. "\n" .. RR.L["LABEL_PHASE"] .. "\n" .. RR.L["LABEL_NEEDS_SKILL"] .. "\n" .. RR.L["LABEL_NEEDS_XP"] .. "\n" .. RR.L["LABEL_NEEDS_REP"] .. "\n" .. RR.L["LABEL_SPECIALISATION"] .. "\n" .. RR.L["LABEL_HOLIDAY"] .. "\n" .. RR.L["LABEL_PRICE"] .. "\n" .. RR.L["LABEL_LEARNED_FROM"] .. "\n" .. RR.L["LABEL_OBTAINED_FROM"])
+    self.detailLabels:SetTextColor(1, 0.82, 0, 1)
+    self.detailLabels:SetText("Name\nPhase\nMin. Fertigkeitsstufe\nBenötigt XP Level\nBenötigt Ruf\nSpezialisierung\nFeiertag\nSonderaktion\nKosten\nErlernbar durch")
 
     self.detailValues = attrBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    self.detailValues:SetPoint("TOPLEFT", 130, -10)
-    self.detailValues:SetPoint("RIGHT", -10, 0)
+    self.detailValues:SetPoint("TOPLEFT", 140, -8)
+    self.detailValues:SetPoint("RIGHT", -8, 0)
     self.detailValues:SetJustifyH("LEFT")
     self.detailValues:SetJustifyV("TOP")
-    self.detailValues:SetTextColor(1, 1, 1, 1) -- White values
+    self.detailValues:SetTextColor(1, 1, 1, 1)
     self.detailValues:SetText("-\n-\n-\n-\n-\n-\n-\n-\n-\n-")
 
-    local tomtomBtn = RR.UI.Theme:CreateButton(attrBox, "📌 " .. RR.L["TOMTOM_WAYPOINT"], 150, 22)
+    local tomtomBtn = RR.UI.Theme:CreateDarkButton(attrBox, "📌 TomTom Wegpunkt", 150, 22)
     tomtomBtn:SetPoint("BOTTOMRIGHT", -8, 8)
     tomtomBtn:SetScript("OnClick", function()
         if self.selectedRecipe and self.selectedRecipe.waypoint then
@@ -321,53 +357,36 @@ function RR.UI.MainWindow:Initialize()
 
     -- Alt Character Knowledge Section
     local altsBox = CreateFrame("Frame", nil, detailPane, BackdropTemplateMixin and "BackdropTemplate")
-    altsBox:SetPoint("TOPLEFT", attrBox, "BOTTOMLEFT", 0, -8)
-    altsBox:SetPoint("BOTTOMRIGHT", -8, 8)
+    altsBox:SetPoint("TOPLEFT", attrBox, "BOTTOMLEFT", 0, -6)
+    altsBox:SetPoint("BOTTOMRIGHT", -6, 6)
     RR.UI.Theme:SkinPanel(altsBox, 0.7)
     local altsTitle = altsBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    altsTitle:SetPoint("TOPLEFT", 8, -8)
+    altsTitle:SetPoint("TOPLEFT", 6, -6)
     altsTitle:SetText(RR.COLORS.GOLD .. RR.L["ALTS_STATUS"])
     self.altsText = altsBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     self.altsText:SetPoint("TOPLEFT", altsTitle, "BOTTOMLEFT", 0, -4)
-    self.altsText:SetPoint("BOTTOMRIGHT", -8, 8)
+    self.altsText:SetPoint("BOTTOMRIGHT", -6, 6)
     self.altsText:SetJustifyH("LEFT")
     self.altsText:SetJustifyV("TOP")
 
     -- 5. Footer Progress Bar
     local footer = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
-    footer:SetPoint("BOTTOMLEFT", 4, 4)
-    footer:SetPoint("BOTTOMRIGHT", -4, 4)
-    footer:SetHeight(30)
+    footer:SetPoint("BOTTOMLEFT", 8, 6)
+    footer:SetPoint("BOTTOMRIGHT", -8, 6)
+    footer:SetHeight(24)
     RR.UI.Theme:SkinPanel(footer, 0.98)
 
     self.progressBar = CreateFrame("StatusBar", nil, footer, BackdropTemplateMixin and "BackdropTemplate")
-    self.progressBar:SetPoint("LEFT", 12, 0)
-    self.progressBar:SetSize(350, 14)
+    self.progressBar:SetAllPoints(footer)
     self.progressBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
-    self.progressBar:SetStatusBarColor(0.15, 0.75, 0.35, 1)
-    RR.UI.Theme:SkinPanel(self.progressBar, 0.9)
+    self.progressBar:SetStatusBarColor(0.12, 0.45, 0.20, 1)
 
     self.progressText = self.progressBar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     self.progressText:SetPoint("CENTER", 0, 0)
-    self.progressText:SetText("0 / 0 (0%)")
-
-    self.footerStatus = footer:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    self.footerStatus:SetPoint("RIGHT", -12, 0)
-    self.footerStatus:SetText("RecipeRadar v" .. RR.VERSION)
+    self.progressText:SetText("Fehlend: 0 / 0")
 
     self:UpdateFilterButtons()
 end
-
-function RR.UI.MainWindow:Toggle()
-    if not self.frame then self:Initialize() end
-    if self.frame:IsShown() then
-        self.frame:Hide()
-    else
-        self.frame:Show()
-        self:Refresh()
-    end
-end
-
 
 function RR.UI.MainWindow:IsShown()
     return (self.frame ~= nil and self.frame:IsShown() == true)
@@ -383,12 +402,14 @@ function RR.UI.MainWindow:Show()
     self:Refresh()
 end
 
-function RR.UI.MainWindow:SelectTab(tabKey)
-    self.activeTab = tabKey
-    for k, btn in pairs(self.tabs) do
-        btn:SetActive(k == tabKey)
+function RR.UI.MainWindow:Toggle()
+    if not self.frame then self:Initialize() end
+    if self.frame:IsShown() then
+        self.frame:Hide()
+    else
+        self.frame:Show()
+        self:Refresh()
     end
-    self:Refresh()
 end
 
 function RR.UI.MainWindow:UpdateFilterButtons()
@@ -402,7 +423,7 @@ function RR.UI.MainWindow:UpdateFilterButtons()
     local curZone = RR.Config:GetFilterSetting("zoneFilter") or "any"
     if self.zoneBtns then
         for z, btn in pairs(self.zoneBtns) do
-            btn:SetActive(z == curZone)
+            btn:SetActive(z == curZone or (z == "current_name" and curZone == "current"))
         end
     end
 end
@@ -413,14 +434,26 @@ function RR.UI.MainWindow:Refresh()
     local prof = RR.Scanner.currentProfession or "Tailoring"
     local rawRecipes = RR.DB:GetRecipesForProfession(prof)
     
+    -- Update Title Banner Plaque with profession name
+    local locProfName = prof
+    local spellId = RR.DB:GetEnglishProfessionName(prof)
+    if self.titlePlaque and self.titlePlaque.SetTitle then
+        self.titlePlaque:SetTitle(RR.NAME .. " - " .. locProfName)
+    end
+
     local filtered, counts = RR.Filter:ApplyFilters(rawRecipes, prof, self.searchQuery)
     self.currentList = filtered
 
-    -- Update Progress Bar
-    local pct = counts.total > 0 and math.floor((counts.known / counts.total) * 100) or 0
+    -- Update Progress Bar (Matching MTSL: Fehlend: X / Y)
+    local curMode = RR.Config:GetFilterSetting("mode") or "missing"
     self.progressBar:SetMinMaxValues(0, counts.total)
-    self.progressBar:SetValue(counts.known)
-    self.progressText:SetText(string.format("%d / %d (%d%%)", counts.known, counts.total, pct))
+    if curMode == "known" then
+        self.progressBar:SetValue(counts.known)
+        self.progressText:SetText(string.format("Gelernt: %d / %d", counts.known, counts.total))
+    else
+        self.progressBar:SetValue(counts.missing)
+        self.progressText:SetText(string.format("Fehlend: %d / %d", counts.missing, counts.total))
+    end
 
     -- Update Scrollbar
     local maxScroll = math.max(0, #filtered - NUM_VISIBLE_ROWS)
@@ -445,15 +478,39 @@ function RR.UI.MainWindow:RenderList()
         if dataIndex <= #filtered then
             local item = filtered[dataIndex]
             row.recipeData = item
-            row.name:SetText(item.name)
-            row.skill:SetText(tostring(item.skillReq))
 
-
+            -- Skill bracket colored + Name
+            local skillColor = "|cff00ff00" -- Green
+            if not item.isKnown then skillColor = "|cff44ff44" end
+            row.text:SetText(string.format("%s[%d]|r %s", skillColor, item.skillReq or 1, item.name))
 
             if item.isKnown then
-                row.name:SetTextColor(0.18, 0.83, 0.75, 1) -- Teal highlight for known
+                row.text:SetTextColor(0.18, 0.83, 0.75, 1) -- Teal
             else
-                row.name:SetTextColor(1, 0.82, 0, 1)
+                row.text:SetTextColor(0.95, 0.95, 0.95, 1)
+            end
+
+            -- Item recipe scroll icon
+            local rData = item.data or {}
+            if rData.items and #rData.items > 0 then
+                row.iconItem:SetTexture("Interface\\Icons\\INV_Scroll_03")
+                row.iconItem:Show()
+            else
+                row.iconItem:Hide()
+            end
+
+            -- Source icon
+            if rData.trainers then
+                row.iconSource:SetTexture("Interface\\Icons\\Trade_Engraving")
+                row.iconSource:Show()
+            elseif rData.vendors then
+                row.iconSource:SetTexture("Interface\\Icons\\INV_Misc_Bag_08")
+                row.iconSource:Show()
+            elseif rData.quests then
+                row.iconSource:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+                row.iconSource:Show()
+            else
+                row.iconSource:Hide()
             end
 
             row:Show()
@@ -470,7 +527,7 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     local data = recipeItem.data or {}
     local locale = GetLocale()
 
-    local labels = RR.L["LABEL_NAME"] .. "\n" .. RR.L["LABEL_PHASE"] .. "\n" .. RR.L["LABEL_NEEDS_SKILL"] .. "\n" .. RR.L["LABEL_NEEDS_XP"] .. "\n" .. RR.L["LABEL_NEEDS_REP"] .. "\n" .. RR.L["LABEL_SPECIALISATION"] .. "\n" .. RR.L["LABEL_HOLIDAY"] .. "\n" .. RR.L["LABEL_PRICE"] .. "\n" .. RR.L["LABEL_LEARNED_FROM"] .. "\n" .. RR.L["LABEL_OBTAINED_FROM"]
+    local labels = "Name\nPhase\nMin. Fertigkeitsstufe\nBenötigt XP Level\nBenötigt Ruf\nSpezialisierung\nFeiertag\nSonderaktion\nKosten\nErlernbar durch"
     
     local rName = recipeItem.name or "-"
     local rPhase = tostring(data.phase or 1)
@@ -484,7 +541,6 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     local rHol = data.holiday and tostring(data.holiday) or "-"
     local rPrice = "-"
     local rLearnedFrom = "-"
-    local rObtainedFrom = "-"
 
     self.selectedRecipe.waypoint = nil
 
@@ -513,34 +569,30 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     if trainerSources and type(trainerSources) == "table" and #trainerSources > 0 then
         local nName, zName, nx, ny = resolveNPC(trainerSources[1])
         if nName then
-            rLearnedFrom = nName .. " " .. RR.L["TAG_TRAINER"]
-            rObtainedFrom = string.format("%s (%.1f, %.1f)", zName, nx, ny)
+            rLearnedFrom = string.format("%s (Lehrer) - %s (%.1f, %.1f)", nName, zName, nx, ny)
             self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
     elseif vendorSources and type(vendorSources) == "table" and #vendorSources > 0 then
         local nName, zName, nx, ny = resolveNPC(vendorSources[1])
         if nName then
-            rLearnedFrom = nName .. " " .. RR.L["TAG_VENDOR"]
-            rObtainedFrom = string.format("%s (%.1f, %.1f)", zName, nx, ny)
+            rLearnedFrom = string.format("%s (Händler) - %s (%.1f, %.1f)", nName, zName, nx, ny)
             self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
     elseif questSources and type(questSources) == "table" and #questSources > 0 then
         local q = RR.DB:GetQuest(questSources[1])
         local qName = (q and type(q.name) == "table" and (q.name[locale] or q.name["German"] or q.name["English"])) or "Quest"
         local zName = q and RR.DB:GetZoneName(q.zone_id) or "World"
-        rLearnedFrom = qName .. " " .. RR.L["TAG_QUEST"]
-        rObtainedFrom = zName
+        rLearnedFrom = string.format("%s (Quest) - %s", qName, zName)
     elseif dropSources and type(dropSources) == "table" and #dropSources > 0 then
         local nName, zName, nx, ny = resolveNPC(dropSources[1])
         if nName then
-            rLearnedFrom = nName .. " " .. RR.L["TAG_DROP"]
-            rObtainedFrom = string.format("%s (%.1f, %.1f)", zName, nx, ny)
+            rLearnedFrom = string.format("%s (Beute) - %s (%.1f, %.1f)", nName, zName, nx, ny)
             self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
     end
 
     local values = string.format("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s",
-        rName, rPhase, rSkill, rXp, rRep, rSpec, rHol, rPrice, rLearnedFrom, rObtainedFrom)
+        rName, rPhase, rSkill, rXp, rRep, rSpec, rHol, rPrice, rLearnedFrom, "-")
 
     self.detailLabels:SetText(labels)
     self.detailValues:SetText(values)
@@ -555,8 +607,7 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     self.altsText:SetText(altsStr ~= "" and altsStr or (RR.COLORS.GREY .. RR.L["NO_ALTS_REALM"]))
 end
 
-
--- Custom Dark Theme Dropdown Popup Frame
+-- Custom Dark Dropdown Popup Frame
 local dropdownPopup = nil
 
 function RR.UI.MainWindow:ShowDropdown(anchorBtn, items)
