@@ -106,12 +106,12 @@ function RR.UI.MainWindow:Initialize()
 
     local sourceMenu = {
         { text = "Alle Quellen", value = "any" },
-        { text = "Lehrer", value = "trainer" },
-        { text = "Händler", value = "vendor" },
-        { text = "Quest", value = "quest" },
-        { text = "Gegner-Beute (Drop)", value = "drop" },
-        { text = "Weltereignis", value = "holiday" },
-        { text = "Ruf", value = "reputation" },
+        { text = "Lehrer", value = "trainer", icon = "Interface\\Icons\\INV_Misc_Book_09" },
+        { text = "Händler", value = "vendor", icon = "Interface\\Icons\\INV_Misc_Bag_08" },
+        { text = "Quest", value = "quest", icon = "Interface\\GossipFrame\\AvailableQuestIcon" },
+        { text = "Gegner-Beute (Drop)", value = "drop", icon = "Interface\\Icons\\INV_Scroll_03" },
+        { text = "Weltereignis", value = "holiday", icon = "Interface\\Icons\\INV_Misc_Gift_01" },
+        { text = "Ruf", value = "reputation", icon = "Interface\\Icons\\Achievement_Reputation_01" },
     }
     self.sourceBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Quelle", function(selfF)
         local menu = {}
@@ -132,9 +132,9 @@ function RR.UI.MainWindow:Initialize()
 
     local factionMenu = {
         { text = "Alle Fraktionen", value = "any" },
-        { text = "Allianz", value = "Alliance" },
-        { text = "Horde", value = "Horde" },
-        { text = "Neutral", value = "Neutral" },
+        { text = "Allianz", value = "Alliance", icon = RR.ADDON_PATH .. "\\images\\alliance.tga" },
+        { text = "Horde", value = "Horde", icon = RR.ADDON_PATH .. "\\images\\horde.tga" },
+        { text = "Neutral", value = "Neutral", icon = RR.ADDON_PATH .. "\\images\\neutral.tga" },
         { text = "Argentumdämmerung", value = 529 },
         { text = "Thoriumbruderschaft", value = 59 },
         { text = "Holzschlundfeste", value = 576 },
@@ -763,7 +763,7 @@ function RR.UI.MainWindow:ShowDropdown(anchorBtn, items)
     dropdownPopup:ClearAllPoints()
     dropdownPopup:SetPoint("TOPLEFT", anchorBtn, "BOTTOMLEFT", 0, -2)
 
-    local maxWidth = anchorBtn:GetWidth() or 120
+    local maxWidth = (anchorBtn:GetWidth() or 120) + 20
     local itemHeight = 22
     local count = #items
 
@@ -774,12 +774,17 @@ function RR.UI.MainWindow:ShowDropdown(anchorBtn, items)
             btn:SetHeight(itemHeight)
             RR.UI.Theme:SkinPanel(btn, 0.6)
 
-            btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-            btn.text:SetPoint("LEFT", 8, 0)
+            btn.icon = btn:CreateTexture(nil, "OVERLAY")
+            btn.icon:SetSize(16, 16)
+            btn.icon:SetPoint("LEFT", 6, 0)
 
-            btn.check = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-            btn.check:SetPoint("RIGHT", -8, 0)
-            btn.check:SetText(RR.COLORS.TEAL .. "✓")
+            btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            btn.text:SetPoint("LEFT", 26, 0)
+
+            btn.check = btn:CreateTexture(nil, "OVERLAY")
+            btn.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
+            btn.check:SetSize(16, 16)
+            btn.check:SetPoint("RIGHT", -4, 0)
 
             btn:SetScript("OnEnter", function(selfB)
                 if selfB.SetBackdropColor then selfB:SetBackdropColor(0.25, 0.28, 0.35, 1) end
@@ -795,7 +800,16 @@ function RR.UI.MainWindow:ShowDropdown(anchorBtn, items)
         btn:SetPoint("TOPRIGHT", -4, -((i - 1) * itemHeight + 4))
         btn.text:SetText(itm.text)
 
-        local strWidth = (btn.text:GetStringWidth() or 80) + 36
+        if itm.icon then
+            btn.icon:SetTexture(itm.icon)
+            btn.icon:Show()
+            btn.text:SetPoint("LEFT", 26, 0)
+        else
+            btn.icon:Hide()
+            btn.text:SetPoint("LEFT", 8, 0)
+        end
+
+        local strWidth = (btn.text:GetStringWidth() or 80) + 50
         if strWidth > maxWidth then maxWidth = strWidth end
 
         if itm.checked then
