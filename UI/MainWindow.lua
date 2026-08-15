@@ -300,19 +300,27 @@ function RR.UI.MainWindow:Initialize()
         row.text:SetJustifyH("LEFT")
         row.text:SetWordWrap(false)
 
-        -- Up to 4 source and faction icons on the right
-        row.sourceIcons = {}
-        for iconIdx = 1, 4 do
-            local ic = row:CreateTexture(nil, "OVERLAY")
-            ic:SetSize(14, 14)
-            if iconIdx == 1 then
-                ic:SetPoint("RIGHT", row, "RIGHT", -4, 0)
-            else
-                ic:SetPoint("RIGHT", row.sourceIcons[iconIdx - 1], "LEFT", -2, 0)
-            end
-            ic:Hide()
-            row.sourceIcons[iconIdx] = ic
-        end
+        -- Dedicated fixed column slots for Sources and Faction
+        row.iconSource1 = row:CreateTexture(nil, "OVERLAY")
+        row.iconSource1:SetSize(14, 14)
+        row.iconSource1:SetPoint("RIGHT", row, "RIGHT", -4, 0)
+        row.iconSource1:Hide()
+
+        row.iconSource2 = row:CreateTexture(nil, "OVERLAY")
+        row.iconSource2:SetSize(14, 14)
+        row.iconSource2:SetPoint("RIGHT", row.iconSource1, "LEFT", -2, 0)
+        row.iconSource2:Hide()
+
+        row.iconSource3 = row:CreateTexture(nil, "OVERLAY")
+        row.iconSource3:SetSize(14, 14)
+        row.iconSource3:SetPoint("RIGHT", row.iconSource2, "LEFT", -2, 0)
+        row.iconSource3:Hide()
+
+        -- Faction Icon ALWAYS to the left of source icons
+        row.iconFaction = row:CreateTexture(nil, "OVERLAY")
+        row.iconFaction:SetSize(14, 14)
+        row.iconFaction:SetPoint("RIGHT", row.iconSource3, "LEFT", -4, 0)
+        row.iconFaction:Hide()
 
         -- Hover Tooltip showing Source and Faction restriction
         row:SetScript("OnEnter", function(selfR)
@@ -595,44 +603,50 @@ function RR.UI.MainWindow:RenderList()
                 table.insert(sourceLabels, "Lehrer")
             end
 
-            -- Faction restriction and badge
+            -- Faction restriction & placement
             local hasAlliance = meta.factions["Alliance"]
             local hasHorde = meta.factions["Horde"]
             local factionText = "Alle Fraktionen"
             local factionColor = "|cffffff00"
 
-            local displayIcons = {}
             if hasAlliance and not hasHorde then
                 factionText = "Nur Allianz"
                 factionColor = "|cff0070dd"
-                table.insert(displayIcons, RR.ADDON_PATH .. "\\images\\alliance.tga")
+                row.iconFaction:SetTexture(RR.ADDON_PATH .. "\\images\\alliance.tga")
+                row.iconFaction:Show()
             elseif hasHorde and not hasAlliance then
                 factionText = "Nur Horde"
                 factionColor = "|cffff2020"
-                table.insert(displayIcons, RR.ADDON_PATH .. "\\images\\horde.tga")
+                row.iconFaction:SetTexture(RR.ADDON_PATH .. "\\images\\horde.tga")
+                row.iconFaction:Show()
+            else
+                row.iconFaction:Hide()
             end
 
-            -- Append Acquisition Source Icons
-            for _, sKey in ipairs(sources) do
-                if iconMap[sKey] and #displayIcons < 4 then
-                    table.insert(displayIcons, iconMap[sKey])
-                end
+            -- Render Source Icons flush on the right
+            if sources[1] and iconMap[sources[1]] then
+                row.iconSource1:SetTexture(iconMap[sources[1]])
+                row.iconSource1:Show()
+            else
+                row.iconSource1:Hide()
             end
 
-            -- Display up to 4 icons on the right of the row
-            for iconIdx = 1, 4 do
-                local tex = displayIcons[iconIdx]
-                if tex then
-                    row.sourceIcons[iconIdx]:SetTexture(tex)
-                    row.sourceIcons[iconIdx]:Show()
-                else
-                    row.sourceIcons[iconIdx]:Hide()
-                end
+            if sources[2] and iconMap[sources[2]] then
+                row.iconSource2:SetTexture(iconMap[sources[2]])
+                row.iconSource2:Show()
+            else
+                row.iconSource2:Hide()
             end
 
-            -- Adjust text padding based on visible icons
-            local reserved = (#displayIcons > 0) and ((#displayIcons * 16) + 8) or 8
-            row.text:SetPoint("RIGHT", row, "RIGHT", -reserved, 0)
+            if sources[3] and iconMap[sources[3]] then
+                row.iconSource3:SetTexture(iconMap[sources[3]])
+                row.iconSource3:Show()
+            else
+                row.iconSource3:Hide()
+            end
+
+            -- Text padding
+            row.text:SetPoint("RIGHT", row, "RIGHT", -68, 0)
 
             row.sourceTooltipSources = table.concat(sourceLabels, ", ")
             row.sourceTooltipFaction = factionColor .. factionText .. "|r"
@@ -648,7 +662,7 @@ function RR.UI.MainWindow:RenderList()
         else
             row.recipeData = nil
             row.selected_bg:Hide()
-            for iconIdx = 1, 4 do row.sourceIcons[iconIdx]:Hide() end
+            row.iconSource1:Hide(); row.iconSource2:Hide(); row.iconSource3:Hide(); row.iconFaction:Hide()
             row:Hide()
         end
     end
