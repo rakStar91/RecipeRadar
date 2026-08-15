@@ -35,6 +35,7 @@ function RR.UI.MainWindow:Initialize()
     local close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", -2, -2)
     close:SetScript("OnClick", function() f:Hide() end)
+    RR.UI.Theme:AddTooltip(close, RR.L["TOOLTIP_CLOSE_TITLE"], RR.L["TOOLTIP_CLOSE_DESC"])
 
     -- 2. Compact Spacious 3-Row Filter Area
     local filterArea = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
@@ -59,6 +60,13 @@ function RR.UI.MainWindow:Initialize()
             self:UpdateFilterButtons()
             self:Refresh()
         end)
+        if md.id == "missing" then
+            RR.UI.Theme:AddTooltip(mBtn, RR.L["TOOLTIP_MODE_MISSING_TITLE"], RR.L["TOOLTIP_MODE_MISSING_DESC"])
+        elseif md.id == "known" then
+            RR.UI.Theme:AddTooltip(mBtn, RR.L["TOOLTIP_MODE_KNOWN_TITLE"], RR.L["TOOLTIP_MODE_KNOWN_DESC"])
+        elseif md.id == "all" then
+            RR.UI.Theme:AddTooltip(mBtn, RR.L["TOOLTIP_MODE_ALL_TITLE"], RR.L["TOOLTIP_MODE_ALL_DESC"])
+        end
         self.modeBtns[md.id] = mBtn
     end
 
@@ -97,6 +105,8 @@ function RR.UI.MainWindow:Initialize()
         self.searchBox:ClearFocus()
         self:Refresh()
     end)
+    RR.UI.Theme:AddTooltip(searchBox, RR.L["TOOLTIP_SEARCH_TITLE"], RR.L["TOOLTIP_SEARCH_DESC"])
+    RR.UI.Theme:AddTooltip(searchBtn, RR.L["TOOLTIP_SEARCH_BTN_TITLE"], RR.L["TOOLTIP_SEARCH_BTN_DESC"])
 
     -- ROW 2: Quelle: [ Quelle (6/6) v ] [ Fraktion v ] [ Spezialisierung v ] [ Phase v ]
     local sourceLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -129,6 +139,7 @@ function RR.UI.MainWindow:Initialize()
         self:ShowDropdown(selfF, menu)
     end)
     self.sourceBtn:SetPoint("LEFT", sourceLabel, "RIGHT", 8, 0)
+    RR.UI.Theme:AddTooltip(self.sourceBtn, RR.L["TOOLTIP_SOURCE_FILTER_TITLE"], RR.L["TOOLTIP_SOURCE_FILTER_DESC"])
 
     local factionMenu = {
         { text = "Alle Fraktionen", value = "any" },
@@ -159,6 +170,7 @@ function RR.UI.MainWindow:Initialize()
         self:ShowDropdown(selfF, menu)
     end)
     self.factionBtn:SetPoint("LEFT", self.sourceBtn, "RIGHT", 8, 0)
+    RR.UI.Theme:AddTooltip(self.factionBtn, RR.L["TOOLTIP_FACTION_FILTER_TITLE"], RR.L["TOOLTIP_FACTION_FILTER_DESC"])
 
     self.specBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 135, "Spezialisierung", function(selfF)
         local menu = {
@@ -167,6 +179,7 @@ function RR.UI.MainWindow:Initialize()
         self:ShowDropdown(selfF, menu)
     end)
     self.specBtn:SetPoint("LEFT", self.factionBtn, "RIGHT", 8, 0)
+    RR.UI.Theme:AddTooltip(self.specBtn, RR.L["TOOLTIP_SPEC_FILTER_TITLE"], RR.L["TOOLTIP_SPEC_FILTER_DESC"])
 
     local phaseMenu = {
         { text = RR.L["PHASE_ALL"], value = 0 },
@@ -193,6 +206,7 @@ function RR.UI.MainWindow:Initialize()
         self:ShowDropdown(selfF, menu)
     end)
     self.phaseBtn:SetPoint("LEFT", self.specBtn, "RIGHT", 8, 0)
+    RR.UI.Theme:AddTooltip(self.phaseBtn, RR.L["TOOLTIP_PHASE_FILTER_TITLE"], RR.L["TOOLTIP_PHASE_FILTER_DESC"])
 
     -- ROW 3: Zone: [ Jede Zone v ] [ Zone v ] [ Jede Zone ] [ Aktuelle Zone ] [ <ZoneName> ]
     local zoneLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -242,6 +256,7 @@ function RR.UI.MainWindow:Initialize()
         self:ShowDropdown(selfF, menu)
     end)
     self.continentBtn:SetPoint("LEFT", zoneLabel, "RIGHT", 14, 0)
+    RR.UI.Theme:AddTooltip(self.continentBtn, RR.L["TOOLTIP_REGION_FILTER_TITLE"], RR.L["TOOLTIP_REGION_FILTER_DESC"])
 
     self.zoneDropBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Zone", function(selfF)
         local curCont = RR.Config:GetFilterSetting("continentFilter") or "any"
@@ -285,6 +300,7 @@ function RR.UI.MainWindow:Initialize()
         self:ShowDropdown(selfF, menu)
     end)
     self.zoneDropBtn:SetPoint("LEFT", self.continentBtn, "RIGHT", 8, 0)
+    RR.UI.Theme:AddTooltip(self.zoneDropBtn, RR.L["TOOLTIP_ZONE_FILTER_TITLE"], RR.L["TOOLTIP_ZONE_FILTER_DESC"])
 
     -- Quick Zone Buttons (Jede Zone, Aktuelle Zone, Letzte Zone)
     self.zoneBtns = {}
@@ -298,6 +314,7 @@ function RR.UI.MainWindow:Initialize()
         self:UpdateFilterButtons()
         self:Refresh()
     end)
+    RR.UI.Theme:AddTooltip(zBtnAny, RR.L["TOOLTIP_QUICK_ANY_TITLE"], RR.L["TOOLTIP_QUICK_ANY_DESC"])
     self.zoneBtns.any = zBtnAny
 
     local zBtnCurrent = RR.UI.Theme:CreateDarkButton(filterArea, "Aktuelle Zone", 95, 24)
@@ -309,6 +326,7 @@ function RR.UI.MainWindow:Initialize()
         self:UpdateFilterButtons()
         self:Refresh()
     end)
+    RR.UI.Theme:AddTooltip(zBtnCurrent, RR.L["TOOLTIP_QUICK_CURRENT_TITLE"], RR.L["TOOLTIP_QUICK_CURRENT_DESC"])
     self.zoneBtns.current = zBtnCurrent
 
     local lastLabel = self.lastCustomZone.name or "Letzte Zone"
@@ -324,6 +342,7 @@ function RR.UI.MainWindow:Initialize()
         self:UpdateFilterButtons()
         self:Refresh()
     end)
+    RR.UI.Theme:AddTooltip(zBtnLast, RR.L["TOOLTIP_QUICK_LAST_TITLE"], RR.L["TOOLTIP_QUICK_LAST_DESC"])
     self.zoneBtns.last = zBtnLast
 
     -- 3. Left Column: Recipe List Pane (Authentic Alternating Rows, Icons & Tooltips)

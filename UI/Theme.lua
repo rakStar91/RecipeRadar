@@ -219,5 +219,25 @@ function RR.UI.Theme:CreateDropDownFrame(parent, width, titleText, onClick)
 
     f.text = text
     f.button = btn
+    f.clickBtn = clickBtn
     return f
+end
+
+--- Standardized tooltip attachment using HookScript
+function RR.UI.Theme:AddTooltip(frame, title, text, anchor)
+    if not frame then return end
+    local target = frame.clickBtn or frame
+    target:HookScript("OnEnter", function(selfF)
+        GameTooltip:SetOwner(selfF, anchor or "ANCHOR_RIGHT")
+        if title then
+            GameTooltip:AddLine(title, 1.0, 0.82, 0.0, true)
+        end
+        if text and text ~= "" then
+            GameTooltip:AddLine(text, 0.90, 0.90, 0.90, true)
+        end
+        GameTooltip:Show()
+    end)
+    target:HookScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
 end
