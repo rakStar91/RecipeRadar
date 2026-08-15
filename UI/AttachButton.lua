@@ -110,10 +110,16 @@ function RR.UI.AttachButton:HookFrames()
                 C_Timer.After(0.05, function()
                     if not self:GetVisibleParentFrame() then
                         self.button:Hide()
+                        if RR.UI.MainWindow and RR.UI.MainWindow.Hide then
+                            RR.UI.MainWindow:Hide()
+                        end
                     end
                 end)
             else
                 self.button:Hide()
+                if RR.UI.MainWindow and RR.UI.MainWindow.Hide then
+                    RR.UI.MainWindow:Hide()
+                end
             end
         end
     end)
@@ -129,6 +135,9 @@ function RR.UI.AttachButton:HookFrames()
             f:HookScript("OnHide", function()
                 if not self:GetVisibleParentFrame() then
                     self.button:Hide()
+                    if RR.UI.MainWindow and RR.UI.MainWindow.Hide then
+                        RR.UI.MainWindow:Hide()
+                    end
                 end
             end)
         end
