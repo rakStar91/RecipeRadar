@@ -115,19 +115,20 @@ function RR.UI.MainWindow:Initialize()
     sourceLabel:SetText(RR.L["LABEL_SOURCE_COLON"])
 
     local sourceMenu = {
-        { text = RR.L["SOURCE_ALL"], value = "any" },
+        { text = RR.L["SOURCE_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" },
         { text = RR.L["SOURCE_TRAINER"], value = "trainer", icon = "Interface\\Icons\\INV_Misc_Book_09" },
         { text = RR.L["SOURCE_VENDOR"], value = "vendor", icon = "Interface\\Icons\\INV_Misc_Coin_01" },
         { text = RR.L["SOURCE_QUEST"], value = "quest", icon = "Interface\\GossipFrame\\AvailableQuestIcon" },
-        { text = "Gegner-Beute (Drop)", value = "drop", icon = "Interface\\GossipFrame\\VendorGossipIcon" },
+        { text = RR.L["SOURCE_DROP"], value = "drop", icon = "Interface\\Icons\\INV_Sword_04" },
         { text = RR.L["SOURCE_HOLIDAY"], value = "holiday", icon = "Interface\\Icons\\INV_Misc_Gift_01" },
-        { text = RR.L["SOURCE_REPUTATION"], value = "reputation", icon = "Interface\\Icons\\Achievement_Reputation_01" },
+        { text = RR.L["SOURCE_REPUTATION"], value = "reputation", icon = "Interface\\Icons\\INV_BannerPVP_02" },
     }
     self.sourceBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, RR.L["DROPDOWN_SOURCE"], function(selfF)
         local menu = {}
         for _, itm in ipairs(sourceMenu) do
             table.insert(menu, {
                 text = itm.text,
+                icon = itm.icon,
                 func = function()
                     RR.Config:SetFilterSetting("sourceFilter", itm.value)
                     selfF.text:SetText(itm.text)
@@ -142,23 +143,24 @@ function RR.UI.MainWindow:Initialize()
     RR.UI.Theme:AddTooltip(self.sourceBtn, RR.L["TOOLTIP_SOURCE_FILTER_TITLE"], RR.L["TOOLTIP_SOURCE_FILTER_DESC"])
 
     local factionMenu = {
-        { text = RR.L["FACTION_ALL"], value = "any" },
+        { text = RR.L["FACTION_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" },
         { text = RR.L["FACTION_ALLIANCE"], value = "Alliance", icon = RR.ADDON_PATH .. "\\images\\alliance.tga" },
         { text = RR.L["FACTION_HORDE"], value = "Horde", icon = RR.ADDON_PATH .. "\\images\\horde.tga" },
         { text = RR.L["FACTION_NEUTRAL"], value = "Neutral", icon = RR.ADDON_PATH .. "\\images\\neutral.tga" },
-        { text = "Argentumdämmerung", value = 529 },
-        { text = "Thoriumbruderschaft", value = 59 },
-        { text = "Holzschlundfeste", value = 576 },
-        { text = "Stamm der Zandalari", value = 270 },
-        { text = "Hydraxianer", value = 749 },
-        { text = "Dunkelmond-Jahrmarkt", value = 909 },
-        { text = "Cenarischer Zirkel", value = 609 },
+        { text = "Argentumdämmerung", value = 529, icon = "Interface\\Icons\\INV_BannerPVP_02" },
+        { text = "Thoriumbruderschaft", value = 59, icon = "Interface\\Icons\\INV_BannerPVP_02" },
+        { text = "Holzschlundfeste", value = 576, icon = "Interface\\Icons\\INV_BannerPVP_02" },
+        { text = "Stamm der Zandalari", value = 270, icon = "Interface\\Icons\\INV_BannerPVP_02" },
+        { text = "Hydraxianer", value = 749, icon = "Interface\\Icons\\INV_BannerPVP_02" },
+        { text = "Dunkelmond-Jahrmarkt", value = 909, icon = "Interface\\Icons\\INV_BannerPVP_02" },
+        { text = "Cenarischer Zirkel", value = 609, icon = "Interface\\Icons\\INV_BannerPVP_02" },
     }
     self.factionBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, RR.L["DROPDOWN_FACTION"], function(selfF)
         local menu = {}
         for _, itm in ipairs(factionMenu) do
             table.insert(menu, {
                 text = itm.text,
+                icon = itm.icon,
                 func = function()
                     RR.Config:SetFilterSetting("factionFilter", itm.value)
                     selfF.text:SetText(itm.text)
@@ -174,7 +176,7 @@ function RR.UI.MainWindow:Initialize()
 
     self.specBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 135, RR.L["DROPDOWN_SPEC"], function(selfF)
         local menu = {
-            { text = RR.L["FACTION_ALL"], value = "any" },
+            { text = RR.L["FACTION_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" },
         }
         self:ShowDropdown(selfF, menu)
     end)
@@ -182,19 +184,20 @@ function RR.UI.MainWindow:Initialize()
     RR.UI.Theme:AddTooltip(self.specBtn, RR.L["TOOLTIP_SPEC_FILTER_TITLE"], RR.L["TOOLTIP_SPEC_FILTER_DESC"])
 
     local phaseMenu = {
-        { text = RR.L["PHASE_ALL"], value = 0 },
-        { text = RR.L["PHASE_1"], value = 1 },
-        { text = RR.L["PHASE_2"], value = 2 },
-        { text = RR.L["PHASE_3"], value = 3 },
-        { text = RR.L["PHASE_4"], value = 4 },
-        { text = RR.L["PHASE_5"], value = 5 },
-        { text = RR.L["PHASE_6"], value = 6 },
+        { text = RR.L["PHASE_ALL"], value = 0, icon = "Interface\\Icons\\INV_Misc_Book_08" },
+        { text = RR.L["PHASE_1"], value = 1, icon = "Interface\\Icons\\Spell_Fire_MoltenBlood" },
+        { text = RR.L["PHASE_2"], value = 2, icon = "Interface\\Icons\\Spell_Nature_Earthquake" },
+        { text = RR.L["PHASE_3"], value = 3, icon = "Interface\\Icons\\INV_Misc_Head_Dragon_Black" },
+        { text = RR.L["PHASE_4"], value = 4, icon = "Interface\\Icons\\Ability_Hunter_Pet_Bat" },
+        { text = RR.L["PHASE_5"], value = 5, icon = "Interface\\Icons\\INV_Misc_AhnQirajTrinket_03" },
+        { text = RR.L["PHASE_6"], value = 6, icon = "Interface\\Icons\\Spell_Shadow_Necromancy" },
     }
     self.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 105, "Phase", function(selfF)
         local menu = {}
         for _, itm in ipairs(phaseMenu) do
             table.insert(menu, {
                 text = itm.text,
+                icon = itm.icon,
                 func = function()
                     RR.Config:SetFilterSetting("phaseFilter", itm.value)
                     selfF.text:SetText(itm.text)
@@ -1412,6 +1415,8 @@ function RR.UI.MainWindow:ShowDropdown(anchorBtn, items)
 
             btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
             btn.text:SetPoint("LEFT", 26, 0)
+            btn.text:SetPoint("RIGHT", -22, 0)
+            btn.text:SetJustifyH("LEFT")
 
             btn.check = btn:CreateTexture(nil, "OVERLAY")
             btn.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
