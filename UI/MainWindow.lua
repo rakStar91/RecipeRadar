@@ -257,7 +257,7 @@ function RR.UI.MainWindow:Initialize()
         prevZBtn = zBtn
     end
 
-    -- 3. Left Column: Recipe List Pane
+    -- 3. Left Column: Recipe List Pane (Authentic Alternating Rows, Icons & Tooltips)
     local listPane = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
     listPane:SetPoint("TOPLEFT", filterArea, "BOTTOMLEFT", 0, -4)
     listPane:SetPoint("BOTTOMLEFT", 8, 32)
@@ -271,21 +271,60 @@ function RR.UI.MainWindow:Initialize()
         row:SetPoint("TOPLEFT", 4, -((i - 1) * ROW_HEIGHT + 4))
         row:SetPoint("TOPRIGHT", -22, -((i - 1) * ROW_HEIGHT + 4))
         row:SetHeight(ROW_HEIGHT)
-        RR.UI.Theme:SkinPanel(row, 0.4)
 
+        -- Alternating zebra background
+        row.row_bg = row:CreateTexture(nil, "BACKGROUND")
+        row.row_bg:SetTexture("Interface\\Buttons\\WHITE8X8")
+        row.row_bg:SetAllPoints(row)
+        if i % 2 == 0 then
+            row.row_bg:SetVertexColor(1, 1, 1, 0.055)
+        else
+            row.row_bg:SetVertexColor(1, 1, 1, 0)
+        end
+
+        -- Selected highlight texture
+        row.selected_bg = row:CreateTexture(nil, "BORDER")
+        row.selected_bg:SetTexture(RR.ADDON_PATH .. "\\images\\fill_row_selected.tga")
+        row.selected_bg:SetAllPoints(row)
+        row.selected_bg:Hide()
+
+        -- Hover highlight
+        row:SetHighlightTexture("Interface\\Buttons\\WHITE8X8")
+        local hl = row:GetHighlightTexture()
+        if hl then hl:SetVertexColor(1, 1, 1, 0.10) end
+
+        -- Text: [Skill] Recipe Name
         row.text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.text:SetPoint("LEFT", 6, 0)
-        row.text:SetPoint("RIGHT", -55, 0)
+        row.text:SetPoint("RIGHT", -56, 0)
         row.text:SetJustifyH("LEFT")
-        row.text:SetText("Recipe Name")
+        row.text:SetWordWrap(false)
 
-        row.iconSource = row:CreateTexture(nil, "ARTWORK")
-        row.iconSource:SetSize(16, 16)
-        row.iconSource:SetPoint("RIGHT", -4, 0)
+        -- Up to 3 source icons on the right
+        row.sourceIcons = {}
+        for iconIdx = 1, 3 do
+            local ic = row:CreateTexture(nil, "OVERLAY")
+            ic:SetSize(14, 14)
+            if iconIdx == 1 then
+                ic:SetPoint("RIGHT", row, "RIGHT", -4, 0)
+            else
+                ic:SetPoint("RIGHT", row.sourceIcons[iconIdx - 1], "LEFT", -2, 0)
+            end
+            ic:Hide()
+            row.sourceIcons[iconIdx] = ic
+        end
 
-        row.iconItem = row:CreateTexture(nil, "ARTWORK")
-        row.iconItem:SetSize(16, 16)
-        row.iconItem:SetPoint("RIGHT", row.iconSource, "LEFT", -2, 0)
+        -- Hover Tooltip for source types (e.g. "Verkäufer, Drop")
+        row:SetScript("OnEnter", function(selfR)
+            if selfR.sourceTooltipText and selfR.sourceTooltipText ~= "" then
+                GameTooltip:SetOwner(selfR, "ANCHOR_RIGHT")
+                GameTooltip:SetText(selfR.sourceTooltipText, 1, 1, 1)
+                GameTooltip:Show()
+            end
+        end)
+        row:SetScript("OnLeave", function()
+            GameTooltip:Hide()
+        end)
 
         row:SetScript("OnClick", function(selfRow)
             if selfRow.recipeData then
@@ -471,6 +510,14 @@ function RR.UI.MainWindow:RenderList()
     local filtered = self.currentList or {}
     local offset = self.scrollOffset or 0
 
+    local iconMap = {
+        trainer = "Interface\\Icons\\INV_Misc_Book_09",
+        vendor  = "Interface\\Icons\\INV_Misc_Bag_08",
+        drop    = "Interface\\Icons\\INV_Scroll_03",
+        quest   = "Interface\\GossipFrame\\AvailableQuestIcon",
+        holiday = "Interface\\Icons\\INV_Misc_Gift_01",
+    }
+
     for i = 1, NUM_VISIBLE_ROWS do
         local row = self.rows[i]
         local dataIndex = offset + i
@@ -478,6 +525,7 @@ function RR.UI.MainWindow:RenderList()
         if dataIndex <= #filtered then
             local item = filtered[dataIndex]
             row.recipeData = item
+            local rData = item.data or {}
 
             -- Skill bracket colored + Name
             local skillColor = "|cff00ff00" -- Green
@@ -485,37 +533,69 @@ function RR.UI.MainWindow:RenderList()
             row.text:SetText(string.format("%s[%d]|r %s", skillColor, item.skillReq or 1, item.name))
 
             if item.isKnown then
-                row.text:SetTextColor(0.18, 0.83, 0.75, 1) -- Teal
+                row.text:SetTextColor(0.18, 0.83, 0.75, 1) -- Cyan / Turquoise
             else
                 row.text:SetTextColor(0.95, 0.95, 0.95, 1)
             end
 
-            -- Item recipe scroll icon
-            local rData = item.data or {}
-            if rData.items and #rData.items > 0 then
-                row.iconItem:SetTexture("Interface\\Icons\\INV_Scroll_03")
-                row.iconItem:Show()
-            else
-                row.iconItem:Hide()
+            -- Resolve source icons & tooltip
+            local sources = {}
+            local sourceLabels = {}
+            if rData.trainers then
+                table.insert(sources, "trainer")
+                table.insert(sourceLabels, "Lehrer")
+            end
+            if rData.vendors then
+                table.insert(sources, "vendor")
+                table.insert(sourceLabels, "Verkäufer")
+            end
+            if rData.quests then
+                table.insert(sources, "quest")
+                table.insert(sourceLabels, "Quest")
+            end
+            if rData.drops then
+                table.insert(sources, "drop")
+                table.insert(sourceLabels, "Drop")
+            end
+            if rData.holiday then
+                table.insert(sources, "holiday")
+                table.insert(sourceLabels, "Weltereignis")
             end
 
-            -- Source icon
-            if rData.trainers then
-                row.iconSource:SetTexture("Interface\\Icons\\Trade_Engraving")
-                row.iconSource:Show()
-            elseif rData.vendors then
-                row.iconSource:SetTexture("Interface\\Icons\\INV_Misc_Bag_08")
-                row.iconSource:Show()
-            elseif rData.quests then
-                row.iconSource:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
-                row.iconSource:Show()
+            if #sources == 0 then
+                table.insert(sources, "trainer")
+                table.insert(sourceLabels, "Lehrer")
+            end
+
+            -- Display up to 3 icons
+            for iconIdx = 1, 3 do
+                local sKey = sources[iconIdx]
+                if sKey and iconMap[sKey] then
+                    row.sourceIcons[iconIdx]:SetTexture(iconMap[sKey])
+                    row.sourceIcons[iconIdx]:Show()
+                else
+                    row.sourceIcons[iconIdx]:Hide()
+                end
+            end
+
+            -- Adjust text padding based on visible icons
+            local reserved = (#sources > 0) and ((#sources * 16) + 8) or 8
+            row.text:SetPoint("RIGHT", row, "RIGHT", -reserved, 0)
+
+            row.sourceTooltipText = table.concat(sourceLabels, ", ")
+
+            -- Selected highlight
+            if self.selectedRecipe and self.selectedRecipe.id == item.id then
+                row.selected_bg:Show()
             else
-                row.iconSource:Hide()
+                row.selected_bg:Hide()
             end
 
             row:Show()
         else
             row.recipeData = nil
+            row.selected_bg:Hide()
+            for iconIdx = 1, 3 do row.sourceIcons[iconIdx]:Hide() end
             row:Hide()
         end
     end
@@ -605,6 +685,9 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         altsStr = altsStr .. string.format("%s (%s): %s\n", alt.name, alt.class, statusStr)
     end
     self.altsText:SetText(altsStr ~= "" and altsStr or (RR.COLORS.GREY .. RR.L["NO_ALTS_REALM"]))
+
+    -- Re-render list to highlight selected row
+    self:RenderList()
 end
 
 -- Custom Dark Dropdown Popup Frame
