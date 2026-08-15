@@ -300,9 +300,9 @@ function RR.UI.MainWindow:Initialize()
         row.text:SetJustifyH("LEFT")
         row.text:SetWordWrap(false)
 
-        -- Up to 3 source icons on the right
+        -- Up to 4 source and faction icons on the right
         row.sourceIcons = {}
-        for iconIdx = 1, 3 do
+        for iconIdx = 1, 4 do
             local ic = row:CreateTexture(nil, "OVERLAY")
             ic:SetSize(14, 14)
             if iconIdx == 1 then
@@ -375,6 +375,10 @@ function RR.UI.MainWindow:Initialize()
     attrBox:SetPoint("TOPRIGHT", -6, -6)
     attrBox:SetHeight(270)
     RR.UI.Theme:SkinPanel(attrBox, 0.7)
+
+    self.detailFactionIcon = attrBox:CreateTexture(nil, "OVERLAY")
+    self.detailFactionIcon:SetSize(28, 28)
+    self.detailFactionIcon:SetPoint("TOPRIGHT", -8, -8)
 
     self.detailLabels = attrBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     self.detailLabels:SetPoint("TOPLEFT", 8, -8)
@@ -591,11 +595,35 @@ function RR.UI.MainWindow:RenderList()
                 table.insert(sourceLabels, "Lehrer")
             end
 
-            -- Display up to 3 icons
-            for iconIdx = 1, 3 do
-                local sKey = sources[iconIdx]
-                if sKey and iconMap[sKey] then
-                    row.sourceIcons[iconIdx]:SetTexture(iconMap[sKey])
+            -- Faction restriction and badge
+            local hasAlliance = meta.factions["Alliance"]
+            local hasHorde = meta.factions["Horde"]
+            local factionText = "Alle Fraktionen"
+            local factionColor = "|cffffff00"
+
+            local displayIcons = {}
+            if hasAlliance and not hasHorde then
+                factionText = "Nur Allianz"
+                factionColor = "|cff0070dd"
+                table.insert(displayIcons, RR.ADDON_PATH .. "\\images\\alliance.tga")
+            elseif hasHorde and not hasAlliance then
+                factionText = "Nur Horde"
+                factionColor = "|cffff2020"
+                table.insert(displayIcons, RR.ADDON_PATH .. "\\images\\horde.tga")
+            end
+
+            -- Append Acquisition Source Icons
+            for _, sKey in ipairs(sources) do
+                if iconMap[sKey] and #displayIcons < 4 then
+                    table.insert(displayIcons, iconMap[sKey])
+                end
+            end
+
+            -- Display up to 4 icons on the right of the row
+            for iconIdx = 1, 4 do
+                local tex = displayIcons[iconIdx]
+                if tex then
+                    row.sourceIcons[iconIdx]:SetTexture(tex)
                     row.sourceIcons[iconIdx]:Show()
                 else
                     row.sourceIcons[iconIdx]:Hide()
@@ -603,21 +631,8 @@ function RR.UI.MainWindow:RenderList()
             end
 
             -- Adjust text padding based on visible icons
-            local reserved = (#sources > 0) and ((#sources * 16) + 8) or 8
+            local reserved = (#displayIcons > 0) and ((#displayIcons * 16) + 8) or 8
             row.text:SetPoint("RIGHT", row, "RIGHT", -reserved, 0)
-
-            -- Faction restriction
-            local hasAlliance = meta.factions["Alliance"]
-            local hasHorde = meta.factions["Horde"]
-            local factionText = "Alle Fraktionen"
-            local factionColor = "|cffffff00"
-            if hasAlliance and not hasHorde then
-                factionText = "Nur Allianz"
-                factionColor = "|cff0070dd"
-            elseif hasHorde and not hasAlliance then
-                factionText = "Nur Horde"
-                factionColor = "|cffff2020"
-            end
 
             row.sourceTooltipSources = table.concat(sourceLabels, ", ")
             row.sourceTooltipFaction = factionColor .. factionText .. "|r"
@@ -633,7 +648,7 @@ function RR.UI.MainWindow:RenderList()
         else
             row.recipeData = nil
             row.selected_bg:Hide()
-            for iconIdx = 1, 3 do row.sourceIcons[iconIdx]:Hide() end
+            for iconIdx = 1, 4 do row.sourceIcons[iconIdx]:Hide() end
             row:Hide()
         end
     end
@@ -744,6 +759,22 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         altsStr = altsStr .. string.format("%s (%s): %s\n", alt.name, alt.class, statusStr)
     end
     self.altsText:SetText(altsStr ~= "" and altsStr or (RR.COLORS.GREY .. RR.L["NO_ALTS_REALM"]))
+
+    -- Update Detail Faction Crest
+    if self.detailFactionIcon then
+        local hasAlliance = meta.factions["Alliance"]
+        local hasHorde = meta.factions["Horde"]
+        if hasAlliance and not hasHorde then
+            self.detailFactionIcon:SetTexture(RR.ADDON_PATH .. "\\images\\alliance.tga")
+            self.detailFactionIcon:Show()
+        elseif hasHorde and not hasAlliance then
+            self.detailFactionIcon:SetTexture(RR.ADDON_PATH .. "\\images\\horde.tga")
+            self.detailFactionIcon:Show()
+        else
+            self.detailFactionIcon:SetTexture(RR.ADDON_PATH .. "\\images\\neutral.tga")
+            self.detailFactionIcon:Show()
+        end
+    end
 
     -- Re-render list to highlight selected row
     self:RenderList()
