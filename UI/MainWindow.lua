@@ -383,6 +383,16 @@ function RR.UI.MainWindow:RenderList()
             row.name:SetText(item.name)
             row.skill:SetText(tostring(item.skillReq))
 
+            -- Load authentic spell or item icon
+            local iconTex = nil
+            if item.id and GetSpellTexture then
+                iconTex = GetSpellTexture(item.id)
+            end
+            if not iconTex and item.id and GetItemIcon then
+                iconTex = GetItemIcon(item.id)
+            end
+            row.icon:SetTexture(iconTex or "Interface\\Icons\\INV_Misc_QuestionMark")
+
             if item.isKnown then
                 row.name:SetTextColor(0.18, 0.83, 0.75, 1) -- Teal highlight for known
             else
@@ -402,6 +412,12 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     self.selectedRecipe = recipeItem
     local data = recipeItem.data or {}
 
+    -- Set Big Icon
+    local bigTex = nil
+    if recipeItem.id and GetSpellTexture then bigTex = GetSpellTexture(recipeItem.id) end
+    if not bigTex and recipeItem.id and GetItemIcon then bigTex = GetItemIcon(recipeItem.id) end
+    self.detailIcon:SetTexture(bigTex or "Interface\\Icons\\INV_Misc_QuestionMark")
+
     self.detailTitle:SetText(RR.COLORS.GOLD .. (recipeItem.name or "Recipe"))
     self.detailSub:SetText(string.format(RR.L["REQUIRES_SKILL"], RR.Scanner.currentProfession or "Skill", recipeItem.skillReq or 1))
 
@@ -417,20 +433,46 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     -- Acquisition Source & TomTom
     local srcStr = RR.L["UNKNOWN_SOURCE"]
     self.selectedRecipe.waypoint = nil
+    local locale = GetLocale()
 
-    if data.trainers and #data.trainers > 0 then
-        local npc = RR.DB:GetNPC(data.trainers[1])
-        if npc then
-            local zone = RR.DB:GetZoneName(npc.zone_id)
-            srcStr = string.format(RR.L["TRAINER_LOCATION"], npc.name or "Trainer", zone, tostring(npc.x or 0), tostring(npc.y or 0))
-            self.selectedRecipe.waypoint = { name = npc.name, zone = zone, x = npc.x, y = npc.y }
+    local function resolveNPC(npcId)
+        local npc = RR.DB:GetNPC(npcId)
+        if not npc then return nil end
+        local nName = (type(npc.name) == "table" and (npc.name[locale] or npc.name["German"] or npc.name["English"])) or npc.name or "NPC"
+        local zId = (npc.location and npc.location.zone_id) or npc.zone_id
+        local zName = RR.DB:GetZoneName(zId)
+        local nx = tonumber(npc.location and npc.location.x or npc.x or 0)
+        local ny = tonumber(npc.location and npc.location.y or npc.y or 0)
+        return nName, zName, nx, ny
+    end
+
+    local trainerSources = data.trainers and (data.trainers.sources or (type(data.trainers) == "table" and data.trainers))
+    local vendorSources = data.vendors and (data.vendors.sources or (type(data.vendors) == "table" and data.vendors))
+    local questSources = data.quests and (data.quests.sources or (type(data.quests) == "table" and data.quests))
+    local dropSources = data.drops and (data.drops.sources or (type(data.drops) == "table" and data.drops))
+
+    if trainerSources and type(trainerSources) == "table" and #trainerSources > 0 then
+        local nName, zName, nx, ny = resolveNPC(trainerSources[1])
+        if nName then
+            srcStr = string.format(RR.L["TRAINER_LOCATION"], nName, zName, string.format("%.1f", nx), string.format("%.1f", ny))
+            self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
-    elseif data.vendors and #data.vendors > 0 then
-        local npc = RR.DB:GetNPC(data.vendors[1])
-        if npc then
-            local zone = RR.DB:GetZoneName(npc.zone_id)
-            srcStr = string.format(RR.L["VENDOR_LOCATION"], npc.name or "Vendor", zone, tostring(npc.x or 0), tostring(npc.y or 0))
-            self.selectedRecipe.waypoint = { name = npc.name, zone = zone, x = npc.x, y = npc.y }
+    elseif vendorSources and type(vendorSources) == "table" and #vendorSources > 0 then
+        local nName, zName, nx, ny = resolveNPC(vendorSources[1])
+        if nName then
+            srcStr = string.format(RR.L["VENDOR_LOCATION"], nName, zName, string.format("%.1f", nx), string.format("%.1f", ny))
+            self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
+        end
+    elseif questSources and type(questSources) == "table" and #questSources > 0 then
+        local q = RR.DB:GetQuest(questSources[1])
+        local qName = (q and type(q.name) == "table" and (q.name[locale] or q.name["German"] or q.name["English"])) or "Quest"
+        local zName = q and RR.DB:GetZoneName(q.zone_id) or "World"
+        srcStr = string.format(RR.L["QUEST_LOCATION"], qName, zName)
+    elseif dropSources and type(dropSources) == "table" and #dropSources > 0 then
+        local nName, zName, nx, ny = resolveNPC(dropSources[1])
+        if nName then
+            srcStr = string.format(RR.L["DROP_LOCATION"], nName, zName, string.format("%.1f", nx), string.format("%.1f", ny))
+            self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
         end
     end
     self.sourceText:SetText(srcStr)

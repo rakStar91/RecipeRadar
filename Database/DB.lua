@@ -6,7 +6,6 @@
 local RR = RecipeRadar
 RR.DB = {}
 
--- Storage for raw database tables
 RR.DB.Raw = {
     skills = {},
     items = {},
@@ -15,11 +14,15 @@ RR.DB.Raw = {
     objects = {},
     zones = {},
     factions = {},
+    professions = {},
 }
 
---- Initializes and links raw database tables
+RR.DB.npcMap = {}
+RR.DB.zoneMap = {}
+RR.DB.questMap = {}
+RR.DB.itemMap = {}
+
 function RR.DB:Initialize()
-    -- Link Classic data globals if declared
     if RR_DATA then
         self.Raw.skills = RR_DATA["skills"] or {}
         self.Raw.items = RR_DATA["items"] or {}
@@ -28,50 +31,107 @@ function RR.DB:Initialize()
         self.Raw.objects = RR_DATA["objects"] or {}
         self.Raw.zones = RR_DATA["zones"] or {}
         self.Raw.factions = RR_DATA["factions"] or {}
+        self.Raw.professions = RR_DATA["professions"] or {}
+
+        -- Build O(1) lookup maps
+        self.npcMap = {}
+        for _, npc in pairs(self.Raw.npcs) do
+            if type(npc) == "table" and npc.id then
+                self.npcMap[npc.id] = npc
+            end
+        end
+
+        self.zoneMap = {}
+        for _, z in pairs(self.Raw.zones) do
+            if type(z) == "table" and z.id then
+                self.zoneMap[z.id] = z
+            end
+        end
+
+        self.questMap = {}
+        for _, q in pairs(self.Raw.quests) do
+            if type(q) == "table" and q.id then
+                self.questMap[q.id] = q
+            end
+        end
+
+        self.itemMap = {}
+        for prof, list in pairs(self.Raw.items) do
+            if type(list) == "table" then
+                for _, item in pairs(list) do
+                    if type(item) == "table" and item.id then
+                        self.itemMap[item.id] = item
+                    end
+                end
+            end
+        end
     end
 end
 
---- Retrieves all recipes for a specific profession
--- @param professionName string: Name of the profession (e.g. "Tailoring")
--- @return table list of recipes
+function RR.DB:GetEnglishProfessionName(profName)
+    if not profName then return "Tailoring" end
+    if self.Raw.skills and self.Raw.skills[profName] then return profName end
+
+    -- Check RR_DATA["professions"]
+    if self.Raw.professions then
+        for engName, pData in pairs(self.Raw.professions) do
+            if type(pData) == "table" and pData.name then
+                for _, locName in pairs(pData.name) do
+                    if locName == profName then
+                        return engName
+                    end
+                end
+            end
+        end
+    end
+
+    -- Explicit dictionary fallback
+    local map = {
+        ["Alchemie"] = "Alchemy",
+        ["Alchimie"] = "Alchemy",
+        ["Schmiedekunst"] = "Blacksmithing",
+        ["Kochkunst"] = "Cooking",
+        ["Verzauberkunst"] = "Enchanting",
+        ["Ingenieurskunst"] = "Engineering",
+        ["Erste Hilfe"] = "First Aid",
+        ["Angeln"] = "Fishing",
+        ["Kräuterkunde"] = "Herbalism",
+        ["Lederverarbeitung"] = "Leatherworking",
+        ["Bergbau"] = "Mining",
+        ["Gifte"] = "Poisons",
+        ["Kürschnerei"] = "Skinning",
+        ["Schneiderei"] = "Tailoring",
+        ["Juwelenschleifen"] = "Jewelcrafting",
+    }
+    return map[profName] or profName
+end
+
 function RR.DB:GetRecipesForProfession(professionName)
-    if not professionName then return {} end
-    return (self.Raw.skills and self.Raw.skills[professionName]) or {}
+    local engName = self:GetEnglishProfessionName(professionName)
+    return (self.Raw.skills and self.Raw.skills[engName]) or {}
 end
 
---- Looks up detailed NPC info by NPC ID
--- @param npcId number
--- @return table NPC info (name, zone, coords, faction)
 function RR.DB:GetNPC(npcId)
-    if not (npcId and self.Raw.npcs) then return nil end
-    return self.Raw.npcs[npcId]
+    if not npcId then return nil end
+    return self.npcMap and self.npcMap[npcId]
 end
 
---- Looks up detailed Quest info by Quest ID
--- @param questId number
--- @return table Quest info
 function RR.DB:GetQuest(questId)
-    if not (questId and self.Raw.quests) then return nil end
-    return self.Raw.quests[questId]
+    if not questId then return nil end
+    return self.questMap and self.questMap[questId]
 end
 
---- Looks up Item info by Item ID
--- @param itemId number
--- @return table Item info
 function RR.DB:GetItem(itemId)
-    if not (itemId and self.Raw.items) then return nil end
-    return self.Raw.items[itemId]
+    if not itemId then return nil end
+    return self.itemMap and self.itemMap[itemId]
 end
 
---- Looks up Zone Name by Zone ID
--- @param zoneId number
--- @return string Zone name
 function RR.DB:GetZoneName(zoneId)
-    if not (zoneId and self.Raw.zones) then return "Unknown Zone" end
-    local z = self.Raw.zones[zoneId]
+    if not zoneId then return "Unknown Zone" end
+    local z = self.zoneMap and self.zoneMap[zoneId]
     if z and z.name then
         local locale = GetLocale()
-        return z.name[locale] or z.name["English"] or "Unknown Zone"
+        return z.name[locale] or z.name["German"] or z.name["English"] or "Unknown Zone"
     end
     return "Unknown Zone"
 end
