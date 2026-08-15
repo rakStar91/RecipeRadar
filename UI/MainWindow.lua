@@ -463,14 +463,50 @@ function RR.UI.MainWindow:Initialize()
     srcHeader:SetTextColor(1, 0.82, 0, 1)
     srcHeader:SetText("Erlernbar durch:")
     self.srcHeader = srcHeader
-    self.srcStartY = attrY - 16
 
-    -- Interactive source rows pool for "Erlernbar durch"
+    -- Scrollable frame for sources to prevent overflow into Twink status
+    local srcScrollFrame = CreateFrame("ScrollFrame", "RecipeRadarSourceScroll", attrBox)
+    srcScrollFrame:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 6, attrY - 18)
+    srcScrollFrame:SetPoint("BOTTOMRIGHT", attrBox, "BOTTOMRIGHT", -6, 6)
+    srcScrollFrame:EnableMouse(true)
+    srcScrollFrame:EnableMouseWheel(true)
+
+    local srcScrollChild = CreateFrame("Frame", nil, srcScrollFrame)
+    srcScrollChild:SetPoint("TOPLEFT", 0, 0)
+    srcScrollChild:SetWidth(290)
+    srcScrollChild:SetHeight(100)
+    srcScrollFrame:SetScrollChild(srcScrollChild)
+    self.srcScrollFrame = srcScrollFrame
+    self.srcScrollChild = srcScrollChild
+
+    local srcScrollBar = CreateFrame("Slider", "RecipeRadarSourceScrollBar", srcScrollFrame, "UIPanelScrollBarTemplate")
+    srcScrollBar:SetPoint("TOPRIGHT", srcScrollFrame, "TOPRIGHT", -2, -16)
+    srcScrollBar:SetPoint("BOTTOMRIGHT", srcScrollFrame, "BOTTOMRIGHT", -2, 16)
+    srcScrollBar:SetWidth(14)
+    srcScrollBar:SetMinMaxValues(0, 0)
+    srcScrollBar:SetValue(0)
+    srcScrollBar:SetValueStep(14)
+    srcScrollBar:SetScript("OnValueChanged", function(sb, val)
+        srcScrollFrame:SetVerticalScroll(val)
+    end)
+    srcScrollBar:Hide()
+    self.srcScrollBar = srcScrollBar
+
+    srcScrollFrame:SetScript("OnMouseWheel", function(sf, delta)
+        local cur = srcScrollBar:GetValue()
+        local minVal, maxVal = srcScrollBar:GetMinMaxValues()
+        local target = cur - (delta * 24)
+        if target < minVal then target = minVal end
+        if target > maxVal then target = maxVal end
+        srcScrollBar:SetValue(target)
+    end)
+
+    -- Interactive source rows pool inside srcScrollChild
     self.sourceRows = {}
-    for i = 1, 12 do
-        local row = CreateFrame("Button", nil, attrBox)
-        row:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 12, self.srcStartY - (i - 1) * 16)
-        row:SetPoint("RIGHT", attrBox, "RIGHT", -8, 0)
+    for i = 1, 30 do
+        local row = CreateFrame("Button", nil, srcScrollChild)
+        row:SetPoint("TOPLEFT", srcScrollChild, "TOPLEFT", 4, -(i - 1) * 16)
+        row:SetPoint("RIGHT", srcScrollChild, "RIGHT", -18, 0)
         row:SetHeight(14)
         row:EnableMouse(true)
 
@@ -998,15 +1034,28 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         end
     end
 
-    -- Dynamically position and wrap each source row directly beneath "Erlernbar durch:"
-    local curSrcY = self.srcStartY or -144
-    if self.sourceRows then
+    -- Reset source scroll position to top
+    if self.srcScrollBar then
+        self.srcScrollBar:SetValue(0)
+    end
+    if self.srcScrollFrame then
+        self.srcScrollFrame:SetVerticalScroll(0)
+    end
+
+    -- Populate interactive source rows inside srcScrollChild
+    local curY = 0
+    if self.sourceRows and self.srcScrollChild then
+        local childWidth = (self.srcScrollFrame and self.srcScrollFrame:GetWidth() or 300) - 22
+        if childWidth > 50 then
+            self.srcScrollChild:SetWidth(childWidth)
+        end
+
         for i, row in ipairs(self.sourceRows) do
             local src = allSources[i]
             if src then
                 row:ClearAllPoints()
-                row:SetPoint("TOPLEFT", self.attrBox or row:GetParent(), "TOPLEFT", 12, curSrcY)
-                row:SetPoint("RIGHT", self.attrBox or row:GetParent(), "RIGHT", -8, 0)
+                row:SetPoint("TOPLEFT", self.srcScrollChild, "TOPLEFT", 4, -curY)
+                row:SetPoint("RIGHT", self.srcScrollChild, "RIGHT", -4, 0)
 
                 row.text:SetText("• " .. src.text)
                 if src.isOtherFaction then
@@ -1017,13 +1066,25 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
                 row.waypoint = src.waypoint
                 row:Show()
 
-                -- Dynamic height for text wrapping
+                -- Calculate exact text height
                 local textHeight = math.max(14, math.ceil(row.text:GetStringHeight()) + 2)
                 row:SetHeight(textHeight)
-                curSrcY = curSrcY - textHeight - 2
+                curY = curY + textHeight + 2
             else
                 row:Hide()
             end
+        end
+
+        local frameHeight = self.srcScrollFrame and self.srcScrollFrame:GetHeight() or 110
+        self.srcScrollChild:SetHeight(math.max(frameHeight, curY + 6))
+
+        if curY > (frameHeight - 4) then
+            local maxScroll = curY - frameHeight + 12
+            self.srcScrollBar:SetMinMaxValues(0, maxScroll)
+            self.srcScrollBar:Show()
+        else
+            self.srcScrollBar:SetMinMaxValues(0, 0)
+            self.srcScrollBar:Hide()
         end
     end
 
