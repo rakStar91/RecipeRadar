@@ -659,9 +659,17 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         local nName = (type(npc.name) == "table" and (npc.name[locale] or npc.name["German"] or npc.name["English"])) or npc.name or "NPC"
         local zId = (npc.location and npc.location.zone_id) or npc.zone_id
         local zName = RR.DB:GetZoneName(zId)
-        local nx = tonumber(npc.location and npc.location.x or npc.x or 0)
-        local ny = tonumber(npc.location and npc.location.y or npc.y or 0)
+        local nx = tonumber(npc.location and npc.location.x or npc.x)
+        local ny = tonumber(npc.location and npc.location.y or npc.y)
         return nName, zName, nx, ny
+    end
+
+    local function formatNPC(nName, zName, nx, ny, suffix)
+        if nx and ny and nx > 0 and ny > 0 then
+            return string.format("%s (%s) - %s (%.1f, %.1f)", nName, suffix, zName, nx, ny), { name = nName, zone = zName, x = nx, y = ny }
+        else
+            return string.format("%s (%s) - %s", nName, suffix, zName), (nx and ny and { name = nName, zone = zName, x = nx, y = ny } or nil)
+        end
     end
 
     local trainerSources = data.trainers and (data.trainers.sources or (type(data.trainers) == "table" and data.trainers))
@@ -690,14 +698,12 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     if vendorSources and type(vendorSources) == "table" and #vendorSources > 0 then
         local nName, zName, nx, ny = resolveNPC(vendorSources[1])
         if nName then
-            rLearnedFrom = string.format("%s (Händler) - %s (%.1f, %.1f)", nName, zName, nx, ny)
-            self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
+            rLearnedFrom, self.selectedRecipe.waypoint = formatNPC(nName, zName, nx, ny, "Händler")
         end
     elseif dropSources and type(dropSources) == "table" and #dropSources > 0 then
         local nName, zName, nx, ny = resolveNPC(dropSources[1])
         if nName then
-            rLearnedFrom = string.format("%s (Beute) - %s (%.1f, %.1f)", nName, zName, nx, ny)
-            self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
+            rLearnedFrom, self.selectedRecipe.waypoint = formatNPC(nName, zName, nx, ny, "Beute")
         end
     elseif meta.dropRange then
         rLearnedFrom = string.format("Gegner-Beute (Stufe %d-%d)", meta.dropRange.min_xp_level or 1, meta.dropRange.max_xp_level or 60)
@@ -709,8 +715,7 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
     elseif trainerSources and type(trainerSources) == "table" and #trainerSources > 0 then
         local nName, zName, nx, ny = resolveNPC(trainerSources[1])
         if nName then
-            rLearnedFrom = string.format("%s (Lehrer) - %s (%.1f, %.1f)", nName, zName, nx, ny)
-            self.selectedRecipe.waypoint = { name = nName, zone = zName, x = nx, y = ny }
+            rLearnedFrom, self.selectedRecipe.waypoint = formatNPC(nName, zName, nx, ny, "Lehrer")
         end
     end
 
