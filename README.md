@@ -15,15 +15,15 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 * **3 Mode Filters**: Instantly switch between **[ Missing ]**, **[ Known ]**, and **[ All ]** recipes with distinct visual teal highlighting for skills you already learned.
 * **3-Button Quick Zone Bar**: Filter recipes on the fly by **[ Any Zone ]**, **[ Current Zone ]**, and **[ Last Zone ]** with per-character & per-profession persistence across logouts.
 * **Multi-Select Source Filters**: Check and combine multiple acquisition sources simultaneously (Vendor, Trainer, Quest, Drop, Object, Holiday) with clear multi-icon indicators.
-* **Dynamic Faction & Neutral Crests**: Displays Alliance Lion, Horde Crest, and Dual Neutral Crest icons for faction-restricted and neutral multi-faction recipes.
-* **DragonflightUI & TradeSkill Frame Hooking**: The dark-themed `RR` button cleanly attaches to the profession window, moves synchronously when the window is dragged (e.g. via DragonflightUI Revived), and can be freely detached/repositioned.
+* **Dynamic Faction & Reputation Filters**: Displays Alliance Lion, Horde Crest, and Dual Neutral Crest icons for faction-restricted and neutral multi-faction recipes, plus dedicated reputation filters (Argent Dawn, Thorium Brotherhood, Timbermaw Hold, Zandalar Tribe, Hydraxian Waterlords, Darkmoon Faire, Cenarion Circle).
+* **Interactive Tooltip Item Hover**: Hovering over recipe names in the detail pane or list displays the exact crafted item tooltip, full stats, and profession requirements.
+* **Alt Character Tracking**: Tooltips display recipe learned status across all your characters on your realm & faction (both on recipes/patterns and crafted items).
+* **Starter Recipe Support**: Full tracking for baseline recipes acquired automatically upon learning a profession (e.g. Simple Linen Pants, Brown Linen Shirt, Linen Bandage, etc.).
+* **DragonflightUI & TradeSkill Frame Hooking**: The dark-themed `RR` button cleanly attaches to the profession window, moves synchronously when the window is dragged (e.g. via DragonflightUI Revived / ElvUI), and can be freely detached/repositioned.
 * **Mousewheel Scrollable Dropdowns**: Smooth hover-scrolling support across all dropdown popups (Zones, Continents, Specializations, Phases).
-* **Rich Source & Object Details**: Detailed acquisition views for NPCs, Trainers, Vendors, Mob Drops, Quests, Seasonal Holidays, and World Objects/Chests.
-* **Native TBC Support**: Full core integration of Outland recipes, trainers, quests, and NPC database.
+* **Phase Filtering**: Filter recipes by raid phase (Phase 1 through Phase 6 with the Scourge Crest).
 * **TomTom Integration**: Click any coordinate or NPC name to instantly place a TomTom waypoint on your world map.
-* **Alt Character Tracking**: Tooltips display recipe learned status across all your characters on your realm & faction.
-* **In-Game Database Explorers**: Comprehensive database browsers to search recipes, NPCs, and faction items (`/rr`, `/rr alts`, `/rr search`, `/rr npc`).
-* **Strict 10-Language Alignment**: 100% synchronized translations across UI and database for English, German, French, Spanish, Mexican Spanish, Russian, Simplified Chinese, Traditional Chinese, Korean, and Portuguese.
+* **Strict 10-Language Alignment**: 100% synchronized native translations across UI and database for English, German, French, Spanish, Mexican Spanish, Russian, Simplified Chinese, Traditional Chinese, Korean, and Portuguese.
 * **Streamlined Lightweight Assets**: Optimized high-resolution 3-slice and vector TGA textures with zero dead weight.
 
 ---
@@ -32,7 +32,7 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 
 1. Open your in-game **Profession / Trade Skill** window.
 2. Click the **RR button** next to the frame to open your recipe tracker.
-3. Use the top filter bar to filter by status, zone, or acquisition source.
+3. Use the top filter bar to filter by status, zone, phase, or acquisition source.
 4. Click on any NPC coordinate to automatically set a TomTom waypoint.
 
 ---
@@ -41,6 +41,7 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 
 * `/rr` or `/reciperadar` – Toggle RecipeRadar window
 * `/rr help` – Display available commands
+* `/rr debug` – Toggle live verbose debug logging for recipe and tooltip resolution
 
 ---
 
