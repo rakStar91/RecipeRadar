@@ -161,6 +161,7 @@ function RR.UI.Theme:CreateDarkButton(parent, text, width, height)
     btn.SetLabel = function(selfB, newText)
         selfB.text:SetText(newText)
     end
+    btn.SetText = btn.SetLabel
 
     return btn
 end
