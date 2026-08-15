@@ -45,7 +45,7 @@ function RR.UI.MainWindow:Initialize()
     RR.UI.Theme:SkinPanel(filterArea, 0.4)
     self.filterArea = filterArea
 
-    -- Mode Buttons (Fehlend, Bekannt, Alle) placed on the far right column
+    -- Mode Buttons (Missing, Learned, All) placed on the far right column
     self.modeBtns = {}
     local modeDefs = {
         { id = "missing", text = "Fehlend", top = -4 },
@@ -108,7 +108,7 @@ function RR.UI.MainWindow:Initialize()
     RR.UI.Theme:AddTooltip(searchBox, RR.L["TOOLTIP_SEARCH_TITLE"], RR.L["TOOLTIP_SEARCH_DESC"])
     RR.UI.Theme:AddTooltip(searchBtn, RR.L["TOOLTIP_SEARCH_BTN_TITLE"], RR.L["TOOLTIP_SEARCH_BTN_DESC"])
 
-    -- ROW 2: Quelle: [ Quelle (6/6) v ] [ Fraktion v ] [ Spezialisierung v ] [ Phase v ]
+    -- ROW 2: Source: [ Source v ] [ Faction v ] [ Specialisation v ] [ Phase v ]
     local sourceLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     sourceLabel:SetPoint("TOPLEFT", 8, -40)
     sourceLabel:SetTextColor(1, 0.82, 0, 1)
@@ -211,7 +211,7 @@ function RR.UI.MainWindow:Initialize()
     self.phaseBtn:SetPoint("LEFT", self.specBtn, "RIGHT", 8, 0)
     RR.UI.Theme:AddTooltip(self.phaseBtn, RR.L["TOOLTIP_PHASE_FILTER_TITLE"], RR.L["TOOLTIP_PHASE_FILTER_DESC"])
 
-    -- ROW 3: Zone: [ Jede Zone v ] [ Zone v ] [ Jede Zone ] [ Aktuelle Zone ] [ <ZoneName> ]
+    -- ROW 3: Zone: [ Region v ] [ Zone v ] [ Any Zone ] [ Current Zone ] [ <Last Zone> ]
     local zoneLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     zoneLabel:SetPoint("TOPLEFT", 8, -72)
     zoneLabel:SetTextColor(1, 0.82, 0, 1)
@@ -290,7 +290,7 @@ function RR.UI.MainWindow:Initialize()
     self.zoneDropBtn:SetPoint("LEFT", self.continentBtn, "RIGHT", 8, 0)
     RR.UI.Theme:AddTooltip(self.zoneDropBtn, RR.L["TOOLTIP_ZONE_FILTER_TITLE"], RR.L["TOOLTIP_ZONE_FILTER_DESC"])
 
-    -- Quick Zone Buttons (Jede Zone, Aktuelle Zone, Letzte Zone)
+    -- Quick Zone Buttons (Any Zone, Current Zone, Last Zone)
     self.zoneBtns = {}
     local zBtnAny = RR.UI.Theme:CreateDarkButton(filterArea, RR.L["QUICK_ANY_ZONE"], 80, 24)
     zBtnAny:SetPoint("LEFT", self.zoneDropBtn, "RIGHT", 10, 0)
@@ -502,14 +502,14 @@ function RR.UI.MainWindow:Initialize()
         attrY = attrY - 14
     end
 
-    -- "Erlernbar durch:" Header
+    -- "Learnable from:" Header
     local srcHeader = attrBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     srcHeader:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 8, attrY - 4)
     srcHeader:SetTextColor(1, 0.82, 0, 1)
     srcHeader:SetText(RR.L["LABEL_LEARNABLE_BY"])
     self.srcHeader = srcHeader
 
-    -- Scrollable frame for sources to prevent overflow into Twink status
+    -- Scrollable frame for sources to prevent overflow into Alt character status
     local srcScrollFrame = CreateFrame("ScrollFrame", "RecipeRadarSourceScroll", attrBox)
     srcScrollFrame:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 6, attrY - 20)
     srcScrollFrame:SetPoint("BOTTOMRIGHT", attrBox, "BOTTOMRIGHT", -6, 6)
@@ -692,7 +692,7 @@ function RR.UI.MainWindow:Refresh()
     local filtered, counts = RR.Filter:ApplyFilters(rawRecipes, prof, self.searchQuery)
     self.currentList = filtered
 
-    -- Update Progress Bar (Matching MTSL: Fehlend: X / Y)
+    -- Update Progress Bar (Missing: X / Y or Learned: X / Y)
     local curMode = RR.Config:GetFilterSetting("mode") or "missing"
     self.progressBar:SetMinMaxValues(0, counts.total)
     if curMode == "known" then
@@ -1140,7 +1140,7 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         end
     end
 
-    -- 3b. Objects (z. B. Spektraler Kelch, Schrifttafel des Wahnsinns, Buch auf dem Boden)
+    -- 3b. World Objects (e.g. Spectral Chalice, Tablet of Madness, Book on ground)
     local objectSources = meta.objects or data.objects
     if objectSources and type(objectSources) == "table" then
         for _, objId in ipairs(objectSources) do
@@ -1189,7 +1189,7 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         })
     end
 
-    -- 5. Special Actions (z. B. Buch auf dem Boden in Scholomance, Schrifttafel in ZG, Gedankenkontrolle in BWL)
+    -- 5. Special Actions (e.g. Book in Scholomance, Tablet in Zul'Gurub, Mind Control in BWL)
     local specActionKey = data.special_action or meta.special_action
     if specActionKey then
         local saText = RR.DB:GetSpecialActionText(specActionKey)

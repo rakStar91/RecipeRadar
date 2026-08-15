@@ -36,7 +36,7 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
             counts.missing = counts.missing + 1
         end
 
-        -- 1. Mode Check (Fehlend / Gelernt / Alle)
+        -- 1. Mode Check (Missing / Learned / All)
         local passMode = true
         if mode == "missing" and isKnown then
             passMode = false
