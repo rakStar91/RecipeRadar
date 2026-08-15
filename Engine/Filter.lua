@@ -14,6 +14,7 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
     local factionFilter = RR.Config:GetFilterSetting("factionFilter") or "any"
     local zoneFilter = RR.Config:GetFilterSetting("zoneFilter") or "any"
     local phaseFilter = RR.Config:GetFilterSetting("phaseFilter") or 0
+    local specFilter = RR.Config:GetFilterSetting("specFilter") or "any"
 
     local playerFaction = UnitFactionGroup("player") or "Neutral"
     local currentZoneId = RR.DB:GetCurrentZoneId()
@@ -93,6 +94,14 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
             end
         end
 
+        -- 5b. Specialisation Check
+        local passSpec = true
+        if specFilter and specFilter ~= "any" and type(specFilter) == "number" and specFilter > 0 then
+            if recipe.specialisation ~= specFilter then
+                passSpec = false
+            end
+        end
+
         -- 6. Search Query Check
         local passSearch = true
         if searchLower ~= "" then
@@ -102,7 +111,7 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
             end
         end
 
-        if passMode and passSource and passFaction and passZone and passPhase and passSearch then
+        if passMode and passSource and passFaction and passZone and passPhase and passSpec and passSearch then
             table.insert(filtered, {
                 data = recipe,
                 id = spellId,

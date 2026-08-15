@@ -161,6 +161,7 @@ local defaultStrings = {
     ["SOURCE_DROP_LEVEL_RANGE"] = "Mob Drop (Level %d-%d)",
     ["ZONE_UNKNOWN"] = "Unknown Zone",
     ["PHASE_FORMAT"] = "Phase %d",
+    ["SPEC_ALL"] = "All Specialisations",
 }
 
 local translations = {
@@ -251,6 +252,7 @@ local translations = {
         ["SOURCE_DROP_LEVEL_RANGE"] = "Gegner-Beute (Stufe %d-%d)",
         ["ZONE_UNKNOWN"] = "Unbekannte Zone",
         ["PHASE_FORMAT"] = "Phase %d",
+        ["SPEC_ALL"] = "Alle Spezialisierungen",
 },
     frFR = {
         ["RECIPES"] = "Recettes",
@@ -339,6 +341,7 @@ local translations = {
         ["SOURCE_DROP_LEVEL_RANGE"] = "Butin de monstre (Niveau %d-%d)",
         ["ZONE_UNKNOWN"] = "Zone inconnue",
         ["PHASE_FORMAT"] = "Phase %d",
+        ["SPEC_ALL"] = "Toutes les spécialisations",
 },
     esES = {
         ["RECIPES"] = "Recetas",
@@ -427,6 +430,7 @@ local translations = {
         ["SOURCE_DROP_LEVEL_RANGE"] = "Botín de monstruo (Nivel %d-%d)",
         ["ZONE_UNKNOWN"] = "Zona desconocida",
         ["PHASE_FORMAT"] = "Fase %d",
+        ["SPEC_ALL"] = "Todas las especializaciones",
 },
     esMX = {
         ["RECIPES"] = "Recetas",
@@ -515,6 +519,7 @@ local translations = {
         ["SOURCE_DROP_LEVEL_RANGE"] = "Botín de monstruo (Nivel %d-%d)",
         ["ZONE_UNKNOWN"] = "Zona desconocida",
         ["PHASE_FORMAT"] = "Fase %d",
+        ["SPEC_ALL"] = "Todas las especializaciones",
 },
     ruRU = {
         ["RECIPES"] = "Рецепты",
@@ -603,6 +608,7 @@ local translations = {
         ["SOURCE_DROP_LEVEL_RANGE"] = "Добыча с существ (Уровень %d-%d)",
         ["ZONE_UNKNOWN"] = "Неизвестная зона",
         ["PHASE_FORMAT"] = "Фаза %d",
+        ["SPEC_ALL"] = "Все специализации",
 },
     zhCN = {
         ["RECIPES"] = "配方",
@@ -691,6 +697,7 @@ local translations = {
         ["SOURCE_DROP_LEVEL_RANGE"] = "怪物掉落 (等级 %d-%d)",
         ["ZONE_UNKNOWN"] = "未知区域",
         ["PHASE_FORMAT"] = "阶段 %d",
+        ["SPEC_ALL"] = "全部专精",
 },
     zhTW = {
         ["RECIPES"] = "配方",
@@ -779,6 +786,7 @@ local translations = {
         ["SOURCE_DROP_LEVEL_RANGE"] = "怪物掉落 (等級 %d-%d)",
         ["ZONE_UNKNOWN"] = "未知區域",
         ["PHASE_FORMAT"] = "階段 %d",
+        ["SPEC_ALL"] = "全部專精",
 },
     koKR = {
         ["RECIPES"] = "도안 / 제조법",
@@ -867,6 +875,7 @@ local translations = {
         ["SOURCE_DROP_LEVEL_RANGE"] = "몬스터 드롭 (레벨 %d-%d)",
         ["ZONE_UNKNOWN"] = "알 수 없는 지역",
         ["PHASE_FORMAT"] = "단계 %d",
+        ["SPEC_ALL"] = "모든 전문화",
 },
     ptBR = {
         ["RECIPES"] = "Receitas",
@@ -955,6 +964,7 @@ local translations = {
         ["SOURCE_DROP_LEVEL_RANGE"] = "Saque de Criatura (Nível %d-%d)",
         ["ZONE_UNKNOWN"] = "Zona Desconhecida",
         ["PHASE_FORMAT"] = "Fase %d",
+        ["SPEC_ALL"] = "Todas as Especializações",
 },
 }
 

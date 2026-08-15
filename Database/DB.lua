@@ -510,3 +510,25 @@ function RR.DB:GetProfessionDisplayName(profInput)
 
     return profInput
 end
+
+function RR.DB:GetSpecialisations(professionName)
+    local engName = self:GetEnglishProfessionName(professionName)
+    if RR_DATA and RR_DATA["specialisations"] and RR_DATA["specialisations"][engName] then
+        return RR_DATA["specialisations"][engName]
+    end
+    return {}
+end
+
+function RR.DB:GetSpecialisationName(specId)
+    if not specId or specId == 0 or specId == "any" then return nil end
+    if RR_DATA and RR_DATA["specialisations"] then
+        for _, specs in pairs(RR_DATA["specialisations"]) do
+            for _, s in ipairs(specs) do
+                if s.id == specId then
+                    return self:GetLocalizedText(s.name)
+                end
+            end
+        end
+    end
+    return nil
+end

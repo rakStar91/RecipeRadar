@@ -157,10 +157,38 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     instance.factionBtn:SetPoint("LEFT", instance.sourceBtn, "RIGHT", 8, 0)
     RR.UI.Theme:AddTooltip(instance.factionBtn, RR.L["TOOLTIP_FACTION_FILTER_TITLE"], RR.L["TOOLTIP_FACTION_FILTER_DESC"])
 
-    instance.specBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 135, RR.L["DROPDOWN_SPEC"], function(selfF)
+    local function buildSpecMenu()
+        local currentProf = (RR.Engine and RR.Engine:GetCurrentProfession()) or "Tailoring"
+        local specs = RR.DB:GetSpecialisations(currentProf)
         local menu = {
-            { text = RR.L["FACTION_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" },
+            { text = RR.L["SPEC_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" }
         }
+        for _, sp in ipairs(specs) do
+            local sName = RR.DB:GetLocalizedText(sp.name)
+            if sName and sName ~= "" then
+                table.insert(menu, {
+                    text = sName,
+                    value = sp.id,
+                    icon = "Interface\\Icons\\INV_Misc_Wrench_01",
+                })
+            end
+        end
+        return menu
+    end
+    instance.specBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 135, RR.L["DROPDOWN_SPEC"], function(selfF)
+        local menu = {}
+        for _, itm in ipairs(buildSpecMenu()) do
+            table.insert(menu, {
+                text = itm.text,
+                icon = itm.icon,
+                func = function()
+                    RR.Config:SetFilterSetting("specFilter", itm.value)
+                    selfF.text:SetText(itm.value == "any" and RR.L["DROPDOWN_SPEC"] or itm.text)
+                    if instance.onRefresh then instance.onRefresh() end
+                end,
+                checked = (RR.Config:GetFilterSetting("specFilter") or "any") == itm.value,
+            })
+        end
         RR.UI.Dropdown:Show(selfF, menu)
     end)
     instance.specBtn:SetPoint("LEFT", instance.factionBtn, "RIGHT", 8, 0)
@@ -173,7 +201,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         { text = RR.L["PHASE_3"], value = 3, icon = "Interface\\Icons\\INV_Misc_Head_Dragon_Black" },
         { text = RR.L["PHASE_4"], value = 4, icon = "Interface\\Icons\\Ability_Hunter_Pet_Bat" },
         { text = RR.L["PHASE_5"], value = 5, icon = "Interface\\Icons\\INV_Misc_AhnQirajTrinket_03" },
-        { text = RR.L["PHASE_6"], value = 6, icon = "Interface\\Icons\\Spell_Shadow_Necromancy" },
+        { text = RR.L["PHASE_6"], value = 6, icon = "Interface\\Icons\\INV_Trinket_Naxxramas_01" },
     }
     instance.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 105, RR.L["DROPDOWN_PHASE"], function(selfF)
         local menu = {}
@@ -328,6 +356,16 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         if self.zoneBtns then
             for z, btn in pairs(self.zoneBtns) do
                 btn:SetActive(z == curZone or (z == "current_name" and curZone == "current"))
+            end
+        end
+
+        local curSpec = RR.Config:GetFilterSetting("specFilter") or "any"
+        if self.specBtn and self.specBtn.text then
+            if curSpec == "any" then
+                self.specBtn.text:SetText(RR.L["DROPDOWN_SPEC"])
+            else
+                local sName = RR.DB:GetSpecialisationName(curSpec)
+                self.specBtn.text:SetText(sName or RR.L["DROPDOWN_SPEC"])
             end
         end
     end
