@@ -15,15 +15,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Comprehensive Recipe Database**: Complete tracking of recipes, plans, patterns, schematics, and formulas across all primary and secondary professions for World of Warcraft **Classic Era** and **The Burning Crusade** (TBC).
 - **Interactive 3-Mode Filter**: Dedicated filtering to toggle between **[ Missing ]**, **[ Known ]**, and **[ All ]** recipes with distinct visual teal highlighting for skills already learned.
 - **Quick Zone Navigation Bar**: Instant 1-click filtering by **[ Any Zone ]**, **[ Current Zone ]**, and **[ Last Zone ]** with persistent character-specific memory across reloads and sessions.
-- **Multi-Select Source Filters**: Flexible multi-select dropdown to filter recipes by acquisition source (Vendors, Trainers, Quests, Mob Drops, World Objects, and Seasonal Holidays).
-- **Faction Crest Indicators**: Distinct Alliance Lion and Horde Crest badges displayed on recipe items for faction-restricted skills.
+- **Multi-Select Source Filters**: Flexible multi-select dropdown with intuitive icons (including loot pouch for mob drops) to filter recipes by acquisition source (Vendors, Trainers, Quests, Mob Drops, World Objects, and Seasonal Holidays).
+- **Dynamic Faction & Neutral Crests**: Authentic Alliance Lion, Horde Crest, and dual Neutral Crest indicators for faction-restricted and neutral/multi-faction recipes (e.g. Zixil).
 - **TomTom Waypoint Integration**: Clickable NPC names and coordinates for instant TomTom waypoint creation on the world map.
 - **Alt Character Tracking**: Comprehensive tooltip integration displaying recipe learned status across all characters on the player's realm and faction.
+- **Special Action & World Object Details**: Deep inspection and localized notes for world objects, chests, soil nodes, and special quest interactions.
 
 #### Interface & Usability
 - **Smart Draggable Launch Button**: Movable `RR` button attached next to the in-game tradeskill frame with custom drag position saving and automatic screen boundary clamping.
-- **Full Reskin Compatibility**: Adaptive anchoring supporting UI overhaul addons (e.g. *DragonflightUI*, *ElvUI*) without overlap or clipping.
-- **In-Game Database Explorers**: Full-featured in-game browsers to explore Characters, Accounts, Global Database items, and NPCs (`/rr`, `/rr alts`, `/rr search`, `/rr npc`).
-- **Modern Dark UI Theme**: High-contrast dark theme with lossless TrueColor TGA textures and circular gold minimap medallion.
-- **Full 10-Language Localization**: Native translations for English, German, French, Russian, Korean, Simplified Chinese, Traditional Chinese, Spanish, Mexican Spanish, and Portuguese.
-- **Modular MVC Architecture**: Clean modular structure organized into `Core/`, `Database/`, `Engine/`, and `GUI/` modules for maximum performance and stability.
+- **DragonflightUI & TradeSkill Frame Hooking**: Dynamic parent anchoring ensuring the `RR` button moves synchronously when profession windows are dragged or repositioned by UI overhaul addons (*DragonflightUI Revived*, *ElvUI*).
+- **Mousewheel Scrollable Dropdown Popups**: Fluid hover-scrolling support on long dropdown lists (Zones, Continents, Specializations).
+- **Modern Dark UI Theme**: High-contrast dark theme with lossless TrueColor 3-slice TGA textures and circular gold minimap medallion.
+- **Strict 10-Language Localization**: 100% synchronized native translations across UI and database lookup tables for English, German, French, Spanish, Mexican Spanish, Russian, Simplified Chinese, Traditional Chinese, Korean, and Portuguese.
+- **Purged Lightweight Asset Pipeline**: Complete removal of unused legacy textures, maintaining a lean footprint of only active high-definition assets.
+- **Modular MVC Architecture**: Clean modular structure organized into `Core/`, `Database/`, `Engine/`, and `UI/` modules for maximum performance and stability.
