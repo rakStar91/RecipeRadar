@@ -148,7 +148,7 @@ function RR.UI.MainWindow:Initialize()
                 checked = (RR.Config:GetFilterSetting("sourceFilter") or "any") == itm.value,
             })
         end
-        EasyMenu(menu, CreateFrame("Frame", "RR_SourceMenu", UIParent, "UIDropDownMenuTemplate"), selfBtn, 0, 0, "MENU")
+        self:ShowDropdown(selfBtn, menu)
     end)
     self.sourceBtn:SetPoint("LEFT", prevMode, "RIGHT", 8, 0)
 
@@ -179,7 +179,7 @@ function RR.UI.MainWindow:Initialize()
                 checked = (RR.Config:GetFilterSetting("factionFilter") or "any") == itm.value,
             })
         end
-        EasyMenu(menu, CreateFrame("Frame", "RR_FactionMenu", UIParent, "UIDropDownMenuTemplate"), selfBtn, 0, 0, "MENU")
+        self:ShowDropdown(selfBtn, menu)
     end)
     self.factionBtn:SetPoint("LEFT", self.sourceBtn, "RIGHT", 4, 0)
 
@@ -205,7 +205,7 @@ function RR.UI.MainWindow:Initialize()
                 checked = (RR.Config:GetFilterSetting("zoneFilter") or "any") == itm.value,
             })
         end
-        EasyMenu(menu, CreateFrame("Frame", "RR_ZoneMenu", UIParent, "UIDropDownMenuTemplate"), selfBtn, 0, 0, "MENU")
+        self:ShowDropdown(selfBtn, menu)
     end)
     self.zoneBtn:SetPoint("LEFT", self.factionBtn, "RIGHT", 4, 0)
 
@@ -232,7 +232,7 @@ function RR.UI.MainWindow:Initialize()
                 checked = (RR.Config:GetFilterSetting("phaseFilter") or 0) == itm.value,
             })
         end
-        EasyMenu(menu, CreateFrame("Frame", "RR_PhaseMenu", UIParent, "UIDropDownMenuTemplate"), selfBtn, 0, 0, "MENU")
+        self:ShowDropdown(selfBtn, menu)
     end)
     self.phaseBtn:SetPoint("LEFT", self.zoneBtn, "RIGHT", 4, 0)
 
@@ -559,4 +559,93 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         altsStr = altsStr .. string.format("%s (%s): %s\n", alt.name, alt.class, statusStr)
     end
     self.altsText:SetText(altsStr ~= "" and altsStr or (RR.COLORS.GREY .. RR.L["NO_ALTS_REALM"]))
+end
+
+
+-- Custom Dark Theme Dropdown Popup Frame
+local dropdownPopup = nil
+
+function RR.UI.MainWindow:ShowDropdown(anchorBtn, items)
+    if not dropdownPopup then
+        dropdownPopup = CreateFrame("Frame", "RecipeRadarCustomDropdown", UIParent, BackdropTemplateMixin and "BackdropTemplate")
+        dropdownPopup:SetFrameStrata("TOOLTIP")
+        dropdownPopup:SetClampedToScreen(true)
+        RR.UI.Theme:SkinWindow(dropdownPopup)
+        dropdownPopup.buttons = {}
+
+        local clickWatcher = CreateFrame("Frame", nil, dropdownPopup)
+        clickWatcher:SetScript("OnUpdate", function()
+            if dropdownPopup:IsShown() and not dropdownPopup:IsMouseOver() and (not dropdownPopup.currentAnchor or not dropdownPopup.currentAnchor:IsMouseOver()) then
+                if IsMouseButtonDown("LeftButton") or IsMouseButtonDown("RightButton") then
+                    dropdownPopup:Hide()
+                end
+            end
+        end)
+    end
+
+    if dropdownPopup:IsShown() and dropdownPopup.currentAnchor == anchorBtn then
+        dropdownPopup:Hide()
+        return
+    end
+
+    dropdownPopup.currentAnchor = anchorBtn
+    dropdownPopup:ClearAllPoints()
+    dropdownPopup:SetPoint("TOPLEFT", anchorBtn, "BOTTOMLEFT", 0, -2)
+
+    local maxWidth = anchorBtn:GetWidth() or 120
+    local itemHeight = 22
+    local count = #items
+
+    for i, itm in ipairs(items) do
+        local btn = dropdownPopup.buttons[i]
+        if not btn then
+            btn = CreateFrame("Button", nil, dropdownPopup, BackdropTemplateMixin and "BackdropTemplate")
+            btn:SetHeight(itemHeight)
+            RR.UI.Theme:SkinPanel(btn, 0.6)
+
+            btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            btn.text:SetPoint("LEFT", 8, 0)
+
+            btn.check = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+            btn.check:SetPoint("RIGHT", -8, 0)
+            btn.check:SetText(RR.COLORS.TEAL .. "✓")
+
+            btn:SetScript("OnEnter", function(selfB)
+                if selfB.SetBackdropColor then selfB:SetBackdropColor(0.25, 0.28, 0.35, 1) end
+            end)
+            btn:SetScript("OnLeave", function(selfB)
+                if selfB.SetBackdropColor then selfB:SetBackdropColor(0.04, 0.05, 0.06, 0.6) end
+            end)
+
+            dropdownPopup.buttons[i] = btn
+        end
+
+        btn:SetPoint("TOPLEFT", 4, -((i - 1) * itemHeight + 4))
+        btn:SetPoint("TOPRIGHT", -4, -((i - 1) * itemHeight + 4))
+        btn.text:SetText(itm.text)
+
+        local strWidth = (btn.text:GetStringWidth() or 80) + 36
+        if strWidth > maxWidth then maxWidth = strWidth end
+
+        if itm.checked then
+            btn.check:Show()
+            btn.text:SetTextColor(1, 0.82, 0, 1)
+        else
+            btn.check:Hide()
+            btn.text:SetTextColor(0.9, 0.9, 0.9, 1)
+        end
+
+        btn:SetScript("OnClick", function()
+            dropdownPopup:Hide()
+            if itm.func then itm.func() end
+        end)
+        btn:Show()
+    end
+
+    for i = count + 1, #dropdownPopup.buttons do
+        dropdownPopup.buttons[i]:Hide()
+    end
+
+    dropdownPopup:SetSize(maxWidth + 8, count * itemHeight + 8)
+    dropdownPopup:Show()
 end
