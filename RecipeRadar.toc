@@ -44,6 +44,11 @@ Engine\AltTracker.lua
 
 # 4. User Interface
 UI\Theme.lua
+UI\Dropdown.lua
+UI\ProgressBar.lua
+UI\DetailPane.lua
+UI\RecipeList.lua
+UI\FilterBar.lua
 UI\MainWindow.lua
 UI\AttachButton.lua
 UI\MinimapButton.lua
