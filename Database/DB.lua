@@ -167,6 +167,26 @@ function RR.DB:GetItem(itemId)
     return self.itemMap and self.itemMap[itemId]
 end
 
+function RR.DB:GetZonesInContinent(continentId)
+    local zones = {}
+    local locale = GetLocale()
+    if self.Raw.zones then
+        for _, z in pairs(self.Raw.zones) do
+            local cId = z.continent_id or z.cont_id
+            if not continentId or continentId == "any" or cId == continentId then
+                local zName = (type(z.name) == "table" and (z.name[locale] or z.name["German"] or z.name["English"])) or z.name or "Zone"
+                table.insert(zones, {
+                    id = z.id,
+                    name = zName,
+                    continentId = cId,
+                })
+            end
+        end
+    end
+    table.sort(zones, function(a, b) return a.name < b.name end)
+    return zones
+end
+
 function RR.DB:GetZoneName(zoneId)
     if not zoneId then return "Unknown Zone" end
     local z = self.zoneMap and self.zoneMap[zoneId]
@@ -196,8 +216,9 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
             if zId then
                 meta.zones[zId] = true
                 local z = self.zoneMap and self.zoneMap[zId]
-                if z and z.continent_id then
-                    meta.continents[z.continent_id] = true
+                if z then
+                    local cId = z.continent_id or z.cont_id
+                    if cId then meta.continents[cId] = true end
                 end
             end
             if sType then meta.sourceTypes[sType] = true end
@@ -219,8 +240,9 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
             if q.zone_id then
                 meta.zones[q.zone_id] = true
                 local z = self.zoneMap and self.zoneMap[q.zone_id]
-                if z and z.continent_id then
-                    meta.continents[z.continent_id] = true
+                if z then
+                    local cId = z.continent_id or z.cont_id
+                    if cId then meta.continents[cId] = true end
                 end
             end
             meta.sourceTypes["quest"] = true

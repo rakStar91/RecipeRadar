@@ -200,23 +200,29 @@ function RR.UI.MainWindow:Initialize()
     zoneLabel:SetTextColor(1, 0.82, 0, 1)
     zoneLabel:SetText("Zone:")
 
-    self.continentBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Jede Zone", function(selfF)
+    self.continentBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Jede Region", function(selfF)
         local contMenu = {
-            { text = "Jede Zone", value = "any" },
-            { text = "Kalimdor", value = "kalimdor" },
-            { text = "Östliche Königreiche", value = "eastern_kingdoms" },
-            { text = "Instanzen & Schlachtzüge", value = "dungeons" },
+            { text = "Jede Region", value = "any" },
+            { text = "Kalimdor", value = 1 },
+            { text = "Östliche Königreiche", value = 2 },
+            { text = "Schlachtfelder", value = 3 },
+            { text = "Dungeons", value = 4 },
+            { text = "Schlachtzüge", value = 5 },
         }
         local menu = {}
         for _, itm in ipairs(contMenu) do
             table.insert(menu, {
                 text = itm.text,
                 func = function()
-                    RR.Config:SetFilterSetting("zoneFilter", itm.value)
+                    RR.Config:SetFilterSetting("continentFilter", itm.value)
+                    RR.Config:SetFilterSetting("zoneFilter", "any")
                     selfF.text:SetText(itm.text)
+                    if self.zoneDropBtn and self.zoneDropBtn.text then
+                        self.zoneDropBtn.text:SetText("Zone")
+                    end
                     self:Refresh()
                 end,
-                checked = (RR.Config:GetFilterSetting("zoneFilter") or "any") == itm.value,
+                checked = (RR.Config:GetFilterSetting("continentFilter") or "any") == itm.value,
             })
         end
         self:ShowDropdown(selfF, menu)
@@ -224,9 +230,33 @@ function RR.UI.MainWindow:Initialize()
     self.continentBtn:SetPoint("LEFT", zoneLabel, "RIGHT", 14, 0)
 
     self.zoneDropBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, "Zone", function(selfF)
+        local curCont = RR.Config:GetFilterSetting("continentFilter")
+        local zones = RR.DB:GetZonesInContinent(curCont)
+        local curZone = RR.Config:GetFilterSetting("zoneFilter") or "any"
+
         local menu = {
-            { text = "Alle Zonen", value = "any" },
+            {
+                text = "Alle Zonen",
+                func = function()
+                    RR.Config:SetFilterSetting("zoneFilter", "any")
+                    selfF.text:SetText("Zone")
+                    self:Refresh()
+                end,
+                checked = (curZone == "any"),
+            },
         }
+
+        for _, z in ipairs(zones) do
+            table.insert(menu, {
+                text = z.name,
+                func = function()
+                    RR.Config:SetFilterSetting("zoneFilter", z.id)
+                    selfF.text:SetText(z.name)
+                    self:Refresh()
+                end,
+                checked = (curZone == z.id),
+            })
+        end
         self:ShowDropdown(selfF, menu)
     end)
     self.zoneDropBtn:SetPoint("LEFT", self.continentBtn, "RIGHT", 8, 0)

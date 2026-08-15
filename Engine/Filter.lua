@@ -66,18 +66,23 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
 
         -- 4. Zone / Region / Continent Check
         local passZone = true
-        if zoneFilter == "current" then
-            if currentZoneId and not meta.zones[currentZoneId] then
+        local continentFilter = RR.Config:GetFilterSetting("continentFilter")
+        if continentFilter and continentFilter ~= "any" and type(continentFilter) == "number" and continentFilter > 0 then
+            if not meta.continents[continentFilter] then
                 passZone = false
             end
-        elseif zoneFilter == "kalimdor" then
-            if not meta.continents[1] then passZone = false end
-        elseif zoneFilter == "eastern_kingdoms" then
-            if not meta.continents[2] then passZone = false end
-        elseif zoneFilter == "dungeons" then
-            if not meta.continents[3] then passZone = false end
-        elseif type(zoneFilter) == "number" and zoneFilter > 0 then
-            if not meta.zones[zoneFilter] then passZone = false end
+        end
+
+        if passZone then
+            if zoneFilter == "current" then
+                if currentZoneId and not meta.zones[currentZoneId] then
+                    passZone = false
+                end
+            elseif type(zoneFilter) == "number" and zoneFilter > 0 then
+                if not meta.zones[zoneFilter] then
+                    passZone = false
+                end
+            end
         end
 
         -- 5. Phase Check
