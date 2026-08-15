@@ -1,6 +1,6 @@
 -- ============================================================================
 -- RecipeRadar: UI/Theme.lua
--- 3-Slice Art Textures, Plaque Banner, Dark Buttons & Dropdown Frames
+-- Exact 3-Slice Art Textures, Plaque Banner, Dark Buttons & Dropdown Frames
 -- ============================================================================
 
 local RR = RecipeRadar
@@ -46,34 +46,43 @@ function RR.UI.Theme:SkinPanel(frame, bgAlpha)
     end
 end
 
+function RR.UI.Theme:Create3SlicePieces(parent, texture, cap_uv, cap_px, layer)
+    layer = layer or "BACKGROUND"
+    local pieces = {}
+
+    pieces.left = parent:CreateTexture(nil, layer)
+    pieces.left:SetTexture(texture)
+    pieces.left:SetTexCoord(0, cap_uv, 0, 1)
+    pieces.left:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, 0)
+    pieces.left:SetPoint("BOTTOMLEFT", parent, "BOTTOMLEFT", 0, 0)
+    pieces.left:SetWidth(cap_px)
+
+    pieces.right = parent:CreateTexture(nil, layer)
+    pieces.right:SetTexture(texture)
+    pieces.right:SetTexCoord(1 - cap_uv, 1, 0, 1)
+    pieces.right:SetPoint("TOPRIGHT", parent, "TOPRIGHT", 0, 0)
+    pieces.right:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", 0, 0)
+    pieces.right:SetWidth(cap_px)
+
+    pieces.middle = parent:CreateTexture(nil, layer)
+    pieces.middle:SetTexture(texture)
+    pieces.middle:SetTexCoord(cap_uv, 1 - cap_uv, 0, 1)
+    pieces.middle:SetPoint("TOPLEFT", pieces.left, "TOPRIGHT", 0, 0)
+    pieces.middle:SetPoint("BOTTOMRIGHT", pieces.right, "BOTTOMLEFT", 0, 0)
+
+    return pieces
+end
+
 --- Creates the authentic 3-Slice Title Banner Plaque
 function RR.UI.Theme:CreateTitlePlaque(parent, width, height, titleText)
     local banner = CreateFrame("Frame", nil, parent)
-    banner:SetSize(width or 380, height or 44)
+    banner:SetSize(width or 380, height or 46)
 
-    local plaqueTex = RR.ADDON_PATH .. "\\images\\header_plaque.tga"
-
-    local left = banner:CreateTexture(nil, "BACKGROUND")
-    left:SetTexture(plaqueTex)
-    left:SetTexCoord(0, 0.125, 0, 1)
-    left:SetSize(24, height or 44)
-    left:SetPoint("LEFT", 0, 0)
-
-    local right = banner:CreateTexture(nil, "BACKGROUND")
-    right:SetTexture(plaqueTex)
-    right:SetTexCoord(0.875, 1, 0, 1)
-    right:SetSize(24, height or 44)
-    right:SetPoint("RIGHT", 0, 0)
-
-    local mid = banner:CreateTexture(nil, "BACKGROUND")
-    mid:SetTexture(plaqueTex)
-    mid:SetTexCoord(0.125, 0.875, 0, 1)
-    mid:SetPoint("LEFT", left, "RIGHT", 0, 0)
-    mid:SetPoint("RIGHT", right, "LEFT", 0, 0)
-    mid:SetHeight(height or 44)
+    local plaqueTex = RR.ADDON_PATH .. "\\images\\art_header_plaque.tga"
+    banner.pieces = self:Create3SlicePieces(banner, plaqueTex, 0.125, 23, "ARTWORK")
 
     banner.text = banner:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    banner.text:SetPoint("CENTER", 0, 2)
+    banner.text:SetPoint("CENTER", banner, "CENTER", 0, -3)
     banner.text:SetTextColor(1, 0.82, 0, 1)
     banner.text:SetText(titleText or RR.NAME)
 
@@ -84,96 +93,104 @@ function RR.UI.Theme:CreateTitlePlaque(parent, width, height, titleText)
     return banner
 end
 
---- Creates the authentic 3-Slice Dark Button using button_blank texture
+--- Creates the authentic 3-Slice Dark Button using art_button.tga
 function RR.UI.Theme:CreateDarkButton(parent, text, width, height)
-    local btn = CreateFrame("Button", nil, parent, BACKDROP_TEMPLATE)
-    btn:SetSize(width or 80, height or 22)
+    local btn = CreateFrame("Button", nil, parent)
+    btn:SetSize(width or 80, height or 24)
 
-    local btnTex = RR.ADDON_PATH .. "\\images\\button_blank.tga"
+    local btnTex = RR.ADDON_PATH .. "\\images\\art_button.tga"
+    btn.art_pieces = self:Create3SlicePieces(btn, btnTex, 0.0625, 6, "BACKGROUND")
 
-    local left = btn:CreateTexture(nil, "BACKGROUND")
-    left:SetTexture(btnTex)
-    left:SetTexCoord(0, 0.25, 0, 1)
-    left:SetSize(12, height or 22)
-    left:SetPoint("LEFT", 0, 0)
+    local TINTS = {
+        normal   = { 0.82, 0.82, 0.82 },
+        hover    = { 1.00, 1.00, 1.00 },
+        pressed  = { 0.58, 0.58, 0.58 },
+        selected = { 1.00, 0.86, 0.45 },
+    }
 
-    local right = btn:CreateTexture(nil, "BACKGROUND")
-    right:SetTexture(btnTex)
-    right:SetTexCoord(0.75, 1, 0, 1)
-    right:SetSize(12, height or 22)
-    right:SetPoint("RIGHT", 0, 0)
+    btn.SetTint = function(button, state)
+        local c = TINTS[state] or TINTS.normal
+        for _, piece in pairs(button.art_pieces) do
+            piece:SetVertexColor(c[1], c[2], c[3], 1)
+        end
+    end
+    btn:SetTint("normal")
 
-    local mid = btn:CreateTexture(nil, "BACKGROUND")
-    mid:SetTexture(btnTex)
-    mid:SetTexCoord(0.25, 0.75, 0, 1)
-    mid:SetPoint("LEFT", left, "RIGHT", 0, 0)
-    mid:SetPoint("RIGHT", right, "LEFT", 0, 0)
-    mid:SetHeight(height or 22)
-
-    btn.pieces = { left, mid, right }
-
-    btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    btn.text:SetPoint("CENTER", 0, 0)
+    btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    btn.text:SetPoint("LEFT", btn, "LEFT", 4, 0)
+    btn.text:SetPoint("RIGHT", btn, "RIGHT", -4, 0)
+    btn.text:SetJustifyH("CENTER")
+    btn.text:SetWordWrap(false)
     btn.text:SetText(text or "")
-    btn.text:SetTextColor(0.95, 0.90, 0.70, 1)
+    btn.text:SetTextColor(0.90, 0.90, 0.90, 1)
 
-    btn:SetScript("OnEnter", function(self)
-        if not self.isActive then
-            for _, p in ipairs(self.pieces) do p:SetVertexColor(1.2, 1.2, 1.2, 1) end
-            self.text:SetTextColor(1, 1, 1, 1)
+    btn:SetScript("OnEnter", function(selfB)
+        if not selfB.isSelected then
+            selfB:SetTint("hover")
+            selfB.text:SetTextColor(1, 1, 1, 1)
         end
     end)
-    btn:SetScript("OnLeave", function(self)
-        if not self.isActive then
-            for _, p in ipairs(self.pieces) do p:SetVertexColor(1, 1, 1, 1) end
-            self.text:SetTextColor(0.95, 0.90, 0.70, 1)
+    btn:SetScript("OnLeave", function(selfB)
+        if not selfB.isSelected then
+            selfB:SetTint("normal")
+            selfB.text:SetTextColor(0.90, 0.90, 0.90, 1)
         end
     end)
-
-    btn.SetActive = function(self, active)
-        self.isActive = active
-        if active then
-            for _, p in ipairs(self.pieces) do p:SetVertexColor(1.3, 1.0, 0.4, 1) end
-            self.text:SetTextColor(1, 0.85, 0.2, 1)
+    btn:SetScript("OnMouseDown", function(selfB)
+        selfB:SetTint("pressed")
+    end)
+    btn:SetScript("OnMouseUp", function(selfB)
+        if selfB.isSelected then
+            selfB:SetTint("selected")
         else
-            for _, p in ipairs(self.pieces) do p:SetVertexColor(1, 1, 1, 1) end
-            self.text:SetTextColor(0.95, 0.90, 0.70, 1)
+            selfB:SetTint("hover")
+        end
+    end)
+
+    btn.SetActive = function(selfB, active)
+        selfB.isSelected = active
+        if active then
+            selfB:SetTint("selected")
+            selfB.text:SetTextColor(1, 0.85, 0.2, 1)
+        else
+            selfB:SetTint("normal")
+            selfB.text:SetTextColor(0.90, 0.90, 0.90, 1)
         end
     end
 
-    btn.SetLabel = function(self, newText)
-        self.text:SetText(newText)
+    btn.SetLabel = function(selfB, newText)
+        selfB.text:SetText(newText)
     end
 
     return btn
 end
 
---- Creates the authentic WoW DropDown frame with 3-slice background and gold scroll down button
+--- Creates an authentic WoW DropDown frame with 3-slice background and gold scroll down button
 function RR.UI.Theme:CreateDropDownFrame(parent, width, titleText, onClick)
     local f = CreateFrame("Frame", nil, parent, BACKDROP_TEMPLATE)
-    f:SetSize(width or 120, 22)
+    f:SetSize(width or 120, 24)
 
     local left = f:CreateTexture(nil, "BACKGROUND")
     left:SetTexture("Interface\\Glues\\CharacterCreate\\CharacterCreate-LabelFrame")
     left:SetTexCoord(0, 0.1953125, 0, 1)
-    left:SetSize(20, 30)
-    left:SetPoint("TOPLEFT", -10, 4)
-    left:SetVertexColor(0.15, 0.15, 0.15, 0.9)
+    left:SetSize(22, 34)
+    left:SetPoint("TOPLEFT", -12, 5)
+    left:SetVertexColor(0.15, 0.15, 0.15, 0.95)
 
     local right = f:CreateTexture(nil, "BACKGROUND")
     right:SetTexture("Interface\\Glues\\CharacterCreate\\CharacterCreate-LabelFrame")
     right:SetTexCoord(0.8046875, 1, 0, 1)
-    right:SetSize(20, 30)
-    right:SetPoint("TOPRIGHT", 10, 4)
-    right:SetVertexColor(0.15, 0.15, 0.15, 0.9)
+    right:SetSize(22, 34)
+    right:SetPoint("TOPRIGHT", 12, 5)
+    right:SetVertexColor(0.15, 0.15, 0.15, 0.95)
 
     local mid = f:CreateTexture(nil, "BACKGROUND")
     mid:SetTexture("Interface\\Glues\\CharacterCreate\\CharacterCreate-LabelFrame")
     mid:SetTexCoord(0.1953125, 0.8046875, 0, 1)
     mid:SetPoint("LEFT", left, "RIGHT", 0, 0)
     mid:SetPoint("RIGHT", right, "LEFT", 0, 0)
-    mid:SetHeight(30)
-    mid:SetVertexColor(0.15, 0.15, 0.15, 0.9)
+    mid:SetHeight(34)
+    mid:SetVertexColor(0.15, 0.15, 0.15, 0.95)
 
     local btn = CreateFrame("Button", nil, f)
     btn:SetSize(20, 20)
@@ -187,6 +204,7 @@ function RR.UI.Theme:CreateDropDownFrame(parent, width, titleText, onClick)
     text:SetPoint("LEFT", 4, 0)
     text:SetPoint("RIGHT", btn, "LEFT", -2, 0)
     text:SetJustifyH("LEFT")
+    text:SetWordWrap(false)
     text:SetText(titleText or "")
 
     local clickBtn = CreateFrame("Button", nil, f)

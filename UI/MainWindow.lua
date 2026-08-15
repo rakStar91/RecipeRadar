@@ -36,24 +36,24 @@ function RR.UI.MainWindow:Initialize()
     close:SetPoint("TOPRIGHT", -2, -2)
     close:SetScript("OnClick", function() f:Hide() end)
 
-    -- 2. Compact 3-Row Filter Area
+    -- 2. Compact Spacious 3-Row Filter Area
     local filterArea = CreateFrame("Frame", nil, f, BackdropTemplateMixin and "BackdropTemplate")
     filterArea:SetPoint("TOPLEFT", 8, -32)
     filterArea:SetPoint("TOPRIGHT", -8, -32)
-    filterArea:SetHeight(92)
+    filterArea:SetHeight(98)
     RR.UI.Theme:SkinPanel(filterArea, 0.4)
     self.filterArea = filterArea
 
     -- Mode Buttons (Fehlend, Bekannt, Alle) placed on the far right column
     self.modeBtns = {}
     local modeDefs = {
-        { id = "missing", text = "Fehlend", top = 0 },
-        { id = "known", text = "Bekannt", top = -28 },
-        { id = "all", text = "Alle", top = -56 },
+        { id = "missing", text = "Fehlend", top = -4 },
+        { id = "known", text = "Bekannt", top = -36 },
+        { id = "all", text = "Alle", top = -68 },
     }
     for _, md in ipairs(modeDefs) do
-        local mBtn = RR.UI.Theme:CreateDarkButton(filterArea, md.text, 90, 22)
-        mBtn:SetPoint("TOPRIGHT", -4, md.top)
+        local mBtn = RR.UI.Theme:CreateDarkButton(filterArea, md.text, 92, 24)
+        mBtn:SetPoint("TOPRIGHT", -6, md.top)
         mBtn:SetScript("OnClick", function()
             RR.Config:SetFilterSetting("mode", md.id)
             self:UpdateFilterButtons()
@@ -64,13 +64,13 @@ function RR.UI.MainWindow:Initialize()
 
     -- ROW 1: Name: [ Search EditBox ] [ Suche ]
     local nameLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    nameLabel:SetPoint("TOPLEFT", 6, -4)
+    nameLabel:SetPoint("TOPLEFT", 8, -8)
     nameLabel:SetTextColor(1, 0.82, 0, 1)
     nameLabel:SetText("Name:")
 
     local searchBox = CreateFrame("EditBox", nil, filterArea, BackdropTemplateMixin and "BackdropTemplate")
-    searchBox:SetPoint("TOPLEFT", nameLabel, "TOPRIGHT", 14, 2)
-    searchBox:SetSize(470, 22)
+    searchBox:SetPoint("TOPLEFT", nameLabel, "TOPRIGHT", 14, 3)
+    searchBox:SetSize(470, 24)
     searchBox:SetAutoFocus(false)
     searchBox:SetFontObject("GameFontHighlightSmall")
     searchBox:SetTextInsets(6, 6, 0, 0)
@@ -91,7 +91,7 @@ function RR.UI.MainWindow:Initialize()
     end)
     self.searchBox = searchBox
 
-    local searchBtn = RR.UI.Theme:CreateDarkButton(filterArea, "Suche", 75, 22)
+    local searchBtn = RR.UI.Theme:CreateDarkButton(filterArea, "Suche", 80, 24)
     searchBtn:SetPoint("LEFT", searchBox, "RIGHT", 6, 0)
     searchBtn:SetScript("OnClick", function()
         self.searchBox:ClearFocus()
@@ -100,7 +100,7 @@ function RR.UI.MainWindow:Initialize()
 
     -- ROW 2: Quelle: [ Quelle (6/6) v ] [ Fraktion v ] [ Spezialisierung v ] [ Phase v ]
     local sourceLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    sourceLabel:SetPoint("TOPLEFT", 6, -32)
+    sourceLabel:SetPoint("TOPLEFT", 8, -40)
     sourceLabel:SetTextColor(1, 0.82, 0, 1)
     sourceLabel:SetText("Quelle:")
 
@@ -158,7 +158,7 @@ function RR.UI.MainWindow:Initialize()
         end
         self:ShowDropdown(selfF, menu)
     end)
-    self.factionBtn:SetPoint("LEFT", self.sourceBtn, "RIGHT", 6, 0)
+    self.factionBtn:SetPoint("LEFT", self.sourceBtn, "RIGHT", 8, 0)
 
     self.specBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 135, "Spezialisierung", function(selfF)
         local menu = {
@@ -166,7 +166,7 @@ function RR.UI.MainWindow:Initialize()
         }
         self:ShowDropdown(selfF, menu)
     end)
-    self.specBtn:SetPoint("LEFT", self.factionBtn, "RIGHT", 6, 0)
+    self.specBtn:SetPoint("LEFT", self.factionBtn, "RIGHT", 8, 0)
 
     local phaseMenu = {
         { text = "Alle Phasen", value = 0 },
@@ -177,7 +177,7 @@ function RR.UI.MainWindow:Initialize()
         { text = "Phase 5", value = 5 },
         { text = "Phase 6", value = 6 },
     }
-    self.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 110, "Phase", function(selfF)
+    self.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 105, "Phase", function(selfF)
         local menu = {}
         for _, itm in ipairs(phaseMenu) do
             table.insert(menu, {
@@ -192,11 +192,11 @@ function RR.UI.MainWindow:Initialize()
         end
         self:ShowDropdown(selfF, menu)
     end)
-    self.phaseBtn:SetPoint("LEFT", self.specBtn, "RIGHT", 6, 0)
+    self.phaseBtn:SetPoint("LEFT", self.specBtn, "RIGHT", 8, 0)
 
     -- ROW 3: Zone: [ Jede Zone v ] [ Zone v ] [ Jede Zone ] [ Aktuelle Zone ] [ <ZoneName> ]
     local zoneLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    zoneLabel:SetPoint("TOPLEFT", 6, -60)
+    zoneLabel:SetPoint("TOPLEFT", 8, -72)
     zoneLabel:SetTextColor(1, 0.82, 0, 1)
     zoneLabel:SetText("Zone:")
 
@@ -229,7 +229,7 @@ function RR.UI.MainWindow:Initialize()
         }
         self:ShowDropdown(selfF, menu)
     end)
-    self.zoneDropBtn:SetPoint("LEFT", self.continentBtn, "RIGHT", 6, 0)
+    self.zoneDropBtn:SetPoint("LEFT", self.continentBtn, "RIGHT", 8, 0)
 
     -- Quick Zone Buttons
     self.zoneBtns = {}
@@ -241,11 +241,11 @@ function RR.UI.MainWindow:Initialize()
     }
     local prevZBtn = nil
     for _, zDef in ipairs(quickZones) do
-        local zBtn = RR.UI.Theme:CreateDarkButton(filterArea, zDef.label, zDef.width, 22)
+        local zBtn = RR.UI.Theme:CreateDarkButton(filterArea, zDef.label, zDef.width, 24)
         if prevZBtn then
-            zBtn:SetPoint("LEFT", prevZBtn, "RIGHT", 4, 0)
+            zBtn:SetPoint("LEFT", prevZBtn, "RIGHT", 5, 0)
         else
-            zBtn:SetPoint("LEFT", self.zoneDropBtn, "RIGHT", 8, 0)
+            zBtn:SetPoint("LEFT", self.zoneDropBtn, "RIGHT", 10, 0)
         end
         zBtn:SetScript("OnClick", function()
             local zKey = (zDef.key == "current_name") and "current" or zDef.key
