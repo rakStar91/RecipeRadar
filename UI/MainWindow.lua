@@ -403,29 +403,47 @@ function RR.UI.MainWindow:Initialize()
     self.detailValues:SetTextColor(1, 1, 1, 1)
     self.detailValues:SetText("-\n-\n-\n-\n-\n-\n-\n-\n-\n-")
 
-    -- Clickable area over "Erlernbar durch" to set TomTom waypoint
-    local locBtn = CreateFrame("Button", nil, attrBox)
-    locBtn:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 136, -164)
-    locBtn:SetPoint("BOTTOMRIGHT", attrBox, "TOPRIGHT", -8, -196)
-    locBtn:EnableMouse(true)
-    locBtn:SetScript("OnEnter", function(selfB)
-        if self.selectedRecipe and self.selectedRecipe.waypoint then
-            GameTooltip:SetOwner(selfB, "ANCHOR_TOP")
-            GameTooltip:AddLine(self.selectedRecipe.waypoint.name or "Wegpunkt", 1, 0.82, 0)
-            GameTooltip:AddLine("Klicken, um TomTom-Wegpunkt zu setzen", 0.2, 1, 0.2)
-            GameTooltip:Show()
-        end
-    end)
-    locBtn:SetScript("OnLeave", function()
-        GameTooltip:Hide()
-    end)
-    locBtn:SetScript("OnClick", function()
-        if self.selectedRecipe and self.selectedRecipe.waypoint then
-            local wp = self.selectedRecipe.waypoint
-            RR.Utils:AddTomTomWaypoint(wp.name, wp.zone, wp.x, wp.y)
-        end
-    end)
-    self.locBtn = locBtn
+    -- Interactive source rows pool for "Erlernbar durch"
+    self.sourceRows = {}
+    local sourceStartY = -164
+    for i = 1, 10 do
+        local row = CreateFrame("Button", nil, attrBox)
+        row:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 140, sourceStartY - (i - 1) * 16)
+        row:SetPoint("RIGHT", attrBox, "RIGHT", -8, 0)
+        row:SetHeight(16)
+        row:EnableMouse(true)
+
+        local text = row:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+        text:SetPoint("LEFT", 0, 0)
+        text:SetPoint("RIGHT", 0, 0)
+        text:SetJustifyH("LEFT")
+        text:SetWordWrap(false)
+        row.text = text
+
+        row:SetScript("OnEnter", function(btn)
+            if btn.waypoint then
+                GameTooltip:SetOwner(btn, "ANCHOR_TOP")
+                GameTooltip:AddLine(btn.waypoint.name or "Wegpunkt", 1, 0.82, 0)
+                if btn.waypoint.zone and btn.waypoint.x and btn.waypoint.y then
+                    GameTooltip:AddLine(string.format("%s (%.1f, %.1f)", btn.waypoint.zone, btn.waypoint.x, btn.waypoint.y), 1, 1, 1)
+                end
+                GameTooltip:AddLine("Klicken, um TomTom-Wegpunkt zu setzen", 0.2, 1, 0.2)
+                GameTooltip:Show()
+            end
+        end)
+        row:SetScript("OnLeave", function()
+            GameTooltip:Hide()
+        end)
+        row:SetScript("OnClick", function(btn)
+            if btn.waypoint and RR.Utils and RR.Utils.AddTomTomWaypoint then
+                local wp = btn.waypoint
+                RR.Utils:AddTomTomWaypoint(wp.name, wp.zone, wp.x, wp.y)
+            end
+        end)
+
+        row:Hide()
+        table.insert(self.sourceRows, row)
+    end
 
     -- Alt Character Knowledge Section
     local altsBox = CreateFrame("Frame", nil, detailPane, BackdropTemplateMixin and "BackdropTemplate")
@@ -721,48 +739,29 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         local ny = tonumber(npc.location and npc.location.y or npc.y)
 
         local isFactionMatch = false
-        if npc.reacts then
-            if type(npc.reacts) == "table" then
-                for _, r in ipairs(npc.reacts) do
+        local isOtherFaction = false
+        local reacts = npc.reacts
+        if reacts then
+            if type(reacts) == "table" then
+                for _, r in ipairs(reacts) do
                     if r == playerFaction then isFactionMatch = true end
+                    if r ~= playerFaction and (r == "Horde" or r == "Alliance") then isOtherFaction = true end
                 end
-            elseif npc.reacts == playerFaction then
+            elseif reacts == playerFaction then
                 isFactionMatch = true
+            elseif reacts ~= playerFaction and (reacts == "Horde" or reacts == "Alliance") then
+                isOtherFaction = true
             end
-        elseif npc.faction == playerFaction then
-            isFactionMatch = true
         end
 
-        return nName, zName, nx, ny, isFactionMatch
+        return nName, zName, nx, ny, isFactionMatch, (isOtherFaction and not isFactionMatch)
     end
 
-    local function findBestNPC(sourceList)
-        if not sourceList or type(sourceList) ~= "table" or #sourceList == 0 then return nil end
-        
-        -- 1. Try to find NPC matching the player's own faction
-        for _, id in ipairs(sourceList) do
-            local nName, zName, nx, ny, isMatch = resolveNPC(id)
-            if nName and isMatch then
-                return nName, zName, nx, ny, #sourceList
-            end
-        end
-
-        -- 2. Fallback to first valid NPC
-        for _, id in ipairs(sourceList) do
-            local nName, zName, nx, ny = resolveNPC(id)
-            if nName then
-                return nName, zName, nx, ny, #sourceList
-            end
-        end
-        return nil
-    end
-
-    local function formatNPC(nName, zName, nx, ny, suffix, totalCount)
-        local moreSuffix = (totalCount and totalCount > 1) and string.format(" (+%d)", totalCount - 1) or ""
+    local function formatNPC(nName, zName, nx, ny, suffix)
         if nx and ny and nx > 0 and ny > 0 then
-            return string.format("%s (%s) - %s (%.1f, %.1f)%s", nName, suffix, zName, nx, ny, moreSuffix), { name = nName, zone = zName, x = nx, y = ny }
+            return string.format("%s (%s) - %s (%.1f, %.1f)", nName, suffix, zName, nx, ny), { name = nName, zone = zName, x = nx, y = ny }
         else
-            return string.format("%s (%s) - %s%s", nName, suffix, zName, moreSuffix), (nx and ny and { name = nName, zone = zName, x = nx, y = ny } or nil)
+            return string.format("%s (%s) - %s", nName, suffix, zName), (nx and ny and { name = nName, zone = zName, x = nx, y = ny } or nil)
         end
     end
 
@@ -789,48 +788,117 @@ function RR.UI.MainWindow:SelectRecipe(recipeItem)
         rPrice = RR.Utils:FormatMoney(data.vendors.price)
     end
 
-    if vendorSources and type(vendorSources) == "table" and #vendorSources > 0 then
-        local nName, zName, nx, ny, count = findBestNPC(vendorSources)
-        if nName then
-            rLearnedFrom, self.selectedRecipe.waypoint = formatNPC(nName, zName, nx, ny, "Händler", count)
-        end
-    elseif dropSources and type(dropSources) == "table" and #dropSources > 0 then
-        local nName, zName, nx, ny, count = findBestNPC(dropSources)
-        if nName then
-            rLearnedFrom, self.selectedRecipe.waypoint = formatNPC(nName, zName, nx, ny, "Beute", count)
-        end
-    elseif meta.dropRange then
-        rLearnedFrom = string.format("Gegner-Beute (Stufe %d-%d)", meta.dropRange.min_xp_level or 1, meta.dropRange.max_xp_level or 60)
-    elseif questSources and type(questSources) == "table" and #questSources > 0 then
-        -- Find quest matching faction
-        local bestQ = nil
-        for _, qId in ipairs(questSources) do
-            local q = RR.DB:GetQuest(qId)
-            if q then
-                if not bestQ then bestQ = q end
-                if q.reacts and ((type(q.reacts) == "table" and q.reacts[1] == playerFaction) or q.reacts == playerFaction) then
-                    bestQ = q
-                    break
-                end
+    -- Collect ALL possible sources for detailed display
+    local allSources = {}
+    local seenSources = {}
+
+    -- 1. Vendors
+    if vendorSources and type(vendorSources) == "table" then
+        for _, id in ipairs(vendorSources) do
+            local nName, zName, nx, ny, isFactionMatch, isOtherFaction = resolveNPC(id)
+            if nName and not seenSources[id] then
+                seenSources[id] = true
+                local lineText, wp = formatNPC(nName, zName, nx, ny, "Händler")
+                table.insert(allSources, {
+                    text = lineText,
+                    waypoint = wp,
+                    isPlayerFaction = isFactionMatch,
+                    isOtherFaction = isOtherFaction,
+                })
             end
-        end
-        if bestQ then
-            local qName = (type(bestQ.name) == "table" and (bestQ.name[locale] or bestQ.name["German"] or bestQ.name["English"])) or "Quest"
-            local zName = RR.DB:GetZoneName(bestQ.zone_id) or "World"
-            rLearnedFrom = string.format("%s (Quest) - %s", qName, zName)
-        end
-    elseif trainerSources and type(trainerSources) == "table" and #trainerSources > 0 then
-        local nName, zName, nx, ny, count = findBestNPC(trainerSources)
-        if nName then
-            rLearnedFrom, self.selectedRecipe.waypoint = formatNPC(nName, zName, nx, ny, "Lehrer", count)
         end
     end
 
-    local values = string.format("%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s",
-        rName, rPhase, rSkill, rXp, rRep, rSpec, rHol, "-", rPrice, rLearnedFrom)
+    -- 2. Trainers
+    if trainerSources and type(trainerSources) == "table" then
+        for _, id in ipairs(trainerSources) do
+            local nName, zName, nx, ny, isFactionMatch, isOtherFaction = resolveNPC(id)
+            if nName and not seenSources[id] then
+                seenSources[id] = true
+                local lineText, wp = formatNPC(nName, zName, nx, ny, "Lehrer")
+                table.insert(allSources, {
+                    text = lineText,
+                    waypoint = wp,
+                    isPlayerFaction = isFactionMatch,
+                    isOtherFaction = isOtherFaction,
+                })
+            end
+        end
+    end
+
+    -- 3. Quests
+    if questSources and type(questSources) == "table" then
+        for _, qId in ipairs(questSources) do
+            local q = RR.DB:GetQuest(qId)
+            if q then
+                local qName = (type(q.name) == "table" and (q.name[locale] or q.name["German"] or q.name["English"])) or "Quest"
+                local zName = RR.DB:GetZoneName(q.zone_id) or "World"
+                local lineText = string.format("%s (Quest) - %s", qName, zName)
+                local isMatch = q.reacts and ((type(q.reacts) == "table" and q.reacts[1] == playerFaction) or q.reacts == playerFaction)
+                table.insert(allSources, {
+                    text = lineText,
+                    waypoint = nil,
+                    isPlayerFaction = isMatch,
+                })
+            end
+        end
+    end
+
+    -- 4. Drops
+    if dropSources and type(dropSources) == "table" then
+        for _, id in ipairs(dropSources) do
+            local nName, zName, nx, ny = resolveNPC(id)
+            if nName and not seenSources[id] then
+                seenSources[id] = true
+                local lineText, wp = formatNPC(nName, zName, nx, ny, "Beute")
+                table.insert(allSources, {
+                    text = lineText,
+                    waypoint = wp,
+                    isPlayerFaction = true,
+                })
+            end
+        end
+    end
+
+    if meta.dropRange then
+        table.insert(allSources, {
+            text = string.format("Gegner-Beute (Stufe %d-%d)", meta.dropRange.min_xp_level or 1, meta.dropRange.max_xp_level or 60),
+            waypoint = nil,
+            isPlayerFaction = true,
+        })
+    end
+
+    -- Sort sources: player's faction first, then others!
+    table.sort(allSources, function(a, b)
+        if a.isPlayerFaction and not b.isPlayerFaction then return true end
+        if not a.isPlayerFaction and b.isPlayerFaction then return false end
+        return false
+    end)
+
+    local values = string.format("%s\n%s\n%s\n%s\n%s\n%s\n%s\n-\n%s",
+        rName, rPhase, rSkill, rXp, rRep, rSpec, rHol, rPrice)
 
     self.detailLabels:SetText(labels)
     self.detailValues:SetText(values)
+
+    -- Populate interactive source rows under "Erlernbar durch"
+    if self.sourceRows then
+        for i, row in ipairs(self.sourceRows) do
+            local src = allSources[i]
+            if src then
+                row.text:SetText(src.text)
+                if src.isOtherFaction then
+                    row.text:SetTextColor(0.65, 0.65, 0.65)
+                else
+                    row.text:SetTextColor(1, 1, 1)
+                end
+                row.waypoint = src.waypoint
+                row:Show()
+            else
+                row:Hide()
+            end
+        end
+    end
 
     -- Alt knowledge status
     local alts = RR.AltTracker:GetAltStatusForRecipe(RR.Scanner.currentProfession, recipeItem.id, recipeItem.name)
