@@ -6,6 +6,28 @@
 RecipeRadar = RecipeRadar or {}
 local RR = RecipeRadar
 
+-- Global Raw Game Database Table Container
+RR_DATA = RR_DATA or {
+    continents = {},
+    currencies = {},
+    expansions = {},
+    factions = {},
+    holidays = {},
+    items = {},
+    levels = {},
+    npcs = {},
+    objects = {},
+    profession_ranks = {},
+    professions = {},
+    quests = {},
+    reputations = {},
+    reputation_levels = {},
+    skills = {},
+    special_actions = {},
+    specialisations = {},
+    zones = {},
+}
+
 RR.NAME = "RecipeRadar"
 RR.VERSION = "1.0.0"
 RR.AUTHOR = "rakStar"
