@@ -123,9 +123,6 @@ local defaultStrings = {
     ["LOADED_WELCOME"] = "loaded! Type /rr to open.",
     ["CMD_HELP_HEADER"] = "RecipeRadar Commands:",
     ["CMD_HELP_TOGGLE"] = " - Toggle RecipeRadar window",
-    ["CMD_HELP_OPT"] = " - Open options",
-    ["CMD_HELP_ALTS"] = " - Open alt character tracker",
-    ["CMD_HELP_NPC"] = " - Open NPC / World explorer",
 
     -- Tooltip Strings for Header, Filters and Controls
     ["TOOLTIP_CLOSE_TITLE"] = "Close Window",

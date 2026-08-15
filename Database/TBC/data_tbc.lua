@@ -1,5 +1,5 @@
 -------------------------------------------------------
--- MissingTradeSkillsList - TBC Data Module
+-- RecipeRadar - TBC Data Module
 -------------------------------------------------------
 
 RR_DATA_TBC = {

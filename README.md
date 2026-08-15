@@ -39,11 +39,7 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 
 ## ⌨️ Slash Commands
 
-* `/rr` or `/reciperadar` – Toggle Character Explorer
-* `/rr opt` or `/rr config` – Open Options & Settings
-* `/rr alts` – Open Account Explorer (browse recipes across all alts)
-* `/rr search` – Open Global Database Explorer
-* `/rr npc` – Open NPC & Vendor Explorer
+* `/rr` or `/reciperadar` – Toggle RecipeRadar window
 * `/rr help` – Display available commands
 
 ---
