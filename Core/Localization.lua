@@ -23,10 +23,10 @@ local defaultStrings = {
     ["MODE_ALL"] = "All",
 
     -- Dropdown Headers
-    ["DROPDOWN_SOURCE"] = "Source ▾",
-    ["DROPDOWN_FACTION"] = "Faction ▾",
-    ["DROPDOWN_ZONE"] = "Zone / Region ▾",
-    ["DROPDOWN_PHASE"] = "Phase ▾",
+    ["DROPDOWN_SOURCE"] = "Source v",
+    ["DROPDOWN_FACTION"] = "Faction v",
+    ["DROPDOWN_ZONE"] = "Zone v",
+    ["DROPDOWN_PHASE"] = "Phase v",
 
     -- Source Filters
     ["SOURCE_ALL"] = "All Sources",
@@ -47,6 +47,7 @@ local defaultStrings = {
     -- Zone & Region Filters
     ["ZONE_ALL"] = "All Zones",
     ["ZONE_CURRENT"] = "Current Zone",
+    ["ZONE_LAST"] = "Last Zone",
     ["CONTINENT_KALIMDOR"] = "Kalimdor",
     ["CONTINENT_EASTERN_KINGDOMS"] = "Eastern Kingdoms",
     ["CONTINENT_DUNGEONS"] = "Dungeons & Raids",
@@ -122,10 +123,10 @@ local translations = {
         ["MODE_KNOWN"] = "Gelernt",
         ["MODE_ALL"] = "Alle",
 
-        ["DROPDOWN_SOURCE"] = "Quelle ▾",
-        ["DROPDOWN_FACTION"] = "Fraktion ▾",
-        ["DROPDOWN_ZONE"] = "Zone / Region ▾",
-        ["DROPDOWN_PHASE"] = "Phase ▾",
+        ["DROPDOWN_SOURCE"] = "Quelle v",
+        ["DROPDOWN_FACTION"] = "Fraktion v",
+        ["DROPDOWN_ZONE"] = "Zone v",
+        ["DROPDOWN_PHASE"] = "Phase v",
 
         ["SOURCE_ALL"] = "Alle Quellen",
         ["SOURCE_TRAINER"] = "Lehrer",
@@ -143,6 +144,7 @@ local translations = {
 
         ["ZONE_ALL"] = "Alle Zonen",
         ["ZONE_CURRENT"] = "Aktuelle Zone",
+        ["ZONE_LAST"] = "Letzte Zone",
         ["CONTINENT_KALIMDOR"] = "Kalimdor",
         ["CONTINENT_EASTERN_KINGDOMS"] = "Östliche Königreiche",
         ["CONTINENT_DUNGEONS"] = "Instanzen & Schlachtzüge",
