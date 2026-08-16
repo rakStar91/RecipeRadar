@@ -176,11 +176,11 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
 
         local function getRepFactionIcon(allegiance)
             if allegiance == "Alliance" then
-                return "Interface\\Icons\\INV_BannerPVP_01"
+                return RR.ADDON_PATH .. "\\images\\alliance.tga"
             elseif allegiance == "Horde" then
-                return "Interface\\Icons\\INV_BannerPVP_02"
+                return RR.ADDON_PATH .. "\\images\\horde.tga"
             else
-                return "Interface\\Icons\\INV_BannerPVP_03"
+                return RR.ADDON_PATH .. "\\images\\neutral.tga"
             end
         end
 
@@ -209,10 +209,6 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                 })
             end
         else
-            table.insert(menu, {
-                text = "--- " .. (RR.L["SOURCE_REPUTATION"] or "Ruf") .. " ---",
-                isHeader = true,
-            })
             for _, fObj in ipairs(classicFactions) do
                 table.insert(menu, {
                     text = fObj.name,
