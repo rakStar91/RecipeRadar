@@ -165,11 +165,24 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     -- Dropdown 2: Reputation (Ruf-Fraktionen filtered dynamically by current factionFilter)
     local function buildReputationMenu()
         local curFaction = RR.Config:GetFilterSetting("factionFilter") or "any"
+        local isPlayerHorde = (UnitFactionGroup("player") == "Horde")
+        local defaultRepIcon = isPlayerHorde and "Interface\\Icons\\INV_BannerPVP_02" or "Interface\\Icons\\INV_BannerPVP_01"
+
         local menu = {
-            { text = RR.L["REP_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" },
+            { text = RR.L["REP_ALL"], value = "any", icon = defaultRepIcon },
         }
 
         local classicFactions, tbcFactions = RR.DB:GetReputationFactions(curFaction)
+
+        local function getRepFactionIcon(allegiance)
+            if allegiance == "Alliance" then
+                return "Interface\\Icons\\INV_BannerPVP_01"
+            elseif allegiance == "Horde" then
+                return "Interface\\Icons\\INV_BannerPVP_02"
+            else
+                return "Interface\\Icons\\INV_BannerPVP_03"
+            end
+        end
 
         if RR.DB:IsTBC() and #tbcFactions > 0 then
             table.insert(menu, {
@@ -180,9 +193,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                 table.insert(menu, {
                     text = fObj.name,
                     value = fObj.id,
-                    icon = (fObj.allegiance == "Alliance" and (RR.ADDON_PATH .. "\\images\\alliance.tga")) or
-                           (fObj.allegiance == "Horde" and (RR.ADDON_PATH .. "\\images\\horde.tga")) or
-                           (RR.ADDON_PATH .. "\\images\\neutral.tga"),
+                    icon = getRepFactionIcon(fObj.allegiance),
                 })
             end
 
@@ -194,9 +205,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                 table.insert(menu, {
                     text = fObj.name,
                     value = fObj.id,
-                    icon = (fObj.allegiance == "Alliance" and (RR.ADDON_PATH .. "\\images\\alliance.tga")) or
-                           (fObj.allegiance == "Horde" and (RR.ADDON_PATH .. "\\images\\horde.tga")) or
-                           (RR.ADDON_PATH .. "\\images\\neutral.tga"),
+                    icon = getRepFactionIcon(fObj.allegiance),
                 })
             end
         else
@@ -208,9 +217,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                 table.insert(menu, {
                     text = fObj.name,
                     value = fObj.id,
-                    icon = (fObj.allegiance == "Alliance" and (RR.ADDON_PATH .. "\\images\\alliance.tga")) or
-                           (fObj.allegiance == "Horde" and (RR.ADDON_PATH .. "\\images\\horde.tga")) or
-                           (RR.ADDON_PATH .. "\\images\\neutral.tga"),
+                    icon = getRepFactionIcon(fObj.allegiance),
                 })
             end
         end
