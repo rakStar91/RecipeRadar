@@ -16,6 +16,7 @@ RR.DB.Raw = {
     zones = {},
     factions = {},
     professions = {},
+    continents = {},
 }
 
 RR.DB.npcMap = {}
@@ -74,6 +75,7 @@ function RR.DB:Initialize()
         self.Raw.zones = RR_DATA["zones"] or {}
         self.Raw.factions = RR_DATA["factions"] or {}
         self.Raw.professions = RR_DATA["professions"] or {}
+        self.Raw.continents = RR_DATA["continents"] or {}
 
         -- 1. Build O(1) Lookup Maps
         self.npcMap = {}
@@ -165,7 +167,7 @@ function RR.DB:Initialize()
             self.profNameToKey[engKey] = engKey
         end
 
-        -- Also index all 10 language dictionaries from Database/Classic/Professions.lua
+        -- Also index all 10 language dictionaries from Database/Base/professions.lua
         if self.Raw.professions then
             for engName, pData in pairs(self.Raw.professions) do
                 if type(pData) == "table" and pData.name then
@@ -213,6 +215,21 @@ function RR.DB:GetItem(itemId)
     return self.itemMap and self.itemMap[itemId]
 end
 
+function RR.DB:GetContinents()
+    local list = {}
+    if self.Raw.continents then
+        for _, c in ipairs(self.Raw.continents) do
+            local name = self:GetLocalizedText(c.name)
+            if name == "" then name = "Continent" end
+            table.insert(list, {
+                id = c.id,
+                name = name,
+            })
+        end
+    end
+    return list
+end
+
 function RR.DB:GetZonesInContinent(continentId)
     local zones = {}
     if self.Raw.zones then
@@ -252,6 +269,8 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
         factions = {},
         phase = recipe.phase or 1,
         reputationFactionId = nil,
+        reputationLevel = nil,
+        reputations = {},
         dropRange = nil,
         special_action = recipe.special_action,
         objects = recipe.objects,
@@ -418,7 +437,16 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
                 end
                 if itm.reputation then
                     meta.sourceTypes["reputation"] = true
-                    meta.reputationFactionId = itm.reputation.faction_id
+                    local fid = itm.reputation.faction_id
+                    local lid = itm.reputation.level_id or itm.reputation.level
+                    if fid then
+                        meta.reputationFactionId = fid
+                        meta.reputationLevel = lid
+                        table.insert(meta.reputations, {
+                            faction_id = fid,
+                            level_id = lid,
+                        })
+                    end
                 end
                 if itm.holiday then meta.sourceTypes["holiday"] = true end
                 if itm.objects then
@@ -435,7 +463,16 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
     -- Direct reputation / holiday / object
     if recipe.reputation then
         meta.sourceTypes["reputation"] = true
-        meta.reputationFactionId = recipe.reputation.faction_id
+        local fid = recipe.reputation.faction_id
+        local lid = recipe.reputation.level_id or recipe.reputation.level
+        if fid then
+            meta.reputationFactionId = fid
+            meta.reputationLevel = lid
+            table.insert(meta.reputations, {
+                faction_id = fid,
+                level_id = lid,
+            })
+        end
     end
     if recipe.holiday then meta.sourceTypes["holiday"] = true end
     if recipe.objects then meta.sourceTypes["object"] = true end
@@ -446,6 +483,28 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
     end
 
     return meta
+end
+
+--- Returns true if currently running on The Burning Crusade Classic
+function RR.DB:IsTBC()
+    local _, _, _, tocVersion = GetBuildInfo()
+    if tocVersion and tocVersion >= 20000 and tocVersion < 30000 then
+        return true
+    end
+    if WOW_PROJECT_ID and (WOW_PROJECT_ID == (WOW_PROJECT_BURNING_CRUSADE_CLASSIC or 5)) then
+        return true
+    end
+    return false
+end
+
+--- Returns localized name for content phase (Era vs TBC)
+function RR.DB:GetPhaseName(phaseNum)
+    if not phaseNum or phaseNum == 0 then return RR.L["PHASE_ALL"] or "All Phases" end
+    if self:IsTBC() then
+        return RR.L["PHASE_TBC_" .. phaseNum] or string.format(RR.L["PHASE_FORMAT"] or "Phase %d", phaseNum)
+    else
+        return RR.L["PHASE_" .. phaseNum] or string.format(RR.L["PHASE_FORMAT"] or "Phase %d", phaseNum)
+    end
 end
 
 --- Returns current player zone ID in Classic DB
@@ -484,6 +543,75 @@ function RR.DB:GetFactionName(factionId)
         end
     end
     return nil
+end
+
+--- Returns lists of curated reputation factions for Classic and TBC
+function RR.DB:GetReputationFactions()
+    local isTBC = self:IsTBC()
+
+    local classicFactions = {
+        529, -- Argent Dawn / Argentumdämmerung
+        87,  -- Bloodsail Buccaneers / Blutsegelbukaniere
+        909, -- Darkmoon Faire / Dunkelmond-Jahrmarkt
+        369, -- Gadgetzan
+        576, -- Timbermaw Hold / Holzschlundfeste
+        270, -- Zandalar Tribe / Stamm der Zandalar
+        70,  -- Syndicate / Syndikat
+        59,  -- Thorium Brotherhood / Thoriumbruderschaft
+        609, -- Cenarion Circle / Zirkel des Cenarius
+        749, -- Hydraxian Waterlords / Hydraxianer
+        72,  -- Stormwind / Sturmwind
+        47,  -- Ironforge / Eisenschmiede
+        54,  -- Gnomeregan Exiles / Gnomeregangnome
+        76,  -- Orgrimmar
+        81,  -- Thunder Bluff / Donnerfels
+        68,  -- Undercity / Unterstadt
+        530, -- Darkspear Trolls / Dunkelspeertrolle
+    }
+
+    local tbcFactions = {
+        1012, -- Ashtongue Deathsworn / Aschenzungenkaste
+        933,  -- The Consortium / Das Konsortium
+        967,  -- The Violet Eye / Das Violette Auge
+        932,  -- The Aldor / Die Aldor
+        941,  -- The Mag'har / Die Mag'har
+        934,  -- The Scryers / Die Seher
+        935,  -- The Sha'tar / Die Sha'tar
+        990,  -- The Scale of the Sands / Die Wächter der Sande
+        946,  -- Honor Hold / Ehrenfeste
+        942,  -- Cenarion Expedition / Expedition des Cenarius
+        989,  -- Keepers of Time / Hüter der Zeit
+        978,  -- Kurenai / Kurenai
+        1015, -- Netherwing / Netherschwingen
+        1077, -- Shattered Sun Offensive / Offensive der Zerschmetterten Sonne
+        1038, -- Ogri'la / Ogri'la
+        970,  -- Sporeggar / Sporeggar
+        947,  -- Thrallmar / Thrallmar
+        922,  -- Tranquillien / Tristessa
+        1011, -- Lower City / Unteres Viertel
+        930,  -- Exodar / Die Exodar
+        911,  -- Silvermoon City / Silbermond
+    }
+
+    local function buildList(idList)
+        local res = {}
+        for _, id in ipairs(idList) do
+            local fName = self:GetFactionName(id)
+            if fName and fName ~= "" then
+                table.insert(res, {
+                    id = id,
+                    name = fName,
+                })
+            end
+        end
+        table.sort(res, function(a, b) return a.name < b.name end)
+        return res
+    end
+
+    local classicSorted = buildList(classicFactions)
+    local tbcSorted = isTBC and buildList(tbcFactions) or {}
+
+    return classicSorted, tbcSorted
 end
 
 --- Returns localized reputation level name (e.g. Friendly, Honored, Revered, Exalted)
@@ -527,23 +655,33 @@ end
 --- Returns localized display name for a profession in the current locale
 function RR.DB:GetProfessionDisplayName(profInput)
     if not profInput or profInput == "" then
-        -- Default to Tailoring in the current client locale
-        local profData = self.profMap and (self.profMap["Tailoring"] or self.profMap["Schneiderei"])
-        if profData and profData.name then
-            return self:GetLocalizedText(profData.name)
+        profInput = "Leatherworking"
+    end
+
+    local engKey = self:GetEnglishProfessionName(profInput)
+    if engKey and self.Raw.professions and self.Raw.professions[engKey] then
+        local pData = self.Raw.professions[engKey]
+        if pData and pData.name then
+            local locText = self:GetLocalizedText(pData.name)
+            if locText and locText ~= "" then
+                return locText
+            end
         end
-        return (GetLocale() == "deDE" and "Schneiderei") or "Tailoring"
     end
 
-    local profData = self.profMap and self.profMap[profInput]
-    if profData and profData.name then
-        return self:GetLocalizedText(profData.name)
-    end
-
-    -- Check if profInput is an english profession key
-    local engName = self:GetEnglishProfessionName(profInput)
-    if engName and self.profMap and self.profMap[engName] then
-        return self:GetLocalizedText(self.profMap[engName].name)
+    -- Check Blizzard Spell API for localized spell name
+    if engKey and PROFESSION_SPELL_IDS[engKey] then
+        local spellId = PROFESSION_SPELL_IDS[engKey]
+        local spellName = nil
+        if C_Spell and C_Spell.GetSpellInfo then
+            local info = C_Spell.GetSpellInfo(spellId)
+            spellName = info and info.name
+        elseif GetSpellInfo then
+            spellName = GetSpellInfo(spellId)
+        end
+        if spellName and spellName ~= "" then
+            return spellName
+        end
     end
 
     return profInput

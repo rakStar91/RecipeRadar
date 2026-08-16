@@ -290,25 +290,59 @@ function instance:Display(recipeItem)
     
     local rName = recipeItem.name or "-"
     local phaseNum = tonumber(meta.phase or data.phase or 1)
-    local rPhase = RR.L["PHASE_" .. (phaseNum or 1)] or string.format(RR.L["PHASE_FORMAT"] or "Phase %d", phaseNum or 1)
+    local rPhase = RR.DB:GetPhaseName(phaseNum)
     local rSkill = tostring(recipeItem.skillReq or 1)
     
     local rRep = "-"
-    local repFactionId = meta.reputationFactionId or (data.reputation and data.reputation.faction_id)
-    local repLvlId = meta.reputationLevel or (data.reputation and data.reputation.level)
-    if repFactionId then
-        local fName = RR.DB:GetFactionName(repFactionId)
-        local lvlName = repLvlId and RR.DB:GetReputationLevelName(repLvlId)
-        if fName and lvlName then
-            rRep = string.format("%s (%s)", fName, lvlName)
-        elseif fName then
-            rRep = fName
-        else
-            rRep = tostring(repFactionId)
+    local repList = meta.reputations or {}
+    if #repList == 0 then
+        local repFactionId = meta.reputationFactionId or (data.reputation and data.reputation.faction_id)
+        local repLvlId = meta.reputationLevel or (data.reputation and (data.reputation.level_id or data.reputation.level))
+        if repFactionId then
+            table.insert(repList, { faction_id = repFactionId, level_id = repLvlId })
         end
     end
 
-    local prof = RR.Scanner.currentProfession or "Tailoring"
+    if #repList > 0 then
+        local playerFaction = UnitFactionGroup("player") or "Alliance"
+        local repStrings = {}
+        for _, repEntry in ipairs(repList) do
+            local fName = RR.DB:GetFactionName(repEntry.faction_id)
+            local lvlName = repEntry.level_id and RR.DB:GetReputationLevelName(repEntry.level_id)
+            if fName and lvlName then
+                table.insert(repStrings, { text = string.format("%s (%s)", fName, lvlName), fid = repEntry.faction_id })
+            elseif fName then
+                table.insert(repStrings, { text = fName, fid = repEntry.faction_id })
+            end
+        end
+
+        if #repStrings == 1 then
+            rRep = repStrings[1].text
+        elseif #repStrings > 1 then
+            local ALLIANCE_FACTIONS = { [978] = true, [946] = true, [72] = true, [47] = true, [54] = true, [69] = true, [930] = true }
+            local HORDE_FACTIONS = { [941] = true, [947] = true, [76] = true, [68] = true, [81] = true, [88] = true, [911] = true }
+            
+            local matchedRep = nil
+            for _, rObj in ipairs(repStrings) do
+                if playerFaction == "Alliance" and ALLIANCE_FACTIONS[rObj.fid] then
+                    matchedRep = rObj.text
+                    break
+                elseif playerFaction == "Horde" and HORDE_FACTIONS[rObj.fid] then
+                    matchedRep = rObj.text
+                    break
+                end
+            end
+            if matchedRep then
+                rRep = matchedRep
+            else
+                local combined = {}
+                for _, rObj in ipairs(repStrings) do table.insert(combined, rObj.text) end
+                rRep = table.concat(combined, " / ")
+            end
+        end
+    end
+
+    local prof = (RR.Scanner and RR.Scanner:GetCurrentProfession()) or "Leatherworking"
     local rSpec = "-"
     if data.specialisation then
         local specName = nil
@@ -429,27 +463,46 @@ function instance:Display(recipeItem)
         end
     end
 
-    local trainerSources = data.trainers and (data.trainers.sources or (type(data.trainers) == "table" and data.trainers))
-    local vendorSources = data.vendors and (data.vendors.sources or (type(data.vendors) == "table" and data.vendors))
-    local questSources = data.quests and (data.quests.sources or (type(data.quests) == "table" and data.quests))
-    local dropSources = data.drops and (data.drops.sources or (type(data.drops) == "table" and data.drops))
+    local trainerSources = {}
+    local vendorSources = {}
+    local questSources = {}
+    local dropSources = {}
+
+    local function addSourcesToList(srcList, srcData)
+        if not srcData then return end
+        local sources = srcData.sources or (type(srcData) == "table" and srcData)
+        if type(sources) == "table" then
+            for _, id in ipairs(sources) do
+                table.insert(srcList, id)
+            end
+        end
+    end
+
+    addSourcesToList(trainerSources, data.trainers)
+    addSourcesToList(vendorSources, data.vendors)
+    addSourcesToList(questSources, data.quests)
+    addSourcesToList(dropSources, data.drops)
 
     if data.items and type(data.items) == "table" then
         for _, itemId in ipairs(data.items) do
             local itm = RR.DB:GetItem(itemId)
             if itm then
-                if itm.vendors then vendorSources = itm.vendors.sources or itm.vendors end
-                if itm.quests then questSources = itm.quests.sources or itm.quests end
-                if itm.drops then dropSources = itm.drops.sources or itm.drops end
-                if itm.price then rPrice = RR.Utils:FormatMoney(itm.price) end
+                addSourcesToList(vendorSources, itm.vendors)
+                addSourcesToList(questSources, itm.quests)
+                addSourcesToList(dropSources, itm.drops)
+                if itm.price and (not rPrice or rPrice == "-") then
+                    rPrice = RR.Utils:FormatMoney(itm.price)
+                end
             end
         end
     end
 
-    if data.trainers and data.trainers.price then
-        rPrice = RR.Utils:FormatMoney(data.trainers.price)
-    elseif data.vendors and data.vendors.price then
-        rPrice = RR.Utils:FormatMoney(data.vendors.price)
+    if (not rPrice or rPrice == "-") then
+        if data.trainers and data.trainers.price then
+            rPrice = RR.Utils:FormatMoney(data.trainers.price)
+        elseif data.vendors and data.vendors.price then
+            rPrice = RR.Utils:FormatMoney(data.vendors.price)
+        end
     end
 
     -- Collect ALL possible sources for detailed display
@@ -712,7 +765,8 @@ function instance:Display(recipeItem)
     end
 
     -- Alt knowledge status with clean class icons and texture-based checkmarks
-    local alts = RR.AltTracker:GetAltStatusForRecipe(RR.Scanner.currentProfession, recipeItem.id, recipeItem.name)
+    local curProf = (RR.Scanner and RR.Scanner:GetCurrentProfession()) or "Leatherworking"
+    local alts = RR.AltTracker:GetAltStatusForRecipe(curProf, recipeItem.id, recipeItem.name)
     local altsStr = ""
     for _, alt in ipairs(alts) do
         local classKey = alt.class or "WARRIOR"

@@ -70,6 +70,12 @@ local defaultStrings = {
     ["PHASE_5"] = "Phase 5: Gates of Ahn'Qiraj (AQ)",
     ["PHASE_6"] = "Phase 6: Naxxramas & Scourge",
 
+    ["PHASE_TBC_1"] = "Phase 1: Karazhan, Gruul & Magtheridon",
+    ["PHASE_TBC_2"] = "Phase 2: Serpentshrine Cavern & Tempest Keep",
+    ["PHASE_TBC_3"] = "Phase 3: Battle for Mount Hyjal & Black Temple",
+    ["PHASE_TBC_4"] = "Phase 4: Zul'Aman (ZA)",
+    ["PHASE_TBC_5"] = "Phase 5: Sunwell Plateau & Isle of Quel'Danas",
+
     -- Filter Labels
     ["LABEL_NAME_COLON"] = "Name:",
     ["LABEL_SOURCE_COLON"] = "Source:",
@@ -210,6 +216,11 @@ local translations = {
         ["PHASE_4"] = "Phase 4: Zul'Gurub (ZG)",
         ["PHASE_5"] = "Phase 5: Tore von Ahn'Qiraj (AQ)",
         ["PHASE_6"] = "Phase 6: Naxxramas & Geißelinvasion",
+        ["PHASE_TBC_1"] = "Phase 1: Karazhan, Gruul & Magtheridon",
+        ["PHASE_TBC_2"] = "Phase 2: Schlangenschrein & Festung der Stürme",
+        ["PHASE_TBC_3"] = "Phase 3: Schlacht um den Hyjal & Schwarzer Tempel",
+        ["PHASE_TBC_4"] = "Phase 4: Zul'Aman (ZA)",
+        ["PHASE_TBC_5"] = "Phase 5: Sonnenbrunnenplateau & Insel von Quel'Danas",
         ["LABEL_NAME_COLON"] = "Name:",
         ["LABEL_SOURCE_COLON"] = "Quelle:",
         ["LABEL_ZONE_COLON"] = "Zone:",

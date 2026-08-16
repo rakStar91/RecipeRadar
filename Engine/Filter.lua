@@ -60,7 +60,18 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
                 passFaction = false
             end
         elseif type(factionFilter) == "number" and factionFilter > 0 then
-            if meta.reputationFactionId ~= factionFilter then
+            local hasRep = false
+            if meta.reputationFactionId == factionFilter then
+                hasRep = true
+            elseif meta.reputations then
+                for _, r in ipairs(meta.reputations) do
+                    if r.faction_id == factionFilter then
+                        hasRep = true
+                        break
+                    end
+                end
+            end
+            if not hasRep then
                 passFaction = false
             end
         end
