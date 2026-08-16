@@ -12,6 +12,7 @@ local DEFAULT_CONFIG = {
         tooltipAlts = true,
         minimap = { hide = false, angle = 220 },
         buttonPosition = { x = 0, y = 0, isCustom = false },
+        windowPosition = { point = "CENTER", relativePoint = "CENTER", x = 0, y = 0 },
         filter = {
             mode = "missing",       -- "missing", "known", "all"
             zoneMode = "any",       -- "any", "current", "last"
@@ -129,5 +130,22 @@ function RR.Config:ClearButtonOffset()
     local profile = self:GetProfile()
     if profile then
         profile.buttonOffset = nil
+    end
+end
+
+function RR.Config:GetWindowPosition()
+    local profile = self:GetProfile()
+    return (profile and profile.windowPosition) or { point = "CENTER", relativePoint = "CENTER", x = 0, y = 0 }
+end
+
+function RR.Config:SaveWindowPosition(point, relativePoint, x, y)
+    local profile = self:GetProfile()
+    if profile then
+        profile.windowPosition = {
+            point = point or "CENTER",
+            relativePoint = relativePoint or "CENTER",
+            x = math.floor(x or 0),
+            y = math.floor(y or 0),
+        }
     end
 end
