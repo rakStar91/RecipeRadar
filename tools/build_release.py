@@ -110,7 +110,7 @@ def main():
     zip_path = os.path.join(ROOT_DIR, zip_name)
 
     EXCLUDE_DIRS = {".git", ".vscode", "tools", "__pycache__"}
-    EXCLUDE_EXTS = {".py", ".pyc", ".tmp", ".bat", ".sh"}
+    EXCLUDE_EXTS = {".py", ".pyc", ".tmp", ".bat", ".sh", ".jpg", ".png"}
     EXCLUDE_FILES = {"ToDos.md", ".gitignore", ".gitattributes"}
 
     print(f"Packaging {zip_name} for CurseForge...")

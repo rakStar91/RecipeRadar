@@ -11,4 +11,6 @@ ignore:
   - "*.py"
   - "*.bat"
   - "*.sh"
+  - "*.jpg"
+  - "*.png"
   - "ToDos.md"

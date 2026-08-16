@@ -11,6 +11,20 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 
 ---
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src="images/RR_main_window.jpg" alt="RecipeRadar Main Window" width="800"/>
+</p>
+
+<p align="center">
+  <img src="images/Professions_window_rr_button.jpg" alt="Tradeskill Window Integration" width="400"/>
+  &nbsp;&nbsp;
+  <img src="images/RR_switch_professions.jpg" alt="Profession Switching" width="350"/>
+</p>
+
+---
+
 ## ✨ Key Features
 
 * **3 Mode Filters**: Instantly switch between **[ Missing ]**, **[ Known ]**, and **[ All ]** recipes with distinct visual teal highlighting for skills you already learned.
