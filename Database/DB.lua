@@ -267,6 +267,7 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
         continents = {},
         sourceTypes = {},
         factions = {},
+        expansion = recipe.expansion or 1,
         phase = recipe.phase or 1,
         reputationFactionId = nil,
         reputationLevel = nil,
@@ -410,6 +411,7 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
         for _, itemId in ipairs(recipe.items) do
             local itm = self:GetItem(itemId)
             if itm then
+                if itm.expansion then meta.expansion = itm.expansion end
                 if itm.phase then meta.phase = itm.phase end
                 if itm.vendors then
                     meta.sourceTypes["vendor"] = true
@@ -498,12 +500,34 @@ function RR.DB:IsTBC()
 end
 
 --- Returns localized name for content phase (Era vs TBC)
-function RR.DB:GetPhaseName(phaseNum)
-    if not phaseNum or phaseNum == 0 then return RR.L["PHASE_ALL"] or "All Phases" end
-    if self:IsTBC() then
-        return RR.L["PHASE_TBC_" .. phaseNum] or string.format(RR.L["PHASE_FORMAT"] or "Phase %d", phaseNum)
+function RR.DB:GetPhaseName(phaseVal, expansionId)
+    if not phaseVal or phaseVal == 0 or phaseVal == "any" then return RR.L["PHASE_ALL"] or "All Phases" end
+    
+    if type(phaseVal) == "string" then
+        local expKey, pNum = phaseVal:match("^(%a+)_(%d+)$")
+        if expKey and pNum then
+            pNum = tonumber(pNum)
+            if expKey == "tbc" then
+                return RR.L["PHASE_TBC_" .. pNum] or string.format("TBC Phase %d", pNum)
+            else
+                local eraName = RR.L["PHASE_" .. pNum] or string.format("Phase %d", pNum)
+                return (self:IsTBC() and "Classic " or "") .. eraName
+            end
+        end
+    end
+
+    local phaseNum = tonumber(phaseVal) or 1
+    expansionId = expansionId or (self:IsTBC() and 2 or 1)
+    
+    if expansionId == 2 then
+        return RR.L["PHASE_TBC_" .. phaseNum] or string.format("Phase %d", phaseNum)
     else
-        return RR.L["PHASE_" .. phaseNum] or string.format(RR.L["PHASE_FORMAT"] or "Phase %d", phaseNum)
+        local eraName = RR.L["PHASE_" .. phaseNum] or string.format("Phase %d", phaseNum)
+        if self:IsTBC() then
+            return "Classic " .. eraName
+        else
+            return eraName
+        end
     end
 end
 

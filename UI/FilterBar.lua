@@ -405,22 +405,6 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         local curPhase = RR.Config:GetFilterSetting("phaseFilter") or 0
         local isAllChecked = (curPhase == 0 or curPhase == "any")
 
-        local maxPhases = isTBC and 5 or 6
-        local icons = isTBC and {
-            "Interface\\Icons\\INV_Misc_Key_11",
-            "Interface\\Icons\\Spell_Fire_FelImmolation",
-            "Interface\\Icons\\INV_Weapon_Glave_01",
-            "Interface\\Icons\\INV_Misc_Head_Troll_01",
-            "Interface\\Icons\\Spell_Holy_InnerFire",
-        } or {
-            "Interface\\Icons\\Spell_Fire_MoltenBlood",
-            "Interface\\Icons\\Spell_Nature_Earthquake",
-            "Interface\\Icons\\INV_Misc_Head_Dragon_Black",
-            "Interface\\Icons\\Ability_Hunter_Pet_Bat",
-            "Interface\\Icons\\INV_Misc_AhnQirajTrinket_03",
-            "Interface\\Icons\\Spell_Shadow_DeathPact",
-        }
-
         local list = {
             {
                 text = RR.L["PHASE_ALL"],
@@ -435,36 +419,34 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
             },
         }
 
-        for p = 1, maxPhases do
+        local function addPhaseEntry(valKey, displayName, iconTexture)
             local isChecked = false
             if type(curPhase) == "table" then
-                isChecked = (curPhase[p] == true)
-            elseif type(curPhase) == "number" then
-                isChecked = (curPhase == p)
+                isChecked = (curPhase[valKey] == true)
+            elseif curPhase == valKey then
+                isChecked = true
             end
 
             table.insert(list, {
-                text = RR.DB:GetPhaseName(p),
-                value = p,
-                icon = icons[p] or "Interface\\Icons\\INV_Misc_Book_08",
+                text = displayName,
+                value = valKey,
+                icon = iconTexture or "Interface\\Icons\\INV_Misc_Book_08",
                 checked = isChecked,
                 func = function()
                     local newSet = {}
                     if type(curPhase) == "table" then
                         for k, v in pairs(curPhase) do newSet[k] = v end
-                    elseif type(curPhase) == "number" and curPhase > 0 then
+                    elseif curPhase and curPhase ~= 0 and curPhase ~= "any" then
                         newSet[curPhase] = true
                     end
-                    if newSet[p] then
-                        newSet[p] = nil
+                    if newSet[valKey] then
+                        newSet[valKey] = nil
                     else
-                        newSet[p] = true
+                        newSet[valKey] = true
                     end
                     local count = 0
-                    for checkP = 1, maxPhases do
-                        if newSet[checkP] then count = count + 1 end
-                    end
-                    if count == 0 or count >= maxPhases then
+                    for _ in pairs(newSet) do count = count + 1 end
+                    if count == 0 then
                         RR.Config:SetFilterSetting("phaseFilter", 0)
                     else
                         RR.Config:SetFilterSetting("phaseFilter", newSet)
@@ -474,6 +456,47 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                 end,
             })
         end
+
+        if isTBC then
+            local tbcIcons = {
+                "Interface\\Icons\\INV_Misc_Key_11",
+                "Interface\\Icons\\Spell_Fire_FelImmolation",
+                "Interface\\Icons\\INV_Weapon_Glave_01",
+                "Interface\\Icons\\INV_Misc_Head_Troll_01",
+                "Interface\\Icons\\Spell_Holy_InnerFire",
+            }
+            local eraIcons = {
+                "Interface\\Icons\\Spell_Fire_MoltenBlood",
+                "Interface\\Icons\\Spell_Nature_Earthquake",
+                "Interface\\Icons\\INV_Misc_Head_Dragon_Black",
+                "Interface\\Icons\\Ability_Hunter_Pet_Bat",
+                "Interface\\Icons\\INV_Misc_AhnQirajTrinket_03",
+                "Interface\\Icons\\Spell_Shadow_DeathPact",
+            }
+
+            -- TBC Phases 1 to 5
+            for p = 1, 5 do
+                addPhaseEntry("tbc_" .. p, RR.DB:GetPhaseName("tbc_" .. p), tbcIcons[p])
+            end
+
+            -- Classic Phases 1 to 6
+            for p = 1, 6 do
+                addPhaseEntry("era_" .. p, RR.DB:GetPhaseName("era_" .. p), eraIcons[p])
+            end
+        else
+            local eraIcons = {
+                "Interface\\Icons\\Spell_Fire_MoltenBlood",
+                "Interface\\Icons\\Spell_Nature_Earthquake",
+                "Interface\\Icons\\INV_Misc_Head_Dragon_Black",
+                "Interface\\Icons\\Ability_Hunter_Pet_Bat",
+                "Interface\\Icons\\INV_Misc_AhnQirajTrinket_03",
+                "Interface\\Icons\\Spell_Shadow_DeathPact",
+            }
+            for p = 1, 6 do
+                addPhaseEntry(p, RR.DB:GetPhaseName(p), eraIcons[p])
+            end
+        end
+
         return list
     end
     instance.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 90, RR.L["DROPDOWN_PHASE"], function(selfF)
@@ -714,13 +737,13 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
             if type(curPhase) == "table" then
                 local phases = {}
                 for p, v in pairs(curPhase) do if v then table.insert(phases, p) end end
-                table.sort(phases)
+                table.sort(phases, function(a, b) return tostring(a) < tostring(b) end)
                 if #phases == 0 then
                     self.phaseBtn.text:SetText(RR.L["DROPDOWN_PHASE"])
                 elseif #phases == 1 then
                     self.phaseBtn.text:SetText(RR.DB:GetPhaseName(phases[1]))
                 else
-                    self.phaseBtn.text:SetText(string.format("%s (%s)", RR.L["DROPDOWN_PHASE"], table.concat(phases, ", ")))
+                    self.phaseBtn.text:SetText(string.format("%s (%d)", RR.L["DROPDOWN_PHASE"], #phases))
                 end
             elseif curPhase == 0 or curPhase == "any" then
                 self.phaseBtn.text:SetText(RR.L["DROPDOWN_PHASE"])

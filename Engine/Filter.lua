@@ -148,12 +148,40 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
 
         -- 5. Phase Check (Strict Phase filter: show recipes introduced in the chosen phases)
         local passPhase = true
-        if type(phaseFilter) == "table" then
-            if not phaseFilter[meta.phase] then
-                passPhase = false
+        local function matchSinglePhase(reqPhase, mPhase, mExp)
+            mExp = mExp or 1
+            mPhase = mPhase or 1
+            if type(reqPhase) == "string" then
+                local expKey, pNum = reqPhase:match("^(%a+)_(%d+)$")
+                if expKey and pNum then
+                    pNum = tonumber(pNum)
+                    if expKey == "tbc" then
+                        return (mExp == 2 and mPhase == pNum)
+                    elseif expKey == "era" or expKey == "classic" then
+                        return (mExp == 1 and mPhase == pNum)
+                    end
+                end
+            elseif type(reqPhase) == "number" and reqPhase > 0 then
+                if RR.DB:IsTBC() then
+                    return (mExp == 2 and mPhase == reqPhase)
+                else
+                    return (mPhase == reqPhase)
+                end
             end
-        elseif phaseFilter and type(phaseFilter) == "number" and phaseFilter > 0 then
-            if meta.phase ~= phaseFilter then
+            return false
+        end
+
+        if type(phaseFilter) == "table" then
+            local matched = false
+            for reqP, enabled in pairs(phaseFilter) do
+                if enabled and matchSinglePhase(reqP, meta.phase, meta.expansion) then
+                    matched = true
+                    break
+                end
+            end
+            if not matched then passPhase = false end
+        elseif phaseFilter and phaseFilter ~= 0 and phaseFilter ~= "any" then
+            if not matchSinglePhase(phaseFilter, meta.phase, meta.expansion) then
                 passPhase = false
             end
         end

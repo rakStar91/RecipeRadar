@@ -290,7 +290,7 @@ function instance:Display(recipeItem)
     
     local rName = recipeItem.name or "-"
     local phaseNum = tonumber(meta.phase or data.phase or 1)
-    local rPhase = RR.DB:GetPhaseName(phaseNum)
+    local rPhase = RR.DB:GetPhaseName(phaseNum, meta.expansion or data.expansion)
     local rSkill = tostring(recipeItem.skillReq or 1)
     
     local rRep = "-"
