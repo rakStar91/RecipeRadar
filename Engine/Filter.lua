@@ -62,21 +62,35 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
             end
         end
 
-        -- 3. Faction Allegiance Check (Alliance, Horde, Neutral)
+        -- 3. Faction Allegiance Check (Alliance-only, Horde-only, Neutral/Shared)
         local passFaction = true
+        local isAllianceOnly = meta.factions["Alliance"] and not meta.factions["Horde"]
+        local isHordeOnly = meta.factions["Horde"] and not meta.factions["Alliance"]
+        local isNeutralShared = (meta.factions["Alliance"] and meta.factions["Horde"]) or meta.factions["Neutral"] or (not meta.factions["Alliance"] and not meta.factions["Horde"])
+
         if type(factionFilter) == "table" then
             local matched = false
             for fac, enabled in pairs(factionFilter) do
-                if enabled and meta.factions[fac] then
-                    matched = true
-                    break
+                if enabled then
+                    if fac == "Alliance" and isAllianceOnly then
+                        matched = true
+                        break
+                    elseif fac == "Horde" and isHordeOnly then
+                        matched = true
+                        break
+                    elseif fac == "Neutral" and isNeutralShared then
+                        matched = true
+                        break
+                    end
                 end
             end
             if not matched then passFaction = false end
-        elseif factionFilter == "Alliance" or factionFilter == "Horde" or factionFilter == "Neutral" then
-            if not meta.factions[factionFilter] then
-                passFaction = false
-            end
+        elseif factionFilter == "Alliance" then
+            if not isAllianceOnly then passFaction = false end
+        elseif factionFilter == "Horde" then
+            if not isHordeOnly then passFaction = false end
+        elseif factionFilter == "Neutral" then
+            if not isNeutralShared then passFaction = false end
         end
 
         -- 3b. Reputation Faction Check (Specific reputation requirement)
