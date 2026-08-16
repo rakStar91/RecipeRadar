@@ -560,13 +560,6 @@ function RR.DB:GetReputationFactions()
         59,  -- Thorium Brotherhood / Thoriumbruderschaft
         609, -- Cenarion Circle / Zirkel des Cenarius
         749, -- Hydraxian Waterlords / Hydraxianer
-        72,  -- Stormwind / Sturmwind
-        47,  -- Ironforge / Eisenschmiede
-        54,  -- Gnomeregan Exiles / Gnomeregangnome
-        76,  -- Orgrimmar
-        81,  -- Thunder Bluff / Donnerfels
-        68,  -- Undercity / Unterstadt
-        530, -- Darkspear Trolls / Dunkelspeertrolle
     }
 
     local tbcFactions = {
@@ -589,8 +582,6 @@ function RR.DB:GetReputationFactions()
         947,  -- Thrallmar / Thrallmar
         922,  -- Tranquillien / Tristessa
         1011, -- Lower City / Unteres Viertel
-        930,  -- Exodar / Die Exodar
-        911,  -- Silvermoon City / Silbermond
     }
 
     local function buildList(idList)
