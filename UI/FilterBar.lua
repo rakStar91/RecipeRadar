@@ -288,11 +288,25 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
             { text = RR.L["PHASE_ALL"], value = 0, icon = "Interface\\Icons\\INV_Misc_Book_08" },
         }
         local maxPhases = isTBC and 5 or 6
+        local icons = isTBC and {
+            "Interface\\Icons\\Spell_Fire_MoltenBlood",
+            "Interface\\Icons\\Spell_Nature_Earthquake",
+            "Interface\\Icons\\INV_Misc_Head_Dragon_Black",
+            "Interface\\Icons\\Ability_Hunter_Pet_Bat",
+            "Interface\\Icons\\Spell_Holy_InnerFire",
+        } or {
+            "Interface\\Icons\\Spell_Fire_MoltenBlood",
+            "Interface\\Icons\\Spell_Nature_Earthquake",
+            "Interface\\Icons\\INV_Misc_Head_Dragon_Black",
+            "Interface\\Icons\\Ability_Hunter_Pet_Bat",
+            "Interface\\Icons\\INV_Misc_AhnQirajTrinket_03",
+            "Interface\\Icons\\Spell_Shadow_DeathPact",
+        }
         for p = 1, maxPhases do
             table.insert(list, {
                 text = RR.DB:GetPhaseName(p),
                 value = p,
-                icon = "Interface\\Icons\\INV_Misc_Book_09",
+                icon = icons[p] or "Interface\\Icons\\INV_Misc_Book_08",
             })
         end
         return list
