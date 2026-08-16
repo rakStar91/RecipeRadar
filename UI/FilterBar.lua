@@ -120,7 +120,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
 
     -- Dropdown 1: Faction (Alliance / Horde / Neutral / All)
     local factionMenu = {
-        { text = RR.L["FACTION_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" },
+        { text = RR.L["FACTION_ALL"], value = "any", icon = RR.ADDON_PATH .. "\\images\\neutral.tga" },
         { text = RR.L["FACTION_ALLIANCE"], value = "Alliance", icon = RR.ADDON_PATH .. "\\images\\alliance.tga" },
         { text = RR.L["FACTION_HORDE"], value = "Horde", icon = RR.ADDON_PATH .. "\\images\\horde.tga" },
         { text = RR.L["FACTION_NEUTRAL"], value = "Neutral", icon = RR.ADDON_PATH .. "\\images\\neutral.tga" },
@@ -165,8 +165,9 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     -- Dropdown 2: Reputation (Ruf-Fraktionen filtered dynamically by current factionFilter)
     local function buildReputationMenu()
         local curFaction = RR.Config:GetFilterSetting("factionFilter") or "any"
-        local isPlayerHorde = (UnitFactionGroup("player") == "Horde")
-        local defaultRepIcon = isPlayerHorde and "Interface\\Icons\\INV_BannerPVP_02" or "Interface\\Icons\\INV_BannerPVP_01"
+        local defaultRepIcon = (curFaction == "Alliance" and (RR.ADDON_PATH .. "\\images\\alliance.tga")) or
+                               (curFaction == "Horde" and (RR.ADDON_PATH .. "\\images\\horde.tga")) or
+                               (RR.ADDON_PATH .. "\\images\\neutral.tga")
 
         local menu = {
             { text = RR.L["REP_ALL"], value = "any", icon = defaultRepIcon },
