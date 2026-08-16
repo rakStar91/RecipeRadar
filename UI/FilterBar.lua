@@ -90,7 +90,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     sourceLabel:SetTextColor(1, 0.82, 0, 1)
     sourceLabel:SetText(RR.L["LABEL_SOURCE_COLON"])
 
-    local sourceMenu = {
+    local sourceMenuData = {
         { text = RR.L["SOURCE_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" },
         { text = RR.L["SOURCE_TRAINER"], value = "trainer", icon = "Interface\\Icons\\INV_Misc_Book_09" },
         { text = RR.L["SOURCE_VENDOR"], value = "vendor", icon = "Interface\\Icons\\INV_Misc_Coin_01" },
@@ -99,65 +99,127 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         { text = RR.L["SOURCE_HOLIDAY"], value = "holiday", icon = "Interface\\Icons\\INV_Misc_Gift_01" },
         { text = RR.L["SOURCE_REPUTATION"], value = "reputation", icon = "Interface\\Icons\\INV_BannerPVP_02" },
     }
-    instance.sourceBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 95, RR.L["DROPDOWN_SOURCE"], function(selfF)
+
+    local function buildSourceMenu()
+        local curSource = RR.Config:GetFilterSetting("sourceFilter") or "any"
         local menu = {}
-        for _, itm in ipairs(sourceMenu) do
+        for _, itm in ipairs(sourceMenuData) do
+            local isChecked = false
+            if itm.value == "any" then
+                isChecked = (curSource == "any")
+            elseif type(curSource) == "table" then
+                isChecked = (curSource[itm.value] == true)
+            elseif type(curSource) == "string" then
+                isChecked = (curSource == itm.value)
+            end
+
             table.insert(menu, {
                 text = itm.text,
                 icon = itm.icon,
+                checked = isChecked,
                 func = function()
-                    RR.Config:SetFilterSetting("sourceFilter", itm.value)
-                    selfF.text:SetText(itm.value == "any" and RR.L["DROPDOWN_SOURCE"] or itm.text)
+                    if itm.value == "any" then
+                        RR.Config:SetFilterSetting("sourceFilter", "any")
+                    else
+                        local newSet = {}
+                        if type(curSource) == "table" then
+                            for k, v in pairs(curSource) do newSet[k] = v end
+                        elseif type(curSource) == "string" and curSource ~= "any" then
+                            newSet[curSource] = true
+                        end
+                        if newSet[itm.value] then
+                            newSet[itm.value] = nil
+                        else
+                            newSet[itm.value] = true
+                        end
+                        local count = 0
+                        for _, opt in ipairs(sourceMenuData) do
+                            if opt.value ~= "any" and newSet[opt.value] then
+                                count = count + 1
+                            end
+                        end
+                        if count == 0 or count >= (#sourceMenuData - 1) then
+                            RR.Config:SetFilterSetting("sourceFilter", "any")
+                        else
+                            RR.Config:SetFilterSetting("sourceFilter", newSet)
+                        end
+                    end
+                    instance:UpdateFilterButtons()
                     if instance.onRefresh then instance.onRefresh() end
                 end,
-                checked = (RR.Config:GetFilterSetting("sourceFilter") or "any") == itm.value,
             })
         end
-        RR.UI.Dropdown:Show(selfF, menu)
+        return menu
+    end
+
+    instance.sourceBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 95, RR.L["DROPDOWN_SOURCE"], function(selfF)
+        RR.UI.Dropdown:Show(selfF, buildSourceMenu, true)
     end)
     instance.sourceBtn:SetPoint("LEFT", sourceLabel, "RIGHT", 6, 0)
     RR.UI.Theme:AddTooltip(instance.sourceBtn, RR.L["TOOLTIP_SOURCE_FILTER_TITLE"], RR.L["TOOLTIP_SOURCE_FILTER_DESC"])
 
     -- Dropdown 1: Faction (Alliance / Horde / Neutral / All)
-    local factionMenu = {
+    local factionMenuData = {
         { text = RR.L["FACTION_ALL"], value = "any", icon = RR.ADDON_PATH .. "\\images\\neutral.tga" },
         { text = RR.L["FACTION_ALLIANCE"], value = "Alliance", icon = RR.ADDON_PATH .. "\\images\\alliance.tga" },
         { text = RR.L["FACTION_HORDE"], value = "Horde", icon = RR.ADDON_PATH .. "\\images\\horde.tga" },
         { text = RR.L["FACTION_NEUTRAL"], value = "Neutral", icon = RR.ADDON_PATH .. "\\images\\neutral.tga" },
     }
-    instance.factionBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 90, RR.L["DROPDOWN_FACTION"], function(selfF)
+
+    local function buildFactionMenu()
+        local curFaction = RR.Config:GetFilterSetting("factionFilter") or "any"
         local menu = {}
-        for _, itm in ipairs(factionMenu) do
+        for _, itm in ipairs(factionMenuData) do
+            local isChecked = false
+            if itm.value == "any" then
+                isChecked = (curFaction == "any")
+            elseif type(curFaction) == "table" then
+                isChecked = (curFaction[itm.value] == true)
+            elseif type(curFaction) == "string" then
+                isChecked = (curFaction == itm.value)
+            end
+
             table.insert(menu, {
                 text = itm.text,
                 icon = itm.icon,
+                checked = isChecked,
                 func = function()
-                    RR.Config:SetFilterSetting("factionFilter", itm.value)
-                    selfF.text:SetText(itm.value == "any" and RR.L["DROPDOWN_FACTION"] or itm.text)
-
-                    -- Check if current reputation filter is still valid under new faction filter
-                    local curRep = RR.Config:GetFilterSetting("repFilter")
-                    if curRep and curRep ~= "any" and type(curRep) == "number" then
-                        local cList, tList = RR.DB:GetReputationFactions(itm.value)
-                        local isValid = false
-                        for _, f in ipairs(cList) do if f.id == curRep then isValid = true break end end
-                        if not isValid then
-                            for _, f in ipairs(tList) do if f.id == curRep then isValid = true break end end
+                    if itm.value == "any" then
+                        RR.Config:SetFilterSetting("factionFilter", "any")
+                    else
+                        local newSet = {}
+                        if type(curFaction) == "table" then
+                            for k, v in pairs(curFaction) do newSet[k] = v end
+                        elseif type(curFaction) == "string" and curFaction ~= "any" then
+                            newSet[curFaction] = true
                         end
-                        if not isValid then
-                            RR.Config:SetFilterSetting("repFilter", "any")
-                            if instance.repBtn and instance.repBtn.text then
-                                instance.repBtn.text:SetText(RR.L["DROPDOWN_REPUTATION"])
+                        if newSet[itm.value] then
+                            newSet[itm.value] = nil
+                        else
+                            newSet[itm.value] = true
+                        end
+                        local count = 0
+                        for _, opt in ipairs(factionMenuData) do
+                            if opt.value ~= "any" and newSet[opt.value] then
+                                count = count + 1
                             end
                         end
+                        if count == 0 or count >= (#factionMenuData - 1) then
+                            RR.Config:SetFilterSetting("factionFilter", "any")
+                        else
+                            RR.Config:SetFilterSetting("factionFilter", newSet)
+                        end
                     end
-
+                    instance:UpdateFilterButtons()
                     if instance.onRefresh then instance.onRefresh() end
                 end,
-                checked = (RR.Config:GetFilterSetting("factionFilter") or "any") == itm.value,
             })
         end
-        RR.UI.Dropdown:Show(selfF, menu)
+        return menu
+    end
+
+    instance.factionBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 90, RR.L["DROPDOWN_FACTION"], function(selfF)
+        RR.UI.Dropdown:Show(selfF, buildFactionMenu, true)
     end)
     instance.factionBtn:SetPoint("LEFT", instance.sourceBtn, "RIGHT", 6, 0)
     RR.UI.Theme:AddTooltip(instance.factionBtn, RR.L["TOOLTIP_FACTION_FILTER_TITLE"], RR.L["TOOLTIP_FACTION_FILTER_DESC"])
@@ -165,12 +227,25 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     -- Dropdown 2: Reputation (Ruf-Fraktionen filtered dynamically by current factionFilter)
     local function buildReputationMenu()
         local curFaction = RR.Config:GetFilterSetting("factionFilter") or "any"
+        local curRep = RR.Config:GetFilterSetting("repFilter") or "any"
         local defaultRepIcon = (curFaction == "Alliance" and (RR.ADDON_PATH .. "\\images\\alliance.tga")) or
                                (curFaction == "Horde" and (RR.ADDON_PATH .. "\\images\\horde.tga")) or
                                (RR.ADDON_PATH .. "\\images\\neutral.tga")
 
+        local isAllChecked = (curRep == "any")
+
         local menu = {
-            { text = RR.L["REP_ALL"], value = "any", icon = defaultRepIcon },
+            {
+                text = RR.L["REP_ALL"],
+                value = "any",
+                icon = defaultRepIcon,
+                checked = isAllChecked,
+                func = function()
+                    RR.Config:SetFilterSetting("repFilter", "any")
+                    instance:UpdateFilterButtons()
+                    if instance.onRefresh then instance.onRefresh() end
+                end,
+            },
         }
 
         local classicFactions, tbcFactions = RR.DB:GetReputationFactions(curFaction)
@@ -185,17 +260,53 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
             end
         end
 
+        local function addFactionEntry(fObj)
+            local isChecked = false
+            if type(curRep) == "table" then
+                isChecked = (curRep[fObj.id] == true)
+            elseif type(curRep) == "number" then
+                isChecked = (curRep == fObj.id)
+            end
+
+            table.insert(menu, {
+                text = fObj.name,
+                value = fObj.id,
+                icon = getRepFactionIcon(fObj.allegiance),
+                checked = isChecked,
+                func = function()
+                    local newSet = {}
+                    if type(curRep) == "table" then
+                        for k, v in pairs(curRep) do newSet[k] = v end
+                    elseif type(curRep) == "number" and curRep > 0 then
+                        newSet[curRep] = true
+                    end
+                    if newSet[fObj.id] then
+                        newSet[fObj.id] = nil
+                    else
+                        newSet[fObj.id] = true
+                    end
+                    local count = 0
+                    for k, v in pairs(newSet) do
+                        if v then count = count + 1 end
+                    end
+                    if count == 0 then
+                        RR.Config:SetFilterSetting("repFilter", "any")
+                    else
+                        RR.Config:SetFilterSetting("repFilter", newSet)
+                    end
+                    instance:UpdateFilterButtons()
+                    if instance.onRefresh then instance.onRefresh() end
+                end,
+            })
+        end
+
         if RR.DB:IsTBC() and #tbcFactions > 0 then
             table.insert(menu, {
                 text = "--- The Burning Crusade ---",
                 isHeader = true,
             })
             for _, fObj in ipairs(tbcFactions) do
-                table.insert(menu, {
-                    text = fObj.name,
-                    value = fObj.id,
-                    icon = getRepFactionIcon(fObj.allegiance),
-                })
+                addFactionEntry(fObj)
             end
 
             table.insert(menu, {
@@ -203,19 +314,11 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                 isHeader = true,
             })
             for _, fObj in ipairs(classicFactions) do
-                table.insert(menu, {
-                    text = fObj.name,
-                    value = fObj.id,
-                    icon = getRepFactionIcon(fObj.allegiance),
-                })
+                addFactionEntry(fObj)
             end
         else
             for _, fObj in ipairs(classicFactions) do
-                table.insert(menu, {
-                    text = fObj.name,
-                    value = fObj.id,
-                    icon = getRepFactionIcon(fObj.allegiance),
-                })
+                addFactionEntry(fObj)
             end
         end
 
@@ -223,67 +326,85 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     end
 
     instance.repBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 115, RR.L["DROPDOWN_REPUTATION"], function(selfF)
-        local menu = {}
-        for _, itm in ipairs(buildReputationMenu()) do
-            table.insert(menu, {
-                text = itm.text,
-                icon = itm.icon,
-                isHeader = itm.isHeader,
-                func = function()
-                    RR.Config:SetFilterSetting("repFilter", itm.value)
-                    selfF.text:SetText(itm.value == "any" and RR.L["DROPDOWN_REPUTATION"] or itm.text)
-                    if instance.onRefresh then instance.onRefresh() end
-                end,
-                checked = (RR.Config:GetFilterSetting("repFilter") or "any") == itm.value,
-            })
-        end
-        RR.UI.Dropdown:Show(selfF, menu)
+        RR.UI.Dropdown:Show(selfF, buildReputationMenu, true)
     end)
     instance.repBtn:SetPoint("LEFT", instance.factionBtn, "RIGHT", 6, 0)
     RR.UI.Theme:AddTooltip(instance.repBtn, RR.L["TOOLTIP_REP_FILTER_TITLE"], RR.L["TOOLTIP_REP_FILTER_DESC"])
 
     local function buildSpecMenu()
         local currentProf = (RR.Scanner and RR.Scanner:GetCurrentProfession()) or "Leatherworking"
+        local curSpec = RR.Config:GetFilterSetting("specFilter") or "any"
         local specs = RR.DB:GetSpecialisations(currentProf)
+        local isAllChecked = (curSpec == "any")
+
         local menu = {
-            { text = RR.L["SPEC_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" }
+            {
+                text = RR.L["SPEC_ALL"],
+                value = "any",
+                icon = "Interface\\Icons\\INV_Misc_Book_08",
+                checked = isAllChecked,
+                func = function()
+                    RR.Config:SetFilterSetting("specFilter", "any")
+                    instance:UpdateFilterButtons()
+                    if instance.onRefresh then instance.onRefresh() end
+                end,
+            }
         }
         for _, sp in ipairs(specs) do
             local sName = RR.DB:GetLocalizedText(sp.name)
             if sName and sName ~= "" then
+                local isChecked = false
+                if type(curSpec) == "table" then
+                    isChecked = (curSpec[sp.id] == true)
+                elseif type(curSpec) == "number" then
+                    isChecked = (curSpec == sp.id)
+                end
+
                 table.insert(menu, {
                     text = sName,
                     value = sp.id,
                     icon = "Interface\\Icons\\INV_Misc_Wrench_01",
+                    checked = isChecked,
+                    func = function()
+                        local newSet = {}
+                        if type(curSpec) == "table" then
+                            for k, v in pairs(curSpec) do newSet[k] = v end
+                        elseif type(curSpec) == "number" and curSpec > 0 then
+                            newSet[curSpec] = true
+                        end
+                        if newSet[sp.id] then
+                            newSet[sp.id] = nil
+                        else
+                            newSet[sp.id] = true
+                        end
+                        local count = 0
+                        for k, v in pairs(newSet) do
+                            if v then count = count + 1 end
+                        end
+                        if count == 0 or count >= #specs then
+                            RR.Config:SetFilterSetting("specFilter", "any")
+                        else
+                            RR.Config:SetFilterSetting("specFilter", newSet)
+                        end
+                        instance:UpdateFilterButtons()
+                        if instance.onRefresh then instance.onRefresh() end
+                    end,
                 })
             end
         end
         return menu
     end
     instance.specBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 110, RR.L["DROPDOWN_SPEC"], function(selfF)
-        local menu = {}
-        for _, itm in ipairs(buildSpecMenu()) do
-            table.insert(menu, {
-                text = itm.text,
-                icon = itm.icon,
-                func = function()
-                    RR.Config:SetFilterSetting("specFilter", itm.value)
-                    selfF.text:SetText(itm.value == "any" and RR.L["DROPDOWN_SPEC"] or itm.text)
-                    if instance.onRefresh then instance.onRefresh() end
-                end,
-                checked = (RR.Config:GetFilterSetting("specFilter") or "any") == itm.value,
-            })
-        end
-        RR.UI.Dropdown:Show(selfF, menu)
+        RR.UI.Dropdown:Show(selfF, buildSpecMenu, true)
     end)
     instance.specBtn:SetPoint("LEFT", instance.repBtn, "RIGHT", 6, 0)
     RR.UI.Theme:AddTooltip(instance.specBtn, RR.L["TOOLTIP_SPEC_FILTER_TITLE"], RR.L["TOOLTIP_SPEC_FILTER_DESC"])
 
     local function buildPhaseMenu()
         local isTBC = RR.DB:IsTBC()
-        local list = {
-            { text = RR.L["PHASE_ALL"], value = 0, icon = "Interface\\Icons\\INV_Misc_Book_08" },
-        }
+        local curPhase = RR.Config:GetFilterSetting("phaseFilter") or 0
+        local isAllChecked = (curPhase == 0 or curPhase == "any")
+
         local maxPhases = isTBC and 5 or 6
         local icons = isTBC and {
             "Interface\\Icons\\Spell_Fire_MoltenBlood",
@@ -299,30 +420,64 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
             "Interface\\Icons\\INV_Misc_AhnQirajTrinket_03",
             "Interface\\Icons\\Spell_Shadow_DeathPact",
         }
+
+        local list = {
+            {
+                text = RR.L["PHASE_ALL"],
+                value = 0,
+                icon = "Interface\\Icons\\INV_Misc_Book_08",
+                checked = isAllChecked,
+                func = function()
+                    RR.Config:SetFilterSetting("phaseFilter", 0)
+                    instance:UpdateFilterButtons()
+                    if instance.onRefresh then instance.onRefresh() end
+                end,
+            },
+        }
+
         for p = 1, maxPhases do
+            local isChecked = false
+            if type(curPhase) == "table" then
+                isChecked = (curPhase[p] == true)
+            elseif type(curPhase) == "number" then
+                isChecked = (curPhase == p)
+            end
+
             table.insert(list, {
                 text = RR.DB:GetPhaseName(p),
                 value = p,
                 icon = icons[p] or "Interface\\Icons\\INV_Misc_Book_08",
+                checked = isChecked,
+                func = function()
+                    local newSet = {}
+                    if type(curPhase) == "table" then
+                        for k, v in pairs(curPhase) do newSet[k] = v end
+                    elseif type(curPhase) == "number" and curPhase > 0 then
+                        newSet[curPhase] = true
+                    end
+                    if newSet[p] then
+                        newSet[p] = nil
+                    else
+                        newSet[p] = true
+                    end
+                    local count = 0
+                    for checkP = 1, maxPhases do
+                        if newSet[checkP] then count = count + 1 end
+                    end
+                    if count == 0 or count >= maxPhases then
+                        RR.Config:SetFilterSetting("phaseFilter", 0)
+                    else
+                        RR.Config:SetFilterSetting("phaseFilter", newSet)
+                    end
+                    instance:UpdateFilterButtons()
+                    if instance.onRefresh then instance.onRefresh() end
+                end,
             })
         end
         return list
     end
     instance.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 90, RR.L["DROPDOWN_PHASE"], function(selfF)
-        local menu = {}
-        for _, itm in ipairs(buildPhaseMenu()) do
-            table.insert(menu, {
-                text = itm.text,
-                icon = itm.icon,
-                func = function()
-                    RR.Config:SetFilterSetting("phaseFilter", itm.value)
-                    selfF.text:SetText(itm.value == 0 and RR.L["DROPDOWN_PHASE"] or itm.text)
-                    if instance.onRefresh then instance.onRefresh() end
-                end,
-                checked = (RR.Config:GetFilterSetting("phaseFilter") or 0) == itm.value,
-            })
-        end
-        RR.UI.Dropdown:Show(selfF, menu)
+        RR.UI.Dropdown:Show(selfF, buildPhaseMenu, true)
     end)
     instance.phaseBtn:SetPoint("LEFT", instance.specBtn, "RIGHT", 6, 0)
     RR.UI.Theme:AddTooltip(instance.phaseBtn, RR.L["TOOLTIP_PHASE_FILTER_TITLE"], RR.L["TOOLTIP_PHASE_FILTER_DESC"])
@@ -476,7 +631,17 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
 
         local curSource = RR.Config:GetFilterSetting("sourceFilter") or "any"
         if self.sourceBtn and self.sourceBtn.text then
-            if curSource == "any" then
+            if type(curSource) == "table" then
+                local keys = {}
+                for k, v in pairs(curSource) do if v then table.insert(keys, k) end end
+                if #keys == 0 then
+                    self.sourceBtn.text:SetText(RR.L["DROPDOWN_SOURCE"])
+                elseif #keys == 1 then
+                    self.sourceBtn.text:SetText(RR.L["SOURCE_" .. string.upper(keys[1])] or keys[1])
+                else
+                    self.sourceBtn.text:SetText(string.format("%s (%d)", RR.L["DROPDOWN_SOURCE"], #keys))
+                end
+            elseif curSource == "any" then
                 self.sourceBtn.text:SetText(RR.L["DROPDOWN_SOURCE"])
             else
                 self.sourceBtn.text:SetText(RR.L["SOURCE_" .. string.upper(curSource)] or curSource)
@@ -484,12 +649,18 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         end
 
         local curFaction = RR.Config:GetFilterSetting("factionFilter") or "any"
-        if curFaction ~= "Alliance" and curFaction ~= "Horde" and curFaction ~= "Neutral" then
-            curFaction = "any"
-            RR.Config:SetFilterSetting("factionFilter", "any")
-        end
         if self.factionBtn and self.factionBtn.text then
-            if curFaction == "any" then
+            if type(curFaction) == "table" then
+                local keys = {}
+                for k, v in pairs(curFaction) do if v then table.insert(keys, k) end end
+                if #keys == 0 then
+                    self.factionBtn.text:SetText(RR.L["DROPDOWN_FACTION"])
+                elseif #keys == 1 then
+                    self.factionBtn.text:SetText(RR.L["FACTION_" .. string.upper(keys[1])] or keys[1])
+                else
+                    self.factionBtn.text:SetText(string.format("%s (%d)", RR.L["DROPDOWN_FACTION"], #keys))
+                end
+            elseif curFaction == "any" then
                 self.factionBtn.text:SetText(RR.L["DROPDOWN_FACTION"])
             else
                 self.factionBtn.text:SetText(RR.L["FACTION_" .. string.upper(curFaction)] or curFaction)
@@ -498,7 +669,18 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
 
         local curRep = RR.Config:GetFilterSetting("repFilter") or "any"
         if self.repBtn and self.repBtn.text then
-            if curRep == "any" or type(curRep) ~= "number" then
+            if type(curRep) == "table" then
+                local keys = {}
+                for k, v in pairs(curRep) do if v then table.insert(keys, k) end end
+                if #keys == 0 then
+                    self.repBtn.text:SetText(RR.L["DROPDOWN_REPUTATION"])
+                elseif #keys == 1 then
+                    local fName = RR.DB:GetFactionName(keys[1])
+                    self.repBtn.text:SetText(fName or RR.L["DROPDOWN_REPUTATION"])
+                else
+                    self.repBtn.text:SetText(string.format("%s (%d)", RR.L["DROPDOWN_REPUTATION"], #keys))
+                end
+            elseif curRep == "any" or type(curRep) ~= "number" then
                 self.repBtn.text:SetText(RR.L["DROPDOWN_REPUTATION"])
             else
                 local fName = RR.DB:GetFactionName(curRep)
@@ -508,7 +690,18 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
 
         local curSpec = RR.Config:GetFilterSetting("specFilter") or "any"
         if self.specBtn and self.specBtn.text then
-            if curSpec == "any" then
+            if type(curSpec) == "table" then
+                local keys = {}
+                for k, v in pairs(curSpec) do if v then table.insert(keys, k) end end
+                if #keys == 0 then
+                    self.specBtn.text:SetText(RR.L["DROPDOWN_SPEC"])
+                elseif #keys == 1 then
+                    local sName = RR.DB:GetSpecialisationName(keys[1])
+                    self.specBtn.text:SetText(sName or RR.L["DROPDOWN_SPEC"])
+                else
+                    self.specBtn.text:SetText(string.format("%s (%d)", RR.L["DROPDOWN_SPEC"], #keys))
+                end
+            elseif curSpec == "any" then
                 self.specBtn.text:SetText(RR.L["DROPDOWN_SPEC"])
             else
                 local sName = RR.DB:GetSpecialisationName(curSpec)
@@ -518,7 +711,18 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
 
         local curPhase = RR.Config:GetFilterSetting("phaseFilter") or 0
         if self.phaseBtn and self.phaseBtn.text then
-            if curPhase == 0 then
+            if type(curPhase) == "table" then
+                local phases = {}
+                for p, v in pairs(curPhase) do if v then table.insert(phases, p) end end
+                table.sort(phases)
+                if #phases == 0 then
+                    self.phaseBtn.text:SetText(RR.L["DROPDOWN_PHASE"])
+                elseif #phases == 1 then
+                    self.phaseBtn.text:SetText(RR.DB:GetPhaseName(phases[1]))
+                else
+                    self.phaseBtn.text:SetText(string.format("%s (%s)", RR.L["DROPDOWN_PHASE"], table.concat(phases, ", ")))
+                end
+            elseif curPhase == 0 or curPhase == "any" then
                 self.phaseBtn.text:SetText(RR.L["DROPDOWN_PHASE"])
             else
                 self.phaseBtn.text:SetText(RR.DB:GetPhaseName(curPhase))

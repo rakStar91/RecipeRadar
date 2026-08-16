@@ -77,8 +77,11 @@ function RR.UI.Dropdown:GetPopupFrame()
     return dropdownPopup
 end
 
---- Shows or toggles the popup menu anchored to anchorBtn with given items
-function RR.UI.Dropdown:Show(anchorBtn, items)
+--- Shows or toggles the popup menu anchored to anchorBtn with given items or generator function
+-- @param anchorBtn Frame The anchor button
+-- @param items Table or Function Array of item tables or a generator function returning array
+-- @param isMulti Boolean If true, clicking an item will toggle and re-render without closing
+function RR.UI.Dropdown:Show(anchorBtn, items, isMulti)
     local popup = self:GetPopupFrame()
 
     if popup:IsShown() and popup.currentAnchor == anchorBtn then
@@ -87,9 +90,20 @@ function RR.UI.Dropdown:Show(anchorBtn, items)
     end
 
     popup.currentAnchor = anchorBtn
+    popup.isMulti = isMulti or false
+    popup.itemsGenerator = (type(items) == "function") and items or nil
     popup:ClearAllPoints()
     popup:SetPoint("TOPLEFT", anchorBtn, "BOTTOMLEFT", 0, -2)
 
+    local itemList = (type(items) == "function") and items() or items
+    self:Render(itemList, true)
+end
+
+function RR.UI.Dropdown:Render(items, isInitial)
+    local popup = self:GetPopupFrame()
+    if not popup or not popup.currentAnchor then return end
+
+    local anchorBtn = popup.currentAnchor
     local maxWidth = (anchorBtn:GetWidth() or 120) + 20
     local itemHeight = 22
     local count = #items
@@ -163,7 +177,7 @@ function RR.UI.Dropdown:Show(anchorBtn, items)
             end
 
             if itm.checked then
-                checkedIndex = i
+                if not checkedIndex then checkedIndex = i end
                 btn.check:Show()
                 btn.text:SetTextColor(1, 0.82, 0, 1)
             else
@@ -172,8 +186,13 @@ function RR.UI.Dropdown:Show(anchorBtn, items)
             end
 
             btn:SetScript("OnClick", function()
-                popup:Hide()
+                if not popup.isMulti or itm.closeOnClick then
+                    popup:Hide()
+                end
                 if itm.func then itm.func() end
+                if popup.isMulti and popup:IsShown() and popup.itemsGenerator then
+                    RR.UI.Dropdown:Render(popup.itemsGenerator(), false)
+                end
             end)
         end
 
@@ -204,13 +223,15 @@ function RR.UI.Dropdown:Show(anchorBtn, items)
         local maxScroll = math.max(0, totalContentHeight - viewHeight)
         popup.scrollBar:SetMinMaxValues(0, maxScroll)
 
-        local targetScroll = 0
-        if checkedIndex and checkedIndex > 0 then
-            local itemY = (checkedIndex - 1) * itemHeight
-            targetScroll = math.min(maxScroll, math.max(0, itemY - (3 * itemHeight)))
+        if isInitial then
+            local targetScroll = 0
+            if checkedIndex and checkedIndex > 0 then
+                local itemY = (checkedIndex - 1) * itemHeight
+                targetScroll = math.min(maxScroll, math.max(0, itemY - (3 * itemHeight)))
+            end
+            popup.scrollBar:SetValue(targetScroll)
+            popup.scrollFrame:SetVerticalScroll(targetScroll)
         end
-        popup.scrollBar:SetValue(targetScroll)
-        popup.scrollFrame:SetVerticalScroll(targetScroll)
     else
         popup.scrollFrame:SetPoint("TOPLEFT", 4, -4)
         popup.scrollFrame:SetPoint("BOTTOMRIGHT", -4, 4)

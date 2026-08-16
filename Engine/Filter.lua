@@ -47,7 +47,16 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
 
         -- 2. Source Check (Trainer / Vendor / Quest / Drop / Object / Holiday / Reputation)
         local passSource = true
-        if sourceFilter ~= "any" then
+        if type(sourceFilter) == "table" then
+            local matched = false
+            for sType, enabled in pairs(sourceFilter) do
+                if enabled and meta.sourceTypes[sType] then
+                    matched = true
+                    break
+                end
+            end
+            if not matched then passSource = false end
+        elseif sourceFilter and sourceFilter ~= "any" then
             if not meta.sourceTypes[sourceFilter] then
                 passSource = false
             end
@@ -55,7 +64,24 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
 
         -- 3. Faction Allegiance Check (Alliance, Horde, Neutral)
         local passFaction = true
-        if factionFilter == "Alliance" or factionFilter == "Horde" or factionFilter == "Neutral" then
+        if type(factionFilter) == "table" then
+            local matched = false
+            for fac, enabled in pairs(factionFilter) do
+                if enabled then
+                    if fac == "Alliance" and (meta.factions["Alliance"] or meta.factions["Neutral"]) then
+                        matched = true
+                        break
+                    elseif fac == "Horde" and (meta.factions["Horde"] or meta.factions["Neutral"]) then
+                        matched = true
+                        break
+                    elseif fac == "Neutral" and meta.factions["Neutral"] then
+                        matched = true
+                        break
+                    end
+                end
+            end
+            if not matched then passFaction = false end
+        elseif factionFilter == "Alliance" or factionFilter == "Horde" or factionFilter == "Neutral" then
             if not meta.factions[factionFilter] and not meta.factions["Neutral"] then
                 passFaction = false
             end
@@ -64,7 +90,25 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
         -- 3b. Reputation Faction Check (Specific reputation requirement)
         local repFilter = RR.Config:GetFilterSetting("repFilter")
         local passRep = true
-        if repFilter and type(repFilter) == "number" and repFilter > 0 then
+        if type(repFilter) == "table" then
+            local matched = false
+            for fId, enabled in pairs(repFilter) do
+                if enabled then
+                    if meta.reputationFactionId == fId then
+                        matched = true
+                        break
+                    elseif meta.reputations then
+                        for _, r in ipairs(meta.reputations) do
+                            if r.faction_id == fId then
+                                matched = true
+                                break
+                            end
+                        end
+                    end
+                end
+            end
+            if not matched then passRep = false end
+        elseif repFilter and type(repFilter) == "number" and repFilter > 0 then
             local hasRep = false
             if meta.reputationFactionId == repFilter then
                 hasRep = true
@@ -102,9 +146,13 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
             end
         end
 
-        -- 5. Phase Check (Strict Phase filter: show recipes introduced in the chosen phase)
+        -- 5. Phase Check (Strict Phase filter: show recipes introduced in the chosen phases)
         local passPhase = true
-        if phaseFilter and phaseFilter > 0 then
+        if type(phaseFilter) == "table" then
+            if not phaseFilter[meta.phase] then
+                passPhase = false
+            end
+        elseif phaseFilter and type(phaseFilter) == "number" and phaseFilter > 0 then
             if meta.phase ~= phaseFilter then
                 passPhase = false
             end
@@ -112,7 +160,11 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
 
         -- 5b. Specialisation Check
         local passSpec = true
-        if specFilter and specFilter ~= "any" and type(specFilter) == "number" and specFilter > 0 then
+        if type(specFilter) == "table" then
+            if not specFilter[recipe.specialisation or 0] then
+                passSpec = false
+            end
+        elseif specFilter and specFilter ~= "any" and type(specFilter) == "number" and specFilter > 0 then
             if recipe.specialisation ~= specFilter then
                 passSpec = false
             end
