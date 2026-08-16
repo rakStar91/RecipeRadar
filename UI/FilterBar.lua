@@ -407,10 +407,10 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
 
         local maxPhases = isTBC and 5 or 6
         local icons = isTBC and {
-            "Interface\\Icons\\Spell_Fire_MoltenBlood",
-            "Interface\\Icons\\Spell_Nature_Earthquake",
-            "Interface\\Icons\\INV_Misc_Head_Dragon_Black",
-            "Interface\\Icons\\Ability_Hunter_Pet_Bat",
+            "Interface\\Icons\\Spell_Arcane_PortalKarazhan",
+            "Interface\\Icons\\Spell_Fire_FelImmolation",
+            "Interface\\Icons\\INV_Weapon_Glave_01",
+            "Interface\\Icons\\INV_Misc_Head_Troll_01",
             "Interface\\Icons\\Spell_Holy_InnerFire",
         } or {
             "Interface\\Icons\\Spell_Fire_MoltenBlood",
