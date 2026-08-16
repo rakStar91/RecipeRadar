@@ -1,6 +1,7 @@
 # RecipeRadar
 
 [![CurseForge](https://img.shields.io/badge/CurseForge-RecipeRadar-orange.svg)](https://www.curseforge.com/wow/addons/reciperadar)
+[![Support on Ko-fi](https://img.shields.io/badge/Support%20on-Ko--fi-FF5E5B.svg?logo=kofi&logoColor=white)](https://ko-fi.com/rakstar91)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![WoW Versions](https://img.shields.io/badge/WoW-Classic%20Era%20%7C%20TBC-blue.svg)](https://worldofwarcraft.com/)
 
@@ -54,8 +55,17 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 
 ---
 
+## 💖 Support & Feedback
+ 
+If you enjoy using RecipeRadar and want to support ongoing development, maintenance, and future expansions, consider buying me a coffee!
+ 
+[![Support on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/rakstar91)
+ 
+---
+ 
 ## 📄 License & Credits
-
+ 
 * **Developer & Maintainer**: rakStar
+* **Donations**: [https://ko-fi.com/rakstar91](https://ko-fi.com/rakstar91)
 * **Changelog**: See [CHANGELOG.md](CHANGELOG.md) for release notes.
 * **License**: [MIT License](LICENSE)
