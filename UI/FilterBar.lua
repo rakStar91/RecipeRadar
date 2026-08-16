@@ -456,17 +456,20 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
             end
         end
 
-        local curSpec = RR.Config:GetFilterSetting("specFilter") or "any"
-        if self.specBtn and self.specBtn.text then
-            if curSpec == "any" then
-                self.specBtn.text:SetText(RR.L["DROPDOWN_SPEC"])
+        local curSource = RR.Config:GetFilterSetting("sourceFilter") or "any"
+        if self.sourceBtn and self.sourceBtn.text then
+            if curSource == "any" then
+                self.sourceBtn.text:SetText(RR.L["DROPDOWN_SOURCE"])
             else
-                local sName = RR.DB:GetSpecialisationName(curSpec)
-                self.specBtn.text:SetText(sName or RR.L["DROPDOWN_SPEC"])
+                self.sourceBtn.text:SetText(RR.L["SOURCE_" .. string.upper(curSource)] or curSource)
             end
         end
 
         local curFaction = RR.Config:GetFilterSetting("factionFilter") or "any"
+        if curFaction ~= "Alliance" and curFaction ~= "Horde" and curFaction ~= "Neutral" then
+            curFaction = "any"
+            RR.Config:SetFilterSetting("factionFilter", "any")
+        end
         if self.factionBtn and self.factionBtn.text then
             if curFaction == "any" then
                 self.factionBtn.text:SetText(RR.L["DROPDOWN_FACTION"])
@@ -477,11 +480,30 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
 
         local curRep = RR.Config:GetFilterSetting("repFilter") or "any"
         if self.repBtn and self.repBtn.text then
-            if curRep == "any" then
+            if curRep == "any" or type(curRep) ~= "number" then
                 self.repBtn.text:SetText(RR.L["DROPDOWN_REPUTATION"])
             else
                 local fName = RR.DB:GetFactionName(curRep)
                 self.repBtn.text:SetText(fName or RR.L["DROPDOWN_REPUTATION"])
+            end
+        end
+
+        local curSpec = RR.Config:GetFilterSetting("specFilter") or "any"
+        if self.specBtn and self.specBtn.text then
+            if curSpec == "any" then
+                self.specBtn.text:SetText(RR.L["DROPDOWN_SPEC"])
+            else
+                local sName = RR.DB:GetSpecialisationName(curSpec)
+                self.specBtn.text:SetText(sName or RR.L["DROPDOWN_SPEC"])
+            end
+        end
+
+        local curPhase = RR.Config:GetFilterSetting("phaseFilter") or 0
+        if self.phaseBtn and self.phaseBtn.text then
+            if curPhase == 0 then
+                self.phaseBtn.text:SetText(RR.L["DROPDOWN_PHASE"])
+            else
+                self.phaseBtn.text:SetText(RR.DB:GetPhaseName(curPhase))
             end
         end
     end
