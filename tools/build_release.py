@@ -35,11 +35,12 @@ def bump_semver(ver_str, bump_type="patch"):
 def update_file_version(filepath, pattern, replacement):
     if not os.path.exists(filepath):
         return
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, "r", encoding="utf-8", newline="") as f:
         content = f.read()
     new_content = re.sub(pattern, replacement, content)
-    with open(filepath, "w", encoding="utf-8") as f:
-        f.write(new_content)
+    if new_content != content:
+        with open(filepath, "w", encoding="utf-8", newline="") as f:
+            f.write(new_content)
 
 def sync_to_anniversary():
     if os.path.exists(ANNIVERSARY_DIR):
