@@ -2,7 +2,7 @@
 
 [![CurseForge](https://img.shields.io/badge/CurseForge-RecipeRadar-orange.svg)](https://www.curseforge.com/wow/addons/reciperadar)
 [![Support on Ko-fi](https://img.shields.io/badge/Support%20on-Ko--fi-FF5E5B.svg?logo=kofi&logoColor=white)](https://ko-fi.com/rakstar91)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: All Rights Reserved](https://img.shields.io/badge/License-All%20Rights%20Reserved-red.svg)](LICENSE)
 [![WoW Versions](https://img.shields.io/badge/WoW-Classic%20Era%20%7C%20TBC-blue.svg)](https://worldofwarcraft.com/)
 
 **RecipeRadar** is a modern, standalone profession recipe and skill tracker for **World of Warcraft Classic Era** and **TBC Anniversary**.
@@ -72,4 +72,4 @@ If you enjoy using RecipeRadar and want to support ongoing development, maintena
 * **Developer & Maintainer**: rakStar
 * **Donations**: [https://ko-fi.com/rakstar91](https://ko-fi.com/rakstar91)
 * **Changelog**: See [CHANGELOG.md](CHANGELOG.md) for release notes.
-* **License**: [MIT License](LICENSE)
+* **License**: [All Rights Reserved](LICENSE) (Copyright © 2026 rakStar)
