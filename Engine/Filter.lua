@@ -67,22 +67,14 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
         if type(factionFilter) == "table" then
             local matched = false
             for fac, enabled in pairs(factionFilter) do
-                if enabled then
-                    if fac == "Alliance" and (meta.factions["Alliance"] or meta.factions["Neutral"]) then
-                        matched = true
-                        break
-                    elseif fac == "Horde" and (meta.factions["Horde"] or meta.factions["Neutral"]) then
-                        matched = true
-                        break
-                    elseif fac == "Neutral" and meta.factions["Neutral"] then
-                        matched = true
-                        break
-                    end
+                if enabled and meta.factions[fac] then
+                    matched = true
+                    break
                 end
             end
             if not matched then passFaction = false end
         elseif factionFilter == "Alliance" or factionFilter == "Horde" or factionFilter == "Neutral" then
-            if not meta.factions[factionFilter] and not meta.factions["Neutral"] then
+            if not meta.factions[factionFilter] then
                 passFaction = false
             end
         end
