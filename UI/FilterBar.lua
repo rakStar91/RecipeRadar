@@ -118,7 +118,36 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     instance.sourceBtn:SetPoint("LEFT", sourceLabel, "RIGHT", 8, 0)
     RR.UI.Theme:AddTooltip(instance.sourceBtn, RR.L["TOOLTIP_SOURCE_FILTER_TITLE"], RR.L["TOOLTIP_SOURCE_FILTER_DESC"])
 
-    local repFactionIds = { 529, 59, 576, 270, 749, 909, 609 }
+    local ALLIANCE_FACTIONS = {
+        [47] = true,  -- Ironforge / Eisenschmiede
+        [54] = true,  -- Gnomeregan
+        [72] = true,  -- Stormwind / Sturmwind
+        [141] = true, -- Darnassus
+        [930] = true, -- Exodar / Die Exodar
+        [946] = true, -- Honor Hold / Ehrenfeste
+        [978] = true, -- Kurenai
+    }
+    local HORDE_FACTIONS = {
+        [68] = true,  -- Undercity / Unterstadt
+        [76] = true,  -- Orgrimmar
+        [81] = true,  -- Thunder Bluff / Donnerfels
+        [530] = true, -- Darkspear Trolls / Dunkelspeertrolle
+        [911] = true, -- Silvermoon City / Silbermond
+        [922] = true, -- Tranquillien / Tristessa
+        [941] = true, -- The Mag'har / Die Mag'har
+        [947] = true, -- Thrallmar
+    }
+
+    local function getFactionIcon(factionId)
+        if ALLIANCE_FACTIONS[factionId] then
+            return RR.ADDON_PATH .. "\\images\\alliance.tga"
+        elseif HORDE_FACTIONS[factionId] then
+            return RR.ADDON_PATH .. "\\images\\horde.tga"
+        else
+            return RR.ADDON_PATH .. "\\images\\neutral.tga"
+        end
+    end
+
     local function buildFactionMenu()
         local menu = {
             { text = RR.L["FACTION_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" },
@@ -126,16 +155,47 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
             { text = RR.L["FACTION_HORDE"], value = "Horde", icon = RR.ADDON_PATH .. "\\images\\horde.tga" },
             { text = RR.L["FACTION_NEUTRAL"], value = "Neutral", icon = RR.ADDON_PATH .. "\\images\\neutral.tga" },
         }
-        for _, fId in ipairs(repFactionIds) do
-            local fName = RR.DB:GetFactionName(fId)
-            if fName then
+
+        local classicFactions, tbcFactions = RR.DB:GetReputationFactions()
+
+        if RR.DB:IsTBC() and #tbcFactions > 0 then
+            table.insert(menu, {
+                text = "--- The Burning Crusade ---",
+                isHeader = true,
+            })
+            for _, fObj in ipairs(tbcFactions) do
                 table.insert(menu, {
-                    text = fName,
-                    value = fId,
-                    icon = "Interface\\Icons\\INV_BannerPVP_02",
+                    text = fObj.name,
+                    value = fObj.id,
+                    icon = getFactionIcon(fObj.id),
+                })
+            end
+
+            table.insert(menu, {
+                text = "--- Classic Era ---",
+                isHeader = true,
+            })
+            for _, fObj in ipairs(classicFactions) do
+                table.insert(menu, {
+                    text = fObj.name,
+                    value = fObj.id,
+                    icon = getFactionIcon(fObj.id),
+                })
+            end
+        else
+            table.insert(menu, {
+                text = "--- " .. (RR.L["SOURCE_REPUTATION"] or "Ruf") .. " ---",
+                isHeader = true,
+            })
+            for _, fObj in ipairs(classicFactions) do
+                table.insert(menu, {
+                    text = fObj.name,
+                    value = fObj.id,
+                    icon = getFactionIcon(fObj.id),
                 })
             end
         end
+
         return menu
     end
     instance.factionBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, RR.L["DROPDOWN_FACTION"], function(selfF)
@@ -146,7 +206,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                 icon = itm.icon,
                 func = function()
                     RR.Config:SetFilterSetting("factionFilter", itm.value)
-                    selfF.text:SetText(itm.text)
+                    selfF.text:SetText(itm.value == "any" and RR.L["DROPDOWN_FACTION"] or itm.text)
                     if instance.onRefresh then instance.onRefresh() end
                 end,
                 checked = (RR.Config:GetFilterSetting("factionFilter") or "any") == itm.value,
@@ -158,7 +218,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     RR.UI.Theme:AddTooltip(instance.factionBtn, RR.L["TOOLTIP_FACTION_FILTER_TITLE"], RR.L["TOOLTIP_FACTION_FILTER_DESC"])
 
     local function buildSpecMenu()
-        local currentProf = (RR.Engine and RR.Engine:GetCurrentProfession()) or "Tailoring"
+        local currentProf = (RR.Scanner and RR.Scanner:GetCurrentProfession()) or "Leatherworking"
         local specs = RR.DB:GetSpecialisations(currentProf)
         local menu = {
             { text = RR.L["SPEC_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" }
@@ -194,24 +254,45 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     instance.specBtn:SetPoint("LEFT", instance.factionBtn, "RIGHT", 8, 0)
     RR.UI.Theme:AddTooltip(instance.specBtn, RR.L["TOOLTIP_SPEC_FILTER_TITLE"], RR.L["TOOLTIP_SPEC_FILTER_DESC"])
 
-    local phaseMenu = {
-        { text = RR.L["PHASE_ALL"], value = 0, icon = "Interface\\Icons\\INV_Misc_Book_08" },
-        { text = RR.L["PHASE_1"], value = 1, icon = "Interface\\Icons\\Spell_Fire_MoltenBlood" },
-        { text = RR.L["PHASE_2"], value = 2, icon = "Interface\\Icons\\Spell_Nature_Earthquake" },
-        { text = RR.L["PHASE_3"], value = 3, icon = "Interface\\Icons\\INV_Misc_Head_Dragon_Black" },
-        { text = RR.L["PHASE_4"], value = 4, icon = "Interface\\Icons\\Ability_Hunter_Pet_Bat" },
-        { text = RR.L["PHASE_5"], value = 5, icon = "Interface\\Icons\\INV_Misc_AhnQirajTrinket_03" },
-        { text = RR.L["PHASE_6"], value = 6, icon = "Interface\\Icons\\Spell_Shadow_DeathPact" },
-    }
+    local function buildPhaseMenu()
+        local isTBC = RR.DB:IsTBC()
+        local list = {
+            { text = RR.L["PHASE_ALL"], value = 0, icon = "Interface\\Icons\\INV_Misc_Book_08" },
+        }
+        local maxPhases = isTBC and 5 or 6
+        local icons = isTBC and {
+            "Interface\\Icons\\Spell_Fire_MoltenBlood",
+            "Interface\\Icons\\Spell_Nature_Earthquake",
+            "Interface\\Icons\\INV_Misc_Head_Dragon_Black",
+            "Interface\\Icons\\Ability_Hunter_Pet_Bat",
+            "Interface\\Icons\\Spell_Holy_InnerFire",
+        } or {
+            "Interface\\Icons\\Spell_Fire_MoltenBlood",
+            "Interface\\Icons\\Spell_Nature_Earthquake",
+            "Interface\\Icons\\INV_Misc_Head_Dragon_Black",
+            "Interface\\Icons\\Ability_Hunter_Pet_Bat",
+            "Interface\\Icons\\INV_Misc_AhnQirajTrinket_03",
+            "Interface\\Icons\\Spell_Shadow_DeathPact",
+        }
+        for p = 1, maxPhases do
+            table.insert(list, {
+                text = RR.DB:GetPhaseName(p),
+                value = p,
+                icon = icons[p] or "Interface\\Icons\\INV_Misc_Book_08",
+            })
+        end
+        return list
+    end
+
     instance.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 105, RR.L["DROPDOWN_PHASE"], function(selfF)
         local menu = {}
-        for _, itm in ipairs(phaseMenu) do
+        for _, itm in ipairs(buildPhaseMenu()) do
             table.insert(menu, {
                 text = itm.text,
                 icon = itm.icon,
                 func = function()
                     RR.Config:SetFilterSetting("phaseFilter", itm.value)
-                    selfF.text:SetText(itm.text)
+                    selfF.text:SetText(itm.value == 0 and RR.L["DROPDOWN_PHASE"] or itm.text)
                     if instance.onRefresh then instance.onRefresh() end
                 end,
                 checked = (RR.Config:GetFilterSetting("phaseFilter") or 0) == itm.value,
@@ -229,29 +310,39 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     zoneLabel:SetText(RR.L["LABEL_ZONE_COLON"])
 
     instance.continentBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, RR.L["REGION_ALL"], function(selfF)
-        local contMenu = {
-            { text = RR.L["REGION_ALL"], value = "any" },
-            { text = RR.L["CONTINENT_KALIMDOR"], value = 1 },
-            { text = RR.L["CONTINENT_EASTERN_KINGDOMS"], value = 2 },
-            { text = RR.L["CONTINENT_BATTLEGROUNDS"], value = 3 },
-            { text = RR.L["CONTINENT_DUNGEONS"], value = 4 },
-            { text = RR.L["CONTINENT_RAIDS"], value = 5 },
-        }
-        local menu = {}
-        for _, itm in ipairs(contMenu) do
-            table.insert(menu, {
-                text = itm.text,
+        local menu = {
+            {
+                text = RR.L["REGION_ALL"],
                 func = function()
-                    RR.Config:SetFilterSetting("continentFilter", itm.value)
+                    RR.Config:SetFilterSetting("continentFilter", "any")
                     RR.Config:SetFilterSetting("zoneFilter", "any")
-                    selfF.text:SetText(itm.text)
+                    selfF.text:SetText(RR.L["REGION_ALL"])
                     if instance.zoneDropBtn and instance.zoneDropBtn.text then
                         instance.zoneDropBtn.text:SetText(RR.L["DROPDOWN_ZONE"])
                     end
                     instance:UpdateFilterButtons()
                     if instance.onRefresh then instance.onRefresh() end
                 end,
-                checked = (RR.Config:GetFilterSetting("continentFilter") or "any") == itm.value,
+                checked = (RR.Config:GetFilterSetting("continentFilter") or "any") == "any",
+            }
+        }
+        local continents = RR.DB:GetContinents()
+        for _, cont in ipairs(continents) do
+            local contId = cont.id
+            local contName = cont.name
+            table.insert(menu, {
+                text = contName,
+                func = function()
+                    RR.Config:SetFilterSetting("continentFilter", contId)
+                    RR.Config:SetFilterSetting("zoneFilter", "any")
+                    selfF.text:SetText(contName)
+                    if instance.zoneDropBtn and instance.zoneDropBtn.text then
+                        instance.zoneDropBtn.text:SetText(RR.L["DROPDOWN_ZONE"])
+                    end
+                    instance:UpdateFilterButtons()
+                    if instance.onRefresh then instance.onRefresh() end
+                end,
+                checked = (RR.Config:GetFilterSetting("continentFilter") or "any") == contId,
             })
         end
         RR.UI.Dropdown:Show(selfF, menu)
@@ -284,7 +375,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                     RR.Config:SetFilterSetting("zoneFilter", z.id)
                     selfF.text:SetText(z.name)
                     local contLabel = (instance.continentBtn and instance.continentBtn.text and instance.continentBtn.text:GetText()) or RR.L["REGION_ALL"]
-                    local prof = RR.Scanner.currentProfession or "Tailoring"
+                    local prof = (RR.Scanner and RR.Scanner:GetCurrentProfession()) or "Leatherworking"
                     local zoneData = { id = z.id, name = z.name, cont = curCont, contName = contLabel }
                     RR.Config:SaveLastZoneForProfession(prof, zoneData)
                     if instance.zoneBtns and instance.zoneBtns.last then
@@ -330,7 +421,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     local zBtnLast = RR.UI.Theme:CreateDarkButton(filterArea, RR.L["QUICK_LAST_ZONE"], 110, 24)
     zBtnLast:SetPoint("LEFT", zBtnCurrent, "RIGHT", 5, 0)
     zBtnLast:SetScript("OnClick", function()
-        local prof = RR.Scanner.currentProfession or "Tailoring"
+        local prof = (RR.Scanner and RR.Scanner:GetCurrentProfession()) or "Leatherworking"
         local lastZone = RR.Config:GetLastZoneForProfession(prof)
         if lastZone and lastZone.id then
             RR.Config:SetFilterSetting("continentFilter", lastZone.cont)
@@ -371,7 +462,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     end
 
     function instance:UpdateLastZoneForCurrentProfession()
-        local prof = RR.Scanner.currentProfession or "Tailoring"
+        local prof = (RR.Scanner and RR.Scanner:GetCurrentProfession()) or "Leatherworking"
         local saved = RR.Config:GetLastZoneForProfession(prof)
         if saved and saved.id and saved.name then
             if self.zoneBtns and self.zoneBtns.last then

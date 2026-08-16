@@ -155,6 +155,16 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
         scrollbar:SetValue(cur - (delta * 2))
     end)
 
+    -- Empty list placeholder message
+    local emptyText = listPane:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    emptyText:SetPoint("CENTER", listPane, "CENTER", 0, 0)
+    emptyText:SetWidth(280)
+    emptyText:SetJustifyH("CENTER")
+    emptyText:SetTextColor(0.65, 0.65, 0.65, 1)
+    emptyText:SetText(RR.L["NO_RECIPES_FOUND"] or "Keine Rezepte für die aktuellen Filter gefunden.")
+    emptyText:Hide()
+    instance.emptyText = emptyText
+
     function instance:Render(recipeList, selectedId)
         if recipeList then
             self.currentList = recipeList
@@ -168,6 +178,12 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
 
         local filtered = self.currentList or {}
         local offset = self.scrollOffset or 0
+
+        if #filtered == 0 then
+            self.emptyText:Show()
+        else
+            self.emptyText:Hide()
+        end
 
         local iconMap = {
             trainer = "Interface\\Icons\\INV_Misc_Book_09",

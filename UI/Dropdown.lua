@@ -93,12 +93,13 @@ function RR.UI.Dropdown:Show(anchorBtn, items)
     local maxWidth = (anchorBtn:GetWidth() or 120) + 20
     local itemHeight = 22
     local count = #items
-    local maxVisible = 14
+    local maxVisible = 12
     local visibleCount = math.min(count, maxVisible)
     local totalContentHeight = count * itemHeight
     local viewHeight = visibleCount * itemHeight
     local needsScroll = count > maxVisible
 
+    local checkedIndex = nil
     for i, itm in ipairs(items) do
         local btn = popup.buttons[i]
         if not btn then
@@ -138,30 +139,46 @@ function RR.UI.Dropdown:Show(anchorBtn, items)
 
         btn.text:SetText(itm.text)
 
-        if itm.icon then
-            btn.icon:SetTexture(itm.icon)
-            btn.icon:Show()
-            btn.text:SetPoint("LEFT", 26, 0)
-        else
+        if itm.isHeader then
+            btn:Disable()
             btn.icon:Hide()
+            btn.check:Hide()
             btn.text:SetPoint("LEFT", 8, 0)
+            btn.text:SetTextColor(1, 0.82, 0, 1)
+            btn.text:SetFontObject("GameFontNormalSmall")
+            if btn.SetBackdropColor then btn:SetBackdropColor(0.12, 0.14, 0.20, 0.95) end
+            btn:SetScript("OnClick", nil)
+        else
+            btn:Enable()
+            btn.text:SetFontObject("GameFontHighlightSmall")
+            if btn.SetBackdropColor then btn:SetBackdropColor(0.04, 0.05, 0.06, 0.6) end
+
+            if itm.icon then
+                btn.icon:SetTexture(itm.icon)
+                btn.icon:Show()
+                btn.text:SetPoint("LEFT", 26, 0)
+            else
+                btn.icon:Hide()
+                btn.text:SetPoint("LEFT", 8, 0)
+            end
+
+            if itm.checked then
+                checkedIndex = i
+                btn.check:Show()
+                btn.text:SetTextColor(1, 0.82, 0, 1)
+            else
+                btn.check:Hide()
+                btn.text:SetTextColor(0.9, 0.9, 0.9, 1)
+            end
+
+            btn:SetScript("OnClick", function()
+                popup:Hide()
+                if itm.func then itm.func() end
+            end)
         end
 
         local strWidth = (btn.text:GetStringWidth() or 80) + 50
         if strWidth > maxWidth then maxWidth = strWidth end
-
-        if itm.checked then
-            btn.check:Show()
-            btn.text:SetTextColor(1, 0.82, 0, 1)
-        else
-            btn.check:Hide()
-            btn.text:SetTextColor(0.9, 0.9, 0.9, 1)
-        end
-
-        btn:SetScript("OnClick", function()
-            popup:Hide()
-            if itm.func then itm.func() end
-        end)
         btn:Show()
     end
 
@@ -186,7 +203,14 @@ function RR.UI.Dropdown:Show(anchorBtn, items)
         popup.scrollBar:Show()
         local maxScroll = math.max(0, totalContentHeight - viewHeight)
         popup.scrollBar:SetMinMaxValues(0, maxScroll)
-        popup.scrollBar:SetValue(0)
+
+        local targetScroll = 0
+        if checkedIndex and checkedIndex > 0 then
+            local itemY = (checkedIndex - 1) * itemHeight
+            targetScroll = math.min(maxScroll, math.max(0, itemY - (3 * itemHeight)))
+        end
+        popup.scrollBar:SetValue(targetScroll)
+        popup.scrollFrame:SetVerticalScroll(targetScroll)
     else
         popup.scrollFrame:SetPoint("TOPLEFT", 4, -4)
         popup.scrollFrame:SetPoint("BOTTOMRIGHT", -4, 4)
