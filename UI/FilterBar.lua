@@ -99,7 +99,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         { text = RR.L["SOURCE_HOLIDAY"], value = "holiday", icon = "Interface\\Icons\\INV_Misc_Gift_01" },
         { text = RR.L["SOURCE_REPUTATION"], value = "reputation", icon = "Interface\\Icons\\INV_BannerPVP_02" },
     }
-    instance.sourceBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, RR.L["DROPDOWN_SOURCE"], function(selfF)
+    instance.sourceBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 95, RR.L["DROPDOWN_SOURCE"], function(selfF)
         local menu = {}
         for _, itm in ipairs(sourceMenu) do
             table.insert(menu, {
@@ -107,7 +107,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                 icon = itm.icon,
                 func = function()
                     RR.Config:SetFilterSetting("sourceFilter", itm.value)
-                    selfF.text:SetText(itm.text)
+                    selfF.text:SetText(itm.value == "any" and RR.L["DROPDOWN_SOURCE"] or itm.text)
                     if instance.onRefresh then instance.onRefresh() end
                 end,
                 checked = (RR.Config:GetFilterSetting("sourceFilter") or "any") == itm.value,
@@ -115,48 +115,61 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         end
         RR.UI.Dropdown:Show(selfF, menu)
     end)
-    instance.sourceBtn:SetPoint("LEFT", sourceLabel, "RIGHT", 8, 0)
+    instance.sourceBtn:SetPoint("LEFT", sourceLabel, "RIGHT", 6, 0)
     RR.UI.Theme:AddTooltip(instance.sourceBtn, RR.L["TOOLTIP_SOURCE_FILTER_TITLE"], RR.L["TOOLTIP_SOURCE_FILTER_DESC"])
 
-    local ALLIANCE_FACTIONS = {
-        [47] = true,  -- Ironforge / Eisenschmiede
-        [54] = true,  -- Gnomeregan
-        [72] = true,  -- Stormwind / Sturmwind
-        [141] = true, -- Darnassus
-        [930] = true, -- Exodar / Die Exodar
-        [946] = true, -- Honor Hold / Ehrenfeste
-        [978] = true, -- Kurenai
+    -- Dropdown 1: Faction (Alliance / Horde / Neutral / All)
+    local factionMenu = {
+        { text = RR.L["FACTION_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" },
+        { text = RR.L["FACTION_ALLIANCE"], value = "Alliance", icon = RR.ADDON_PATH .. "\\images\\alliance.tga" },
+        { text = RR.L["FACTION_HORDE"], value = "Horde", icon = RR.ADDON_PATH .. "\\images\\horde.tga" },
+        { text = RR.L["FACTION_NEUTRAL"], value = "Neutral", icon = RR.ADDON_PATH .. "\\images\\neutral.tga" },
     }
-    local HORDE_FACTIONS = {
-        [68] = true,  -- Undercity / Unterstadt
-        [76] = true,  -- Orgrimmar
-        [81] = true,  -- Thunder Bluff / Donnerfels
-        [530] = true, -- Darkspear Trolls / Dunkelspeertrolle
-        [911] = true, -- Silvermoon City / Silbermond
-        [922] = true, -- Tranquillien / Tristessa
-        [941] = true, -- The Mag'har / Die Mag'har
-        [947] = true, -- Thrallmar
-    }
+    instance.factionBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 90, RR.L["DROPDOWN_FACTION"], function(selfF)
+        local menu = {}
+        for _, itm in ipairs(factionMenu) do
+            table.insert(menu, {
+                text = itm.text,
+                icon = itm.icon,
+                func = function()
+                    RR.Config:SetFilterSetting("factionFilter", itm.value)
+                    selfF.text:SetText(itm.value == "any" and RR.L["DROPDOWN_FACTION"] or itm.text)
 
-    local function getFactionIcon(factionId)
-        if ALLIANCE_FACTIONS[factionId] then
-            return RR.ADDON_PATH .. "\\images\\alliance.tga"
-        elseif HORDE_FACTIONS[factionId] then
-            return RR.ADDON_PATH .. "\\images\\horde.tga"
-        else
-            return RR.ADDON_PATH .. "\\images\\neutral.tga"
+                    -- Check if current reputation filter is still valid under new faction filter
+                    local curRep = RR.Config:GetFilterSetting("repFilter")
+                    if curRep and curRep ~= "any" and type(curRep) == "number" then
+                        local cList, tList = RR.DB:GetReputationFactions(itm.value)
+                        local isValid = false
+                        for _, f in ipairs(cList) do if f.id == curRep then isValid = true break end end
+                        if not isValid then
+                            for _, f in ipairs(tList) do if f.id == curRep then isValid = true break end end
+                        end
+                        if not isValid then
+                            RR.Config:SetFilterSetting("repFilter", "any")
+                            if instance.repBtn and instance.repBtn.text then
+                                instance.repBtn.text:SetText(RR.L["DROPDOWN_REPUTATION"])
+                            end
+                        end
+                    end
+
+                    if instance.onRefresh then instance.onRefresh() end
+                end,
+                checked = (RR.Config:GetFilterSetting("factionFilter") or "any") == itm.value,
+            })
         end
-    end
+        RR.UI.Dropdown:Show(selfF, menu)
+    end)
+    instance.factionBtn:SetPoint("LEFT", instance.sourceBtn, "RIGHT", 6, 0)
+    RR.UI.Theme:AddTooltip(instance.factionBtn, RR.L["TOOLTIP_FACTION_FILTER_TITLE"], RR.L["TOOLTIP_FACTION_FILTER_DESC"])
 
-    local function buildFactionMenu()
+    -- Dropdown 2: Reputation (Ruf-Fraktionen filtered dynamically by current factionFilter)
+    local function buildReputationMenu()
+        local curFaction = RR.Config:GetFilterSetting("factionFilter") or "any"
         local menu = {
-            { text = RR.L["FACTION_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" },
-            { text = RR.L["FACTION_ALLIANCE"], value = "Alliance", icon = RR.ADDON_PATH .. "\\images\\alliance.tga" },
-            { text = RR.L["FACTION_HORDE"], value = "Horde", icon = RR.ADDON_PATH .. "\\images\\horde.tga" },
-            { text = RR.L["FACTION_NEUTRAL"], value = "Neutral", icon = RR.ADDON_PATH .. "\\images\\neutral.tga" },
+            { text = RR.L["REP_ALL"], value = "any", icon = "Interface\\Icons\\INV_Misc_Book_08" },
         }
 
-        local classicFactions, tbcFactions = RR.DB:GetReputationFactions()
+        local classicFactions, tbcFactions = RR.DB:GetReputationFactions(curFaction)
 
         if RR.DB:IsTBC() and #tbcFactions > 0 then
             table.insert(menu, {
@@ -167,7 +180,9 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                 table.insert(menu, {
                     text = fObj.name,
                     value = fObj.id,
-                    icon = getFactionIcon(fObj.id),
+                    icon = (fObj.allegiance == "Alliance" and (RR.ADDON_PATH .. "\\images\\alliance.tga")) or
+                           (fObj.allegiance == "Horde" and (RR.ADDON_PATH .. "\\images\\horde.tga")) or
+                           (RR.ADDON_PATH .. "\\images\\neutral.tga"),
                 })
             end
 
@@ -179,7 +194,9 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                 table.insert(menu, {
                     text = fObj.name,
                     value = fObj.id,
-                    icon = getFactionIcon(fObj.id),
+                    icon = (fObj.allegiance == "Alliance" and (RR.ADDON_PATH .. "\\images\\alliance.tga")) or
+                           (fObj.allegiance == "Horde" and (RR.ADDON_PATH .. "\\images\\horde.tga")) or
+                           (RR.ADDON_PATH .. "\\images\\neutral.tga"),
                 })
             end
         else
@@ -191,31 +208,35 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                 table.insert(menu, {
                     text = fObj.name,
                     value = fObj.id,
-                    icon = getFactionIcon(fObj.id),
+                    icon = (fObj.allegiance == "Alliance" and (RR.ADDON_PATH .. "\\images\\alliance.tga")) or
+                           (fObj.allegiance == "Horde" and (RR.ADDON_PATH .. "\\images\\horde.tga")) or
+                           (RR.ADDON_PATH .. "\\images\\neutral.tga"),
                 })
             end
         end
 
         return menu
     end
-    instance.factionBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 120, RR.L["DROPDOWN_FACTION"], function(selfF)
+
+    instance.repBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 115, RR.L["DROPDOWN_REPUTATION"], function(selfF)
         local menu = {}
-        for _, itm in ipairs(buildFactionMenu()) do
+        for _, itm in ipairs(buildReputationMenu()) do
             table.insert(menu, {
                 text = itm.text,
                 icon = itm.icon,
+                isHeader = itm.isHeader,
                 func = function()
-                    RR.Config:SetFilterSetting("factionFilter", itm.value)
-                    selfF.text:SetText(itm.value == "any" and RR.L["DROPDOWN_FACTION"] or itm.text)
+                    RR.Config:SetFilterSetting("repFilter", itm.value)
+                    selfF.text:SetText(itm.value == "any" and RR.L["DROPDOWN_REPUTATION"] or itm.text)
                     if instance.onRefresh then instance.onRefresh() end
                 end,
-                checked = (RR.Config:GetFilterSetting("factionFilter") or "any") == itm.value,
+                checked = (RR.Config:GetFilterSetting("repFilter") or "any") == itm.value,
             })
         end
         RR.UI.Dropdown:Show(selfF, menu)
     end)
-    instance.factionBtn:SetPoint("LEFT", instance.sourceBtn, "RIGHT", 8, 0)
-    RR.UI.Theme:AddTooltip(instance.factionBtn, RR.L["TOOLTIP_FACTION_FILTER_TITLE"], RR.L["TOOLTIP_FACTION_FILTER_DESC"])
+    instance.repBtn:SetPoint("LEFT", instance.factionBtn, "RIGHT", 6, 0)
+    RR.UI.Theme:AddTooltip(instance.repBtn, RR.L["TOOLTIP_REP_FILTER_TITLE"], RR.L["TOOLTIP_REP_FILTER_DESC"])
 
     local function buildSpecMenu()
         local currentProf = (RR.Scanner and RR.Scanner:GetCurrentProfession()) or "Leatherworking"
@@ -235,7 +256,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         end
         return menu
     end
-    instance.specBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 135, RR.L["DROPDOWN_SPEC"], function(selfF)
+    instance.specBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 110, RR.L["DROPDOWN_SPEC"], function(selfF)
         local menu = {}
         for _, itm in ipairs(buildSpecMenu()) do
             table.insert(menu, {
@@ -251,7 +272,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         end
         RR.UI.Dropdown:Show(selfF, menu)
     end)
-    instance.specBtn:SetPoint("LEFT", instance.factionBtn, "RIGHT", 8, 0)
+    instance.specBtn:SetPoint("LEFT", instance.repBtn, "RIGHT", 6, 0)
     RR.UI.Theme:AddTooltip(instance.specBtn, RR.L["TOOLTIP_SPEC_FILTER_TITLE"], RR.L["TOOLTIP_SPEC_FILTER_DESC"])
 
     local function buildPhaseMenu()
@@ -260,31 +281,16 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
             { text = RR.L["PHASE_ALL"], value = 0, icon = "Interface\\Icons\\INV_Misc_Book_08" },
         }
         local maxPhases = isTBC and 5 or 6
-        local icons = isTBC and {
-            "Interface\\Icons\\Spell_Fire_MoltenBlood",
-            "Interface\\Icons\\Spell_Nature_Earthquake",
-            "Interface\\Icons\\INV_Misc_Head_Dragon_Black",
-            "Interface\\Icons\\Ability_Hunter_Pet_Bat",
-            "Interface\\Icons\\Spell_Holy_InnerFire",
-        } or {
-            "Interface\\Icons\\Spell_Fire_MoltenBlood",
-            "Interface\\Icons\\Spell_Nature_Earthquake",
-            "Interface\\Icons\\INV_Misc_Head_Dragon_Black",
-            "Interface\\Icons\\Ability_Hunter_Pet_Bat",
-            "Interface\\Icons\\INV_Misc_AhnQirajTrinket_03",
-            "Interface\\Icons\\Spell_Shadow_DeathPact",
-        }
         for p = 1, maxPhases do
             table.insert(list, {
                 text = RR.DB:GetPhaseName(p),
                 value = p,
-                icon = icons[p] or "Interface\\Icons\\INV_Misc_Book_08",
+                icon = "Interface\\Icons\\INV_Misc_Book_09",
             })
         end
         return list
     end
-
-    instance.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 105, RR.L["DROPDOWN_PHASE"], function(selfF)
+    instance.phaseBtn = RR.UI.Theme:CreateDropDownFrame(filterArea, 90, RR.L["DROPDOWN_PHASE"], function(selfF)
         local menu = {}
         for _, itm in ipairs(buildPhaseMenu()) do
             table.insert(menu, {
@@ -300,7 +306,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         end
         RR.UI.Dropdown:Show(selfF, menu)
     end)
-    instance.phaseBtn:SetPoint("LEFT", instance.specBtn, "RIGHT", 8, 0)
+    instance.phaseBtn:SetPoint("LEFT", instance.specBtn, "RIGHT", 6, 0)
     RR.UI.Theme:AddTooltip(instance.phaseBtn, RR.L["TOOLTIP_PHASE_FILTER_TITLE"], RR.L["TOOLTIP_PHASE_FILTER_DESC"])
 
     -- ROW 3: Zone: [ Region v ] [ Zone v ] [ Any Zone ] [ Current Zone ] [ <Last Zone> ]
@@ -457,6 +463,25 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
             else
                 local sName = RR.DB:GetSpecialisationName(curSpec)
                 self.specBtn.text:SetText(sName or RR.L["DROPDOWN_SPEC"])
+            end
+        end
+
+        local curFaction = RR.Config:GetFilterSetting("factionFilter") or "any"
+        if self.factionBtn and self.factionBtn.text then
+            if curFaction == "any" then
+                self.factionBtn.text:SetText(RR.L["DROPDOWN_FACTION"])
+            else
+                self.factionBtn.text:SetText(RR.L["FACTION_" .. string.upper(curFaction)] or curFaction)
+            end
+        end
+
+        local curRep = RR.Config:GetFilterSetting("repFilter") or "any"
+        if self.repBtn and self.repBtn.text then
+            if curRep == "any" then
+                self.repBtn.text:SetText(RR.L["DROPDOWN_REPUTATION"])
+            else
+                local fName = RR.DB:GetFactionName(curRep)
+                self.repBtn.text:SetText(fName or RR.L["DROPDOWN_REPUTATION"])
             end
         end
     end

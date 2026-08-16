@@ -26,6 +26,8 @@ local defaultStrings = {
     -- Dropdown Headers / Initial labels
     ["DROPDOWN_SOURCE"] = "Source",
     ["DROPDOWN_FACTION"] = "Faction",
+    ["DROPDOWN_REPUTATION"] = "Reputation",
+    ["REP_ALL"] = "Any Reputation",
     ["DROPDOWN_SPEC"] = "Specialisation",
     ["DROPDOWN_PHASE"] = "Phase",
     ["DROPDOWN_REGION"] = "Region",
@@ -183,6 +185,8 @@ local translations = {
         ["MODE_ALL"] = "Alle",
         ["DROPDOWN_SOURCE"] = "Quelle",
         ["DROPDOWN_FACTION"] = "Fraktion",
+        ["DROPDOWN_REPUTATION"] = "Ruf",
+        ["REP_ALL"] = "Jeder Ruf",
         ["DROPDOWN_SPEC"] = "Spezialisierung",
         ["DROPDOWN_PHASE"] = "Phase",
         ["DROPDOWN_REGION"] = "Region",

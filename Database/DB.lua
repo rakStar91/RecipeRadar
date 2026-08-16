@@ -545,8 +545,19 @@ function RR.DB:GetFactionName(factionId)
     return nil
 end
 
---- Returns lists of curated reputation factions for Classic and TBC
-function RR.DB:GetReputationFactions()
+local ALLIANCE_REPUTATION_FACTIONS = {
+    [946] = true, -- Honor Hold / Ehrenfeste
+    [978] = true, -- Kurenai
+}
+
+local HORDE_REPUTATION_FACTIONS = {
+    [922] = true, -- Tranquillien / Tristessa
+    [941] = true, -- The Mag'har / Die Mag'har
+    [947] = true, -- Thrallmar
+}
+
+--- Returns lists of curated reputation factions for Classic and TBC filtered by factionFilter (Alliance, Horde, Neutral)
+function RR.DB:GetReputationFactions(factionFilter)
     local isTBC = self:IsTBC()
 
     local classicFactions = {
@@ -567,32 +578,48 @@ function RR.DB:GetReputationFactions()
         933,  -- The Consortium / Das Konsortium
         967,  -- The Violet Eye / Das Violette Auge
         932,  -- The Aldor / Die Aldor
-        941,  -- The Mag'har / Die Mag'har
+        941,  -- The Mag'har / Die Mag'har (Horde)
         934,  -- The Scryers / Die Seher
         935,  -- The Sha'tar / Die Sha'tar
         990,  -- The Scale of the Sands / Die Wächter der Sande
-        946,  -- Honor Hold / Ehrenfeste
+        946,  -- Honor Hold / Ehrenfeste (Alliance)
         942,  -- Cenarion Expedition / Expedition des Cenarius
         989,  -- Keepers of Time / Hüter der Zeit
-        978,  -- Kurenai / Kurenai
+        978,  -- Kurenai / Kurenai (Alliance)
         1015, -- Netherwing / Netherschwingen
         1077, -- Shattered Sun Offensive / Offensive der Zerschmetterten Sonne
         1038, -- Ogri'la / Ogri'la
         970,  -- Sporeggar / Sporeggar
-        947,  -- Thrallmar / Thrallmar
-        922,  -- Tranquillien / Tristessa
+        947,  -- Thrallmar / Thrallmar (Horde)
+        922,  -- Tranquillien / Tristessa (Horde)
         1011, -- Lower City / Unteres Viertel
     }
 
     local function buildList(idList)
         local res = {}
         for _, id in ipairs(idList) do
-            local fName = self:GetFactionName(id)
-            if fName and fName ~= "" then
-                table.insert(res, {
-                    id = id,
-                    name = fName,
-                })
+            local isAlly = ALLIANCE_REPUTATION_FACTIONS[id] == true
+            local isHorde = HORDE_REPUTATION_FACTIONS[id] == true
+            local isNeutral = not isAlly and not isHorde
+
+            local matches = true
+            if factionFilter == "Alliance" then
+                matches = isAlly or isNeutral
+            elseif factionFilter == "Horde" then
+                matches = isHorde or isNeutral
+            elseif factionFilter == "Neutral" then
+                matches = isNeutral
+            end
+
+            if matches then
+                local fName = self:GetFactionName(id)
+                if fName and fName ~= "" then
+                    table.insert(res, {
+                        id = id,
+                        name = fName,
+                        allegiance = isAlly and "Alliance" or (isHorde and "Horde" or "Neutral"),
+                    })
+                end
             end
         end
         table.sort(res, function(a, b) return a.name < b.name end)

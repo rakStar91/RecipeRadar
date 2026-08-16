@@ -53,26 +53,31 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
             end
         end
 
-        -- 3. Faction & Reputation Check
+        -- 3. Faction Allegiance Check (Alliance, Horde, Neutral)
         local passFaction = true
         if factionFilter == "Alliance" or factionFilter == "Horde" or factionFilter == "Neutral" then
             if not meta.factions[factionFilter] and not meta.factions["Neutral"] then
                 passFaction = false
             end
-        elseif type(factionFilter) == "number" and factionFilter > 0 then
+        end
+
+        -- 3b. Reputation Faction Check (Specific reputation requirement)
+        local repFilter = RR.Config:GetFilterSetting("repFilter")
+        local passRep = true
+        if repFilter and type(repFilter) == "number" and repFilter > 0 then
             local hasRep = false
-            if meta.reputationFactionId == factionFilter then
+            if meta.reputationFactionId == repFilter then
                 hasRep = true
             elseif meta.reputations then
                 for _, r in ipairs(meta.reputations) do
-                    if r.faction_id == factionFilter then
+                    if r.faction_id == repFilter then
                         hasRep = true
                         break
                     end
                 end
             end
             if not hasRep then
-                passFaction = false
+                passRep = false
             end
         end
 
@@ -122,7 +127,7 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
             end
         end
 
-        if passMode and passSource and passFaction and passZone and passPhase and passSpec and passSearch then
+        if passMode and passSource and passFaction and passRep and passZone and passPhase and passSpec and passSearch then
             table.insert(filtered, {
                 data = recipe,
                 id = spellId,
