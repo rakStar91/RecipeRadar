@@ -14,12 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Core & Tracking
 - **Comprehensive Recipe Database**: Complete tracking of recipes, plans, patterns, schematics, and formulas across all primary and secondary professions for World of Warcraft **Classic Era** and **The Burning Crusade** (TBC).
 - **Interactive 3-Mode Filter**: Dedicated filtering to toggle between **[ Missing ]**, **[ Known ]**, and **[ All ]** recipes with distinct visual teal highlighting for skills already learned.
+- **1-Click Filter Reset**: Instant **[ Reset Filters ]** button restoring search text and all active filters to default across all 10 supported languages.
 - **Quick Zone Navigation Bar**: Instant 1-click filtering by **[ Any Zone ]**, **[ Current Zone ]**, and **[ Last Zone ]** with persistent character-specific memory across reloads and sessions.
-- **Universal Multi-Select Filter Dropdowns**: Full in-place multi-selection across all filter dropdowns (**Source**, **Faction**, **Reputation**, **Specialization**, and **Phase**) with dynamic button summaries and live list updates.
-- **Dedicated Faction & Reputation Filters**:
-  - Dedicated **Faction** filter with Alliance Lion, Horde Crest, and dual Neutral Crest icons and contextual filtering.
-  - Dedicated **Reputation** filter featuring authentic faction crests for Argent Dawn, Thorium Brotherhood, Timbermaw Hold, Zandalar Tribe, Hydraxian Waterlords, Darkmoon Faire, and Cenarion Circle.
-- **Strict Phase 1–6 Filtering**: Exact raid phase filtering featuring the Scourge Crest (`Spell_Shadow_DeathPact`) for Phase 6 (Naxxramas), with support for multi-phase selection.
+- **Universal Multi-Select Filter Dropdowns**: Full in-place multi-selection across all 5 filter dropdowns (**Source**, **Faction**, **Reputation**, **Specialization**, and **Phase**) with dynamic button summaries and live list updates.
+- **Strict Faction Exclusivity Filtering**:
+  - Exact isolation of **Alliance-only** (Lion Crest) and **Horde-only** (Horde Crest) exclusive recipes without leaking shared trainer/neutral recipes.
+  - Multi-selection support to combine your faction's exclusive recipes with shared/neutral recipes (`Horde + Neutral` or `Alliance + Neutral`).
+- **Dedicated Reputation Filter**:
+  - Curated reputation selection featuring authentic faction crests for Argent Dawn, Thorium Brotherhood, Timbermaw Hold, Zandalar Tribe, Hydraxian Waterlords, Darkmoon Faire, Cenarion Circle, and all TBC Outland factions.
+- **Expansion & Content Phase Separation**:
+  - **Classic Era**: Phases 1–6 (Molten Core through Naxxramas with the Scourge Crest).
+  - **The Burning Crusade**: Visual section headers distinguishing **TBC Phases 1–5** (Master's Key, Fel Fire, Warglaive, Troll Head, Holy Inner Fire) from **Classic Era Phases 1–6** with complete expansion metadata isolation.
 - **TomTom Waypoint Integration**: Clickable NPC names and coordinates for instant TomTom waypoint creation on the world map.
 - **Alt Character Tracking**: Comprehensive tooltip integration displaying recipe learned status across all characters on the player's realm and faction for both recipe scrolls and crafted items.
 - **Starter Profession Recipes**: Complete baseline item mappings for auto-learned starter recipes across all professions (Tailoring, Blacksmithing, Leatherworking, Alchemy, Engineering, Cooking, First Aid, Enchanting, Mining, Poisons).

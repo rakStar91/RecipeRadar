@@ -14,10 +14,14 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 ## ✨ Key Features
 
 * **3 Mode Filters**: Instantly switch between **[ Missing ]**, **[ Known ]**, and **[ All ]** recipes with distinct visual teal highlighting for skills you already learned.
+* **1-Click Filter Reset**: Dedicated **[ Reset Filters ]** button in Row 1 immediately restores all search terms, mode, source, faction, reputation, specialization, phase, and zone filters to default in one click.
 * **3-Button Quick Zone Bar**: Filter recipes on the fly by **[ Any Zone ]**, **[ Current Zone ]**, and **[ Last Zone ]** with per-character & per-profession persistence across logouts.
 * **Universal Multi-Select Filter Dropdowns**: Multi-select across all categories (**Source**, **Faction**, **Reputation**, **Specialization**, and **Phase**) with live updates, dynamic button counters, and in-place toggle checkmarks.
-* **Dynamic Faction & Reputation Filters**: Displays Alliance Lion, Horde Crest, and Dual Neutral Crest icons for faction-restricted and neutral recipes, plus dedicated reputation filters (Argent Dawn, Thorium Brotherhood, Timbermaw Hold, Zandalar Tribe, Hydraxian Waterlords, Darkmoon Faire, Cenarion Circle) with PVP banner crests.
-* **Strict Phase Matching**: Filter by exact raid phase (Phase 1 through Phase 6 with the Scourge Crest) or combine multiple phases simultaneously.
+* **Strict Faction Exclusivity Filtering**: Isolate **Alliance-only** (Lion Crest) and **Horde-only** (Horde Crest) exclusive recipes, or select **Neutral** for shared/cross-faction recipes. Combine them with multi-select to see everything your faction can obtain.
+* **Dedicated Reputation Filters**: Categorized reputation selection featuring authentic faction crests for Argent Dawn, Thorium Brotherhood, Timbermaw Hold, Zandalar Tribe, Hydraxian Waterlords, Darkmoon Faire, Cenarion Circle, and all TBC Outland factions.
+* **Expansion & Content Phase Separation**: 
+  * **Classic Era**: Phases 1–6 (Molten Core through Naxxramas with the Scourge Crest).
+  * **The Burning Crusade**: Visual section headers separating **TBC Phases 1–5** (Karazhan Key, Tempest Keep, Warglaive, Zul'Aman, Sunwell) and **Classic Era Phases 1–6** with 100% accurate expansion metadata and zero AQ/Sunwell phase mixing.
 * **Interactive Tooltip Item Hover**: Hovering over recipe names in the detail pane or list displays the exact crafted item tooltip, full stats, and profession requirements.
 * **Alt Character Tracking**: Tooltips display recipe learned status across all your characters on your realm & faction (both on recipes/patterns and crafted items).
 * **Starter Recipe Support**: Full tracking for baseline recipes acquired automatically upon learning a profession (e.g. Simple Linen Pants, Brown Linen Shirt, Linen Bandage, etc.).
