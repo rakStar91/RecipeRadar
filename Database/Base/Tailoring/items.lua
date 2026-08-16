@@ -1863,10 +1863,6 @@ RR_DATA["items"]["Tailoring"] = {
 			},
 			["phase"] = 1,
 			["quality"] = "uncommon",
-			["reputation"] = {
-				["faction_id"] = 576,
-				["level_id"] = 5,
-			},
 		},
 		{
 			["drops"] = {

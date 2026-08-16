@@ -102,10 +102,10 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
             end
         end
 
-        -- 5. Phase Check
+        -- 5. Phase Check (Strict Phase filter: show recipes introduced in the chosen phase)
         local passPhase = true
         if phaseFilter and phaseFilter > 0 then
-            if meta.phase > phaseFilter then
+            if meta.phase ~= phaseFilter then
                 passPhase = false
             end
         end
