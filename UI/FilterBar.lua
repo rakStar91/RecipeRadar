@@ -474,10 +474,20 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
                 "Interface\\Icons\\Spell_Shadow_DeathPact",
             }
 
+            table.insert(list, {
+                text = "--- The Burning Crusade ---",
+                isHeader = true,
+            })
+
             -- TBC Phases 1 to 5
             for p = 1, 5 do
                 addPhaseEntry("tbc_" .. p, RR.DB:GetPhaseName("tbc_" .. p), tbcIcons[p])
             end
+
+            table.insert(list, {
+                text = "--- Classic Era ---",
+                isHeader = true,
+            })
 
             -- Classic Phases 1 to 6
             for p = 1, 6 do
