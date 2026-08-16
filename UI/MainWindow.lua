@@ -13,22 +13,73 @@ function RR.UI.MainWindow:Initialize()
     -- 1. Main Container Window Frame
     local f = CreateFrame("Frame", "RecipeRadarFrame", UIParent, BackdropTemplateMixin and "BackdropTemplate")
     f:SetSize(840, 560)
-    f:SetPoint("CENTER", 0, 0)
+    
+    local pos = RR.Config:GetWindowPosition()
+    f:ClearAllPoints()
+    if pos and pos.point then
+        f:SetPoint(pos.point, UIParent, pos.relativePoint or pos.point, pos.x or 0, pos.y or 0)
+    else
+        f:SetPoint("CENTER", 0, 0)
+    end
+
     f:SetFrameStrata("HIGH")
     f:SetMovable(true)
     f:EnableMouse(true)
     f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart", f.StartMoving)
-    f:SetScript("OnDragStop", f.StopMovingOrSizing)
+    f:SetScript("OnDragStop", function(selfF)
+        selfF:StopMovingOrSizing()
+        local point, _, relPoint, xOfs, yOfs = selfF:GetPoint()
+        if point then
+            RR.Config:SaveWindowPosition(point, relPoint, xOfs, yOfs)
+        end
+    end)
     f:SetClampedToScreen(true)
 
     RR.UI.Theme:SkinWindow(f)
     self.frame = f
     f:Hide()
 
-    -- Centered Title Plaque Banner
+    -- Centered Title Plaque Banner (Clickable to switch profession)
     self.titlePlaque = RR.UI.Theme:CreateTitlePlaque(f, 420, 38, RR.NAME)
     self.titlePlaque:SetPoint("TOP", f, "TOP", 0, 12)
+    self.titlePlaque:EnableMouse(true)
+
+    local function buildProfessionMenu()
+        local menu = {}
+        local allProfs = {
+            "Leatherworking", "Tailoring", "Blacksmithing", "Alchemy", 
+            "Engineering", "Enchanting", "Jewelcrafting", "Cooking", "First Aid", "Poisons"
+        }
+        if RR.DB and not RR.DB:IsTBC() then
+            for i = #allProfs, 1, -1 do
+                if allProfs[i] == "Jewelcrafting" then table.remove(allProfs, i) end
+            end
+        end
+
+        local curProf = (RR.Scanner and RR.Scanner:GetCurrentProfession()) or "Leatherworking"
+        for _, pKey in ipairs(allProfs) do
+            local locName = RR.DB:GetProfessionDisplayName(pKey)
+            table.insert(menu, {
+                text = locName,
+                value = pKey,
+                icon = "Interface\\Icons\\INV_Misc_Book_08",
+                func = function()
+                    RR.Scanner.currentProfession = pKey
+                    self:Refresh()
+                end,
+                checked = (curProf == pKey),
+            })
+        end
+        return menu
+    end
+
+    self.titlePlaque:SetScript("OnMouseDown", function()
+        if RR.UI.Dropdown then
+            RR.UI.Dropdown:Show(self.titlePlaque, buildProfessionMenu())
+        end
+    end)
+    RR.UI.Theme:AddTooltip(self.titlePlaque, RR.NAME, "Klicken, um den angezeigten Beruf zu wechseln.")
 
     -- Close Button
     local closeBtn = CreateFrame("Button", nil, f, "UIPanelCloseButton")
@@ -89,7 +140,7 @@ end
 function RR.UI.MainWindow:Refresh()
     if not self.frame or not self.frame:IsShown() then return end
 
-    local prof = RR.Scanner.currentProfession or "Tailoring"
+    local prof = (RR.Scanner and RR.Scanner:GetCurrentProfession()) or "Leatherworking"
     local rawRecipes = RR.DB:GetRecipesForProfession(prof)
 
     -- Update the 3rd zone button label to match current profession's stored last zone

@@ -31,11 +31,40 @@ function RR.Scanner:Initialize()
     end)
 end
 
+--- Returns the current active profession key (e.g. Leatherworking), scanning character skills if needed
+function RR.Scanner:GetCurrentProfession()
+    if self.currentProfession and self.currentProfession ~= "" then
+        return RR.DB:GetEnglishProfessionName(self.currentProfession)
+    end
+
+    self:ScanCharacterSkills()
+
+    if self.currentProfession and self.currentProfession ~= "" then
+        return RR.DB:GetEnglishProfessionName(self.currentProfession)
+    end
+
+    local charData = RR.Config:GetCurrentChar()
+    if charData and charData.professions then
+        local craftingProfs = { "Leatherworking", "Tailoring", "Blacksmithing", "Alchemy", "Engineering", "Enchanting", "Jewelcrafting", "Cooking", "First Aid", "Poisons" }
+        for _, profKey in ipairs(craftingProfs) do
+            local locName = RR.DB:GetProfessionDisplayName(profKey)
+            if charData.professions[profKey] or (locName and charData.professions[locName]) then
+                self.currentProfession = profKey
+                return profKey
+            end
+        end
+    end
+
+    return "Leatherworking"
+end
+
 --- Automatically scans character skills tab to register which professions this character has
 function RR.Scanner:ScanCharacterSkills()
     local charData = RR.Config:GetCurrentChar()
     if not charData then return end
     charData.professions = charData.professions or {}
+
+    local primaryCraftingProf = nil
 
     if GetNumSkillLines and GetSkillLineInfo then
         local numSkills = GetNumSkillLines()
@@ -44,12 +73,22 @@ function RR.Scanner:ScanCharacterSkills()
             if not isHeader and skillName then
                 local engKey = RR.DB and RR.DB:GetEnglishProfessionName(skillName)
                 if engKey and RR.DB.Raw and RR.DB.Raw.professions and RR.DB.Raw.professions[engKey] then
-                    charData.professions[skillName] = charData.professions[skillName] or { known = {} }
-                    charData.professions[skillName].current = skillRank or 0
-                    charData.professions[skillName].max = skillMaxRank or 0
+                    charData.professions[engKey] = charData.professions[engKey] or { known = {} }
+                    charData.professions[engKey].current = skillRank or 0
+                    charData.professions[engKey].max = skillMaxRank or 0
+                    charData.professions[skillName] = charData.professions[engKey]
+
+                    -- Exclude gathering-only professions from being the default recipe window
+                    if not primaryCraftingProf and engKey ~= "Skinning" and engKey ~= "Herbalism" and engKey ~= "Mining" and engKey ~= "Fishing" then
+                        primaryCraftingProf = engKey
+                    end
                 end
             end
         end
+    end
+
+    if not self.currentProfession and primaryCraftingProf then
+        self.currentProfession = primaryCraftingProf
     end
 end
 
@@ -60,19 +99,21 @@ function RR.Scanner:ScanTradeSkill()
     local profName, currentRank, maxRank = GetTradeSkillLine()
     if not profName or profName == "UNKNOWN" or profName == "Header" then return end
 
-    self.currentProfession = profName
+    local engProf = RR.DB:GetEnglishProfessionName(profName)
+    self.currentProfession = engProf
     self.currentRank = currentRank or 0
     self.maxRank = maxRank or 0
 
     local charData = RR.Config:GetCurrentChar()
     if not charData then return end
 
-    charData.professions[profName] = charData.professions[profName] or {
+    charData.professions[engProf] = charData.professions[engProf] or {
         current = currentRank,
         max = maxRank,
         known = {},
     }
-    local knownTable = charData.professions[profName].known
+    charData.professions[profName] = charData.professions[engProf]
+    local knownTable = charData.professions[engProf].known
     charData.professions[profName].current = currentRank
     charData.professions[profName].max = maxRank
 
