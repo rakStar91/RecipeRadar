@@ -1,0 +1,14 @@
+package-as: RecipeRadar
+
+enable-toc-creation: no
+
+ignore:
+  - tools
+  - .git
+  - .gitignore
+  - .gitattributes
+  - .vscode
+  - "*.py"
+  - "*.bat"
+  - "*.sh"
+  - "ToDos.md"
