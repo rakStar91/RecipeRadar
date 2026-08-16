@@ -17,6 +17,7 @@ local defaultStrings = {
     ["OPTIONS"] = "Options",
     ["SEARCH_PLACEHOLDER"] = "Search recipes, items, NPCs...",
     ["SEARCH_BUTTON"] = "Search",
+    ["RESET_FILTERS_BUTTON"] = "Reset Filters",
 
     -- Mode Filters
     ["MODE_MISSING"] = "Missing",
@@ -139,6 +140,8 @@ local defaultStrings = {
     ["TOOLTIP_SEARCH_DESC"] = "Filters recipes by name. Type a keyword and press Enter or click Search.",
     ["TOOLTIP_SEARCH_BTN_TITLE"] = "Search",
     ["TOOLTIP_SEARCH_BTN_DESC"] = "Applies the search keyword filter to the recipe list.",
+    ["TOOLTIP_RESET_FILTERS_TITLE"] = "Reset Filters",
+    ["TOOLTIP_RESET_FILTERS_DESC"] = "Resets all search, source, faction, reputation, specialization, phase, and zone filters to default.",
     ["TOOLTIP_MODE_MISSING_TITLE"] = "Missing Recipes",
     ["TOOLTIP_MODE_MISSING_DESC"] = "Shows only recipes that your current character has not learned yet.",
     ["TOOLTIP_MODE_KNOWN_TITLE"] = "Learned Recipes",

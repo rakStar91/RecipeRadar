@@ -54,7 +54,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
 
     local searchBox = CreateFrame("EditBox", nil, filterArea, BackdropTemplateMixin and "BackdropTemplate")
     searchBox:SetPoint("TOPLEFT", nameLabel, "TOPRIGHT", 14, 3)
-    searchBox:SetSize(470, 24)
+    searchBox:SetSize(360, 24)
     searchBox:SetAutoFocus(false)
     searchBox:SetFontObject("GameFontHighlightSmall")
     searchBox:SetTextInsets(6, 6, 0, 0)
@@ -75,7 +75,7 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     end)
     instance.searchBox = searchBox
 
-    local searchBtn = RR.UI.Theme:CreateDarkButton(filterArea, RR.L["SEARCH_BUTTON"], 80, 24)
+    local searchBtn = RR.UI.Theme:CreateDarkButton(filterArea, RR.L["SEARCH_BUTTON"], 75, 24)
     searchBtn:SetPoint("LEFT", searchBox, "RIGHT", 6, 0)
     searchBtn:SetScript("OnClick", function()
         instance.searchBox:ClearFocus()
@@ -83,6 +83,25 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     end)
     RR.UI.Theme:AddTooltip(searchBox, RR.L["TOOLTIP_SEARCH_TITLE"], RR.L["TOOLTIP_SEARCH_DESC"])
     RR.UI.Theme:AddTooltip(searchBtn, RR.L["TOOLTIP_SEARCH_BTN_TITLE"], RR.L["TOOLTIP_SEARCH_BTN_DESC"])
+
+    local resetBtn = RR.UI.Theme:CreateDarkButton(filterArea, RR.L["RESET_FILTERS_BUTTON"], 145, 24)
+    resetBtn:SetPoint("LEFT", searchBtn, "RIGHT", 6, 0)
+    resetBtn:SetScript("OnClick", function()
+        instance.searchBox:SetText("")
+        instance.searchBox:ClearFocus()
+        instance.searchQuery = ""
+        RR.Config:SetFilterSetting("sourceFilter", "any")
+        RR.Config:SetFilterSetting("factionFilter", "any")
+        RR.Config:SetFilterSetting("repFilter", "any")
+        RR.Config:SetFilterSetting("specFilter", "any")
+        RR.Config:SetFilterSetting("phaseFilter", 0)
+        RR.Config:SetFilterSetting("continentFilter", "any")
+        RR.Config:SetFilterSetting("zoneFilter", "any")
+        instance:UpdateFilterButtons()
+        if instance.onRefresh then instance.onRefresh() end
+    end)
+    RR.UI.Theme:AddTooltip(resetBtn, RR.L["TOOLTIP_RESET_FILTERS_TITLE"], RR.L["TOOLTIP_RESET_FILTERS_DESC"])
+    instance.resetBtn = resetBtn
 
     -- ROW 2: Source: [ Source v ] [ Faction v ] [ Specialisation v ] [ Phase v ]
     local sourceLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
