@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.1] - 2026-08-23
+
+### Fixed
+- **Profession Frame Button Layering**: Fixed an issue where the `RR` launch button was rendered in the global `DIALOG` strata, causing it to remain visible on top of other overlapping interfaces (such as the Auction House frame).
+- **Frame Parenting & Strata**: Properly parented the `RR` launch button to the active profession window (`TradeSkillFrame`, `CraftFrame`, `DragonflightUIProfessionFrame`, etc.) so it matches the window's frame strata and level.
+- **Dynamic Window Visibility**: The attach button now automatically hides when no profession window is open, preventing rogue floating buttons.
+- **Candidate Frame Detection**: Added `ProfessionsFrame` to candidate frame lookup for broader compatibility with modern profession UI skins and overhauls.
+
+---
+
 ## [1.0.0] - 2026-08-16
 
 ### Initial Release
