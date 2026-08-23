@@ -2,13 +2,11 @@ import os
 import re
 import sys
 import zipfile
-import shutil
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOC_CLASSIC = os.path.join(ROOT_DIR, "RecipeRadar.toc")
 TOC_BCC = os.path.join(ROOT_DIR, "RecipeRadar-BCC.toc")
 CONSTANTS_FILE = os.path.join(ROOT_DIR, "Core", "Constants.lua")
-ANNIVERSARY_DIR = r"C:\Program Files (x86)\World of Warcraft\_anniversary_\Interface\AddOns\RecipeRadar"
 
 def get_current_version():
     if os.path.exists(TOC_CLASSIC):
@@ -42,70 +40,66 @@ def update_file_version(filepath, pattern, replacement):
         with open(filepath, "w", encoding="utf-8", newline="") as f:
             f.write(new_content)
 
-def sync_to_anniversary():
-    if os.path.exists(ANNIVERSARY_DIR):
-        print("Synchronizing updated files to _anniversary_...")
-        for root, dirs, files in os.walk(ROOT_DIR):
-            rel = os.path.relpath(root, ROOT_DIR)
-            if rel.startswith(".git"):
-                continue
-            dst_root = os.path.join(ANNIVERSARY_DIR, rel) if rel != "." else ANNIVERSARY_DIR
-            os.makedirs(dst_root, exist_ok=True)
-            for file in files:
-                src_file = os.path.join(root, file)
-                dst_file = os.path.join(dst_root, file)
-                shutil.copy2(src_file, dst_file)
-
 def main():
     cur_ver = get_current_version()
-    print(f"==================================================")
-    print(f" RecipeRadar Release Builder & Version Bumper")
-    print(f"==================================================")
+    print("==================================================")
+    print(" RecipeRadar Release Builder")
+    print("==================================================")
     print(f"Current version: {cur_ver}")
 
     # Determine target version
-    target_ver = None
+    target_ver = cur_ver
+    is_bump = False
+
     if len(sys.argv) > 1:
         arg = sys.argv[1].lower()
         if arg in ("patch", "minor", "major"):
             target_ver = bump_semver(cur_ver, arg)
+            is_bump = True
         elif re.match(r"^\d+\.\d+(\.\d+)?$", sys.argv[1]):
             target_ver = sys.argv[1]
+            if target_ver != cur_ver:
+                is_bump = True
+        elif arg in ("current", "rebuild", "build"):
+            target_ver = cur_ver
+            is_bump = False
         else:
-            target_ver = bump_semver(cur_ver, "patch")
+            print(f"Unknown argument '{sys.argv[1]}'.")
+            print("Usage: build_release.py [current | patch | minor | major | <version>]")
+            return
     else:
-        # Default to patch bump when running without arguments
-        suggested = bump_semver(cur_ver, "patch")
-        target_ver = suggested
+        # Default behavior: build current version without bumping
+        target_ver = cur_ver
+        is_bump = False
 
-    print(f"New release version: {target_ver}")
-    print("Updating version in TOC and Lua files...")
+    if is_bump:
+        print(f"Bumping release version: {cur_ver} -> {target_ver}")
+        print("Updating version in TOC and Lua files...")
 
-    # 1. Update RecipeRadar.toc
-    update_file_version(
-        TOC_CLASSIC,
-        r"(##\s*Version:\s*)([^\s\r\n]+)",
-        rf"\g<1>{target_ver}"
-    )
+        # 1. Update RecipeRadar.toc
+        update_file_version(
+            TOC_CLASSIC,
+            r"(##\s*Version:\s*)([^\s\r\n]+)",
+            rf"\g<1>{target_ver}"
+        )
 
-    # 2. Update RecipeRadar-BCC.toc
-    update_file_version(
-        TOC_BCC,
-        r"(##\s*Version:\s*)([^\s\r\n]+)",
-        rf"\g<1>{target_ver}"
-    )
+        # 2. Update RecipeRadar-BCC.toc
+        update_file_version(
+            TOC_BCC,
+            r"(##\s*Version:\s*)([^\s\r\n]+)",
+            rf"\g<1>{target_ver}"
+        )
 
-    # 3. Update Core/Constants.lua
-    update_file_version(
-        CONSTANTS_FILE,
-        r'(RR\.VERSION\s*=\s*")[^"]+(")',
-        rf'\g<1>{target_ver}\g<2>'
-    )
+        # 3. Update Core/Constants.lua
+        update_file_version(
+            CONSTANTS_FILE,
+            r'(RR\.VERSION\s*=\s*")[^"]+(")',
+            rf'\g<1>{target_ver}\g<2>'
+        )
+    else:
+        print(f"Packaging current version v{target_ver} (no version bump)...")
 
-    # 4. Sync to anniversary
-    sync_to_anniversary()
-
-    # 5. Build clean zip for CurseForge
+    # Build clean zip for CurseForge
     zip_name = f"RecipeRadar-v{target_ver}.zip"
     zip_path = os.path.join(ROOT_DIR, zip_name)
 
@@ -130,12 +124,12 @@ def main():
                 zf.write(abs_path, archive_name)
 
     size_kb = os.path.getsize(zip_path) / 1024
-    print(f"--------------------------------------------------")
-    print(f"SUCCESS: Release created successfully!")
+    print("--------------------------------------------------")
+    print("SUCCESS: Release created successfully!")
     print(f"File: {zip_name}")
     print(f"Size: {size_kb:.1f} KB")
-    print(f"Version: {target_ver} applied to TOCs and Constants.")
-    print(f"==================================================")
+    print(f"Version: {target_ver}")
+    print("==================================================")
 
 if __name__ == "__main__":
     main()
