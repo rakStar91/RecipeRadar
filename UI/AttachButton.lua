@@ -11,6 +11,7 @@ RR.UI.AttachButton = {}
 local CANDIDATE_FRAMES = {
     "DragonflightUIProfessionFrame",
     "DragonflightUIRetailProfessionFrame",
+    "ProfessionsFrame",
     "SkilletFrame",
     "MRTF_TradeSkillFrame",
     "TradeSkillFrame",
@@ -22,8 +23,7 @@ function RR.UI.AttachButton:Initialize()
 
     -- Create sleek dark-themed 3-slice button matching RecipeRadar's design
     local btn = RR.UI.Theme:CreateDarkButton(UIParent, "RR", 38, 22)
-    btn:SetFrameStrata("DIALOG")
-    btn:SetToplevel(true)
+    btn:Hide()
     btn:SetMovable(true)
     btn:SetClampedToScreen(true)
     btn:EnableMouse(true)
@@ -137,18 +137,20 @@ function RR.UI.AttachButton:HookFrames()
     watcher:SetScript("OnEvent", function(_, event)
         if event == "TRADE_SKILL_SHOW" or event == "CRAFT_SHOW" then
             self:PositionButton()
-            if self.button then self.button:Show() end
+            if self.button and self.anchor_frame then self.button:Show() end
 
             -- Asynchronous re-check for reskin addons like DragonflightUI that show their frame delayed
             if C_Timer and C_Timer.After then
                 C_Timer.After(0.05, function()
-                    if self.button and self.button:IsShown() then
+                    if self.button and self:FindCraftWindow() then
                         self:PositionButton()
+                        self.button:Show()
                     end
                 end)
                 C_Timer.After(0.2, function()
-                    if self.button and self.button:IsShown() then
+                    if self.button and self:FindCraftWindow() then
                         self:PositionButton()
+                        self.button:Show()
                     end
                 end)
             end
@@ -179,7 +181,7 @@ function RR.UI.AttachButton:HookFrames()
         if f and f.HookScript then
             f:HookScript("OnShow", function()
                 self:PositionButton()
-                if self.button then self.button:Show() end
+                if self.button and self.anchor_frame then self.button:Show() end
             end)
             f:HookScript("OnHide", function()
                 if not self:FindCraftWindow() then
@@ -187,11 +189,6 @@ function RR.UI.AttachButton:HookFrames()
                     if RR.UI.MainWindow and RR.UI.MainWindow.Hide then
                         RR.UI.MainWindow:Hide()
                     end
-                end
-            end)
-            f:HookScript("OnDragStop", function()
-                if self.button and self.button:IsShown() then
-                    self:PositionButton()
                 end
             end)
         end
@@ -203,36 +200,33 @@ function RR.UI.AttachButton:PositionButton()
 
     local parentFrame = self:FindCraftWindow()
     if not parentFrame or not parentFrame:IsVisible() or (parentFrame:GetWidth() or 0) < 50 then
-        -- Fallback if no window is visible
+        -- Fallback if no window is visible: detach and hide
         self.anchor_frame = nil
-        self.button:ClearAllPoints()
-        self.button:SetPoint("TOP", UIParent, "TOP", -200, -80)
+        self.button:Hide()
         return
     end
 
     self.anchor_frame = parentFrame
-    self.button:SetParent(UIParent)
-    self.button:SetFrameStrata("DIALOG")
-    self.button:SetToplevel(true)
+    self.button:SetParent(parentFrame)
+    self.button:SetFrameStrata(parentFrame:GetFrameStrata() or "HIGH")
+    self.button:SetFrameLevel((parentFrame:GetFrameLevel() or 1) + 10)
+    self.button:SetToplevel(false)
 
     -- Hook events on the parent frame if not yet installed
     if not parentFrame.rr_hooks_installed then
         parentFrame.rr_hooks_installed = true
         parentFrame:HookScript("OnHide", function()
-            if self.button then self.button:Hide() end
-            if RR.UI.MainWindow and RR.UI.MainWindow.Hide then
-                RR.UI.MainWindow:Hide()
+            if not self:FindCraftWindow() then
+                if self.button then self.button:Hide() end
+                if RR.UI.MainWindow and RR.UI.MainWindow.Hide then
+                    RR.UI.MainWindow:Hide()
+                end
             end
         end)
         parentFrame:HookScript("OnShow", function()
             if self.button then
                 self:PositionButton()
                 self.button:Show()
-            end
-        end)
-        parentFrame:HookScript("OnDragStop", function()
-            if self.button and self.button:IsShown() then
-                self:PositionButton()
             end
         end)
     end
