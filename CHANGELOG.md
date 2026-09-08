@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.2] - 2026-09-08
+
+### Added
+- **Optional Minimap Button**: Added full support for hiding and showing the circular minimap button.
+- **Minimap Button Context Menu**: Right-clicking the minimap button now opens a quick options menu with a 1-click action to hide the button.
+- **Slash Command Toggle**: Added `/rr minimap` (and `/rr mm`) chat command to quickly toggle minimap button visibility on and off.
+- **Visibility Persistence**: Minimap button hidden state is now reliably saved in `RecipeRadarDB.profile.minimap.hide` across `/reload` and game sessions.
+- **Enhanced Tooltip**: Minimap button tooltip now indicates both left-click (toggle window) and right-click (options menu) actions across supported languages.
+
+---
+
 ## [1.0.1] - 2026-08-23
 
 ### Fixed
