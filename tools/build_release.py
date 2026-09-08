@@ -103,9 +103,9 @@ def main():
     zip_name = f"RecipeRadar-v{target_ver}.zip"
     zip_path = os.path.join(ROOT_DIR, zip_name)
 
-    EXCLUDE_DIRS = {".git", ".vscode", "tools", "__pycache__"}
+    EXCLUDE_DIRS = {".git", ".vscode", ".agents", "tools", "__pycache__"}
     EXCLUDE_EXTS = {".py", ".pyc", ".tmp", ".bat", ".sh", ".jpg", ".png"}
-    EXCLUDE_FILES = {"ToDos.md", ".gitignore", ".gitattributes"}
+    EXCLUDE_FILES = {"ToDos.md", ".gitignore", ".gitattributes", ".pkgmeta"}
 
     print(f"Packaging {zip_name} for CurseForge...")
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
