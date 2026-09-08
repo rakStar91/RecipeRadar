@@ -53,6 +53,18 @@ function RR.Config:Initialize()
         end
     end
 
+    -- Ensure minimap config table and defaults are valid
+    if RecipeRadarDB.profile.minimap == nil then
+        RecipeRadarDB.profile.minimap = { hide = false, angle = 220 }
+    else
+        if RecipeRadarDB.profile.minimap.hide == nil then
+            RecipeRadarDB.profile.minimap.hide = false
+        end
+        if RecipeRadarDB.profile.minimap.angle == nil then
+            RecipeRadarDB.profile.minimap.angle = 220
+        end
+    end
+
     -- Ensure current character entry exists
     local realm = GetRealmName() or "UnknownRealm"
     local charName = UnitName("player") or "UnknownChar"
@@ -151,3 +163,23 @@ function RR.Config:SaveWindowPosition(point, relativePoint, x, y)
         }
     end
 end
+
+function RR.Config:IsMinimapButtonShown()
+    local profile = self:GetProfile()
+    return not (profile and profile.minimap and profile.minimap.hide == true)
+end
+
+function RR.Config:SetMinimapButtonShown(shown)
+    local profile = self:GetProfile()
+    if profile then
+        profile.minimap = profile.minimap or { angle = 220 }
+        profile.minimap.hide = not shown
+    end
+end
+
+function RR.Config:ToggleMinimapButton()
+    local newState = not self:IsMinimapButtonShown()
+    self:SetMinimapButtonShown(newState)
+    return newState
+end
+
