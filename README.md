@@ -49,16 +49,17 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 
 ## 📖 How to Use
 
-1. Open your in-game **Profession / Trade Skill** window.
-2. Click the **RR button** next to the frame to open your recipe tracker.
-3. Use the top filter bar to filter by status, zone, phase, faction, reputation, or acquisition source.
-4. Click on any NPC coordinate to automatically set a TomTom waypoint.
+1. Click the **Minimap button** or open your in-game **Profession / Trade Skill** window and click the attached **RR button** (or type `/rr`).
+2. Use the top filter bar to filter by status, zone, phase, faction, reputation, or acquisition source.
+3. Click on any NPC coordinate to automatically set a TomTom waypoint.
+4. Right-click the minimap button at any time to hide it (or type `/rr minimap` to toggle it back on).
 
 ---
 
 ## ⌨️ Slash Commands
 
 * `/rr` or `/reciperadar` – Toggle RecipeRadar window
+* `/rr minimap` or `/rr mm` – Toggle minimap button visibility
 * `/rr help` – Display available commands
 * `/rr debug` – Toggle live verbose debug logging for recipe and tooltip resolution
 
