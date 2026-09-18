@@ -12,8 +12,11 @@ function RR.UI.MinimapButton:Initialize()
 
     local btn = CreateFrame("Button", "RecipeRadarMinimapButton", Minimap)
     btn:SetSize(31, 31)
-    btn:SetFrameLevel(8)
-    btn:SetToplevel(true)
+    -- Anchor button to LOW strata and disable toplevel so it renders cleanly above
+    -- Minimap textures, but stays strictly underneath all standard UI panels (MEDIUM/HIGH)
+    btn:SetFrameStrata("LOW")
+    btn:SetFrameLevel((Minimap:GetFrameLevel() or 1) + 8)
+    btn:SetToplevel(false)
     btn:SetMovable(true)
     btn:EnableMouse(true)
     btn:RegisterForClicks("LeftButtonUp", "RightButtonUp")
