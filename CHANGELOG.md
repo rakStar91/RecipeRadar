@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.3] - 2026-09-18
+
+### Fixed
+- **Minimap Button Layering**: Fixed an issue where the circular minimap button had `SetToplevel(true)` enabled and lacked an explicit strata, causing it to render on top of overlapping UI windows (such as character sheets, bags, MBB, and the RecipeRadar main frame).
+- **Frame Strata & Toplevel Hierarchy**: Explicitly set the minimap button to `LOW` frame strata with relative frame level (`Minimap:GetFrameLevel() + 8`) and `SetToplevel(false)` so it sits cleanly above the minimap artwork while remaining strictly underneath all standard game panels (`MEDIUM`) and RecipeRadar windows (`HIGH`).
+
+---
+
 ## [1.0.2] - 2026-09-08
 
 ### Added
