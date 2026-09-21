@@ -29,7 +29,7 @@ RR_DATA = RR_DATA or {
 }
 
 RR.NAME = "RecipeRadar"
-RR.VERSION = "1.0.3"
+RR.VERSION = "1.0.4"
 RR.AUTHOR = "rakStar"
 
 -- Addon path

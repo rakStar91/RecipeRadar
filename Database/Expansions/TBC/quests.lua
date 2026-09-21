@@ -5,27 +5,6 @@ local tbc_quests =
 {
 	{
 		["expansion"] = 1,
-		["id"] = 1578,
-		["min_xp_level"] = 1,
-		["name"] = {
-			["Chinese"] = "前线的补给",
-			["English"] = "Supplying the Front",
-			["French"] = "Rééquiper le front",
-			["German"] = "Nachschub für die Front",
-			["Korean"] = "전방 보급품 조달",
-			["Mexican"] = "Abastecer al frente",
-			["Portuguese"] = "Suprimentos para o front",
-			["Russian"] = "Помощь фронту",
-			["Spanish"] = "Abastecer al frente",
-			["Taiwanese"] = "前線的補給",
-		},
-		["npcs"] = {
-			6031,
-		},
-		["phase"] = 1,
-	},
-	{
-		["expansion"] = 1,
 		["id"] = 9171,
 		["min_xp_level"] = 12,
 		["name"] = {

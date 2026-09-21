@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.4] - 2026-09-21
+
+### Fixed
+- **Plans: Copper Chain Vest Quest Source**: Added Quest 1578 (*Supplying the Front*) to Item 3609 (*Plans: Copper Chain Vest*), properly registering it as both a world drop and an Alliance quest reward.
+- **Classic Era Base Quests**: Added missing Quest 1578 (started by NPC 6031 *Tormus Deepforge* in Ironforge) to `Database/Base/quests.lua` and explicitly marked both Quest 1578 and Quest 1618 (*Gearing Redridge*) with Alliance faction affinity (`reacts = "Alliance"`).
+- **Database Cleanup**: Removed duplicate entry for Quest 1578 from `Database/Expansions/TBC/quests.lua` as it is now loaded via the base quest database.
+
+---
+
 ## [1.0.3] - 2026-09-18
 
 ### Fixed

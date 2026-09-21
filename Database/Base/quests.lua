@@ -443,6 +443,27 @@ RR_DATA["quests"] = {
         ["phase"] = 1,
     },
     {
+        ["id"] = 1578,
+        ["min_xp_level"] = 1,
+        ["name"] = {
+            ["Chinese"] = "前线的补给",
+            ["English"] = "Supplying the Front",
+            ["French"] = "Rééquiper le front",
+            ["German"] = "Nachschub für die Front",
+            ["Korean"] = "전방 보급품 조달",
+            ["Mexican"] = "Abastecer al frente",
+            ["Portuguese"] = "Suprimentos para o front",
+            ["Russian"] = "Помощь фронту",
+            ["Spanish"] = "Abastecer al frente",
+            ["Taiwanese"] = "前線的補給",
+        },
+        ["npcs"] = {
+            6031,
+        },
+        ["phase"] = 1,
+        ["reacts"] = "Alliance",
+    },
+    {
         ["id"] = 1582,
         ["min_xp_level"] = 8,
         ["name"] = {
@@ -481,6 +502,7 @@ RR_DATA["quests"] = {
             6031,
         },
         ["phase"] = 1,
+        ["reacts"] = "Alliance",
     },
     {
         ["id"] = 2178,
