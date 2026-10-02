@@ -2,3 +2,6 @@ ToDos.md
 *.tmp
 *.zip
 .vscode/changelists.json
+.projectatlas/
+
+docs/future_settings_backlog.md

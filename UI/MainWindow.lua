@@ -79,7 +79,7 @@ function RR.UI.MainWindow:Initialize()
             RR.UI.Dropdown:Show(self.titlePlaque, buildProfessionMenu())
         end
     end)
-    RR.UI.Theme:AddTooltip(self.titlePlaque, RR.NAME, "Klicken, um den angezeigten Beruf zu wechseln.")
+    RR.UI.Theme:AddTooltip(self.titlePlaque, RR.NAME, RR.L["TOOLTIP_CHANGE_PROFESSION"])
 
     -- Close Button
     local closeBtn = CreateFrame("Button", nil, f, "UIPanelCloseButton")
@@ -88,6 +88,22 @@ function RR.UI.MainWindow:Initialize()
         self:Hide()
     end)
     self.closeBtn = closeBtn
+
+    -- Settings / Options Button
+    local optBtn = CreateFrame("Button", nil, f)
+    optBtn:SetSize(18, 18)
+    optBtn:SetPoint("RIGHT", closeBtn, "LEFT", -2, 0)
+    optBtn:SetNormalTexture("Interface\\Icons\\INV_Gizmo_02")
+    local optNorm = optBtn:GetNormalTexture()
+    if optNorm then optNorm:SetTexCoord(0.08, 0.92, 0.08, 0.92) end
+    optBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+    optBtn:SetScript("OnClick", function()
+        if RR.UI.SettingsWindow then
+            RR.UI.SettingsWindow:Toggle()
+        end
+    end)
+    RR.UI.Theme:AddTooltip(optBtn, RR.L["OPTIONS"], RR.L["SETTINGS_TOOLTIP_DESC"])
+    self.optionsBtn = optBtn
 
     -- 2. Instantiate Sub-Components
     -- Top 3-Row Filter Bar

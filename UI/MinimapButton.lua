@@ -40,7 +40,9 @@ function RR.UI.MinimapButton:Initialize()
         if button == "LeftButton" then
             RR.UI.MainWindow:Toggle()
         elseif button == "RightButton" then
-            RR.UI.MinimapButton:OpenContextMenu(selfBtn)
+            if RR.UI.SettingsWindow then
+                RR.UI.SettingsWindow:Toggle()
+            end
         end
     end)
 
@@ -72,9 +74,9 @@ function RR.UI.MinimapButton:Initialize()
         GameTooltip:SetOwner(selfBtn, "ANCHOR_BOTTOMLEFT")
         GameTooltip:SetText(RR.COLORS.TITLE .. "RecipeRadar (v" .. RR.VERSION .. ")")
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine(RR.COLORS.WHITE .. (RR.L["TOOLTIP_TOGGLE"] or "Left Click: Toggle RecipeRadar tracker"))
-        GameTooltip:AddLine(RR.COLORS.WHITE .. (RR.L["TOOLTIP_MINIMAP_RIGHTCLICK"] or "Right Click: Options"))
-        GameTooltip:AddLine(RR.COLORS.GREY .. (RR.L["TOOLTIP_MINIMAP_DRAG"] or "Left Drag: Move around minimap"))
+        GameTooltip:AddLine(RR.COLORS.WHITE .. RR.L["TOOLTIP_TOGGLE"])
+        GameTooltip:AddLine(RR.COLORS.WHITE .. RR.L["TOOLTIP_MINIMAP_RIGHTCLICK"])
+        GameTooltip:AddLine(RR.COLORS.GREY .. RR.L["TOOLTIP_MINIMAP_DRAG"])
         GameTooltip:Show()
     end)
 
@@ -85,27 +87,6 @@ function RR.UI.MinimapButton:Initialize()
     self.button = btn
     self:UpdatePosition()
     self:UpdateVisibility()
-end
-
-function RR.UI.MinimapButton:OpenContextMenu(anchorBtn)
-    if not RR.UI.Dropdown then return end
-
-    local menu = {
-        {
-            text = RR.COLORS.TITLE .. "RecipeRadar (v" .. RR.VERSION .. ")",
-            isHeader = true,
-        },
-        {
-            text = RR.L["MENU_HIDE_MINIMAP"] or "Hide Minimap Button",
-            icon = "Interface\\Icons\\Spell_ChargeNegative",
-            func = function()
-                RR.UI.MinimapButton:SetShown(false)
-                print(RR.COLORS.TITLE .. "RecipeRadar: " .. RR.COLORS.WHITE .. (RR.L["CMD_MINIMAP_HIDDEN"] or "Minimap button is now hidden. Type '/rr minimap' to show it again."))
-            end,
-        },
-    }
-
-    RR.UI.Dropdown:Show(anchorBtn or self.button, menu)
 end
 
 function RR.UI.MinimapButton:UpdateVisibility()

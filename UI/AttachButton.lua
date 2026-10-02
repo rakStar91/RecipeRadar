@@ -40,6 +40,10 @@ function RR.UI.AttachButton:Initialize()
         if mouseButton == "RightButton" and IsShiftKeyDown() then
             RR.Config:ClearButtonOffset()
             RR.UI.AttachButton:PositionButton()
+        elseif mouseButton == "RightButton" then
+            if RR.UI.SettingsWindow then
+                RR.UI.SettingsWindow:Toggle()
+            end
         else
             RR.UI.MainWindow:Toggle()
         end
@@ -68,9 +72,10 @@ function RR.UI.AttachButton:Initialize()
         if selfBtn.SetTint then selfBtn:SetTint("hover") end
         GameTooltip:SetOwner(selfBtn, "ANCHOR_RIGHT")
         GameTooltip:SetText(RR.COLORS.TITLE .. "RecipeRadar")
-        GameTooltip:AddLine(RR.COLORS.WHITE .. (RR.L["TOOLTIP_TOGGLE"] or "Left Click: Toggle RecipeRadar"))
-        GameTooltip:AddLine(RR.COLORS.GREY .. (RR.L["TOOLTIP_DRAG"] or "Drag: Move button position"))
-        GameTooltip:AddLine(RR.COLORS.GREY .. "Shift + Right Click: Reset position")
+        GameTooltip:AddLine(RR.COLORS.WHITE .. RR.L["TOOLTIP_TOGGLE"])
+        GameTooltip:AddLine(RR.COLORS.WHITE .. RR.L["TOOLTIP_SETTINGS"])
+        GameTooltip:AddLine(RR.COLORS.GREY .. RR.L["TOOLTIP_DRAG"])
+        GameTooltip:AddLine(RR.COLORS.GREY .. RR.L["TOOLTIP_RESET_POS"])
         GameTooltip:Show()
     end)
 
@@ -137,20 +142,32 @@ function RR.UI.AttachButton:HookFrames()
     watcher:SetScript("OnEvent", function(_, event)
         if event == "TRADE_SKILL_SHOW" or event == "CRAFT_SHOW" then
             self:PositionButton()
-            if self.button and self.anchor_frame then self.button:Show() end
+            if self.button and self.anchor_frame and RR.Config:IsAttachButtonShown() then
+                self.button:Show()
+            end
+            if RR.Config:IsAutoShowEnabled() and RR.UI.MainWindow then
+                RR.UI.MainWindow:Show()
+            end
 
             -- Asynchronous re-check for reskin addons like DragonflightUI that show their frame delayed
             if C_Timer and C_Timer.After then
                 C_Timer.After(0.05, function()
-                    if self.button and self:FindCraftWindow() then
+                    if self:FindCraftWindow() then
                         self:PositionButton()
-                        self.button:Show()
+                        if self.button and RR.Config:IsAttachButtonShown() then
+                            self.button:Show()
+                        end
+                        if RR.Config:IsAutoShowEnabled() and RR.UI.MainWindow then
+                            RR.UI.MainWindow:Show()
+                        end
                     end
                 end)
                 C_Timer.After(0.2, function()
-                    if self.button and self:FindCraftWindow() then
+                    if self:FindCraftWindow() then
                         self:PositionButton()
-                        self.button:Show()
+                        if self.button and RR.Config:IsAttachButtonShown() then
+                            self.button:Show()
+                        end
                     end
                 end)
             end
@@ -181,7 +198,12 @@ function RR.UI.AttachButton:HookFrames()
         if f and f.HookScript then
             f:HookScript("OnShow", function()
                 self:PositionButton()
-                if self.button and self.anchor_frame then self.button:Show() end
+                if self.button and self.anchor_frame and RR.Config:IsAttachButtonShown() then
+                    self.button:Show()
+                end
+                if RR.Config:IsAutoShowEnabled() and RR.UI.MainWindow then
+                    RR.UI.MainWindow:Show()
+                end
             end)
             f:HookScript("OnHide", function()
                 if not self:FindCraftWindow() then
@@ -238,5 +260,15 @@ function RR.UI.AttachButton:PositionButton()
     else
         -- Default position beside the craft window top right
         self.button:SetPoint("TOPLEFT", parentFrame, "TOPRIGHT", 4, -40)
+    end
+end
+
+function RR.UI.AttachButton:UpdateVisibility()
+    if not self.button then return end
+    if RR.Config:IsAttachButtonShown() and self:FindCraftWindow() and self.anchor_frame and self.anchor_frame:IsShown() then
+        self:PositionButton()
+        self.button:Show()
+    else
+        self.button:Hide()
     end
 end

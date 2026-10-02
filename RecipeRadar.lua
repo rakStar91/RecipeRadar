@@ -22,6 +22,7 @@ coreFrame:SetScript("OnEvent", function(_, event, arg1)
         -- 3. Initialize UI Components
         RR.UI.AttachButton:Initialize()
         RR.UI.MinimapButton:Initialize()
+        RR.UI.SettingsWindow:Initialize()
         RR.UI.Tooltips:Initialize()
 
     elseif event == "PLAYER_LOGIN" then
@@ -39,17 +40,28 @@ SlashCmdList["RECIPERADAR"] = function(msg)
     local cmd = msg and string.lower(strtrim(msg)) or ""
     
     if cmd == "help" then
-        print(RR.COLORS.TITLE .. (RR.L["CMD_HELP_HEADER"] or "RecipeRadar Commands:"))
-        print(RR.COLORS.GOLD .. "/rr" .. RR.COLORS.WHITE .. (RR.L["CMD_HELP_TOGGLE"] or " - Toggle RecipeRadar window"))
-        print(RR.COLORS.GOLD .. "/rr minimap" .. RR.COLORS.WHITE .. (RR.L["CMD_HELP_MINIMAP"] or " - Toggle minimap button"))
+        print(RR.COLORS.TITLE .. RR.L["CMD_HELP_HEADER"])
+        print(RR.COLORS.GOLD .. "/rr" .. RR.COLORS.WHITE .. RR.L["CMD_HELP_TOGGLE"])
+        print(RR.COLORS.GOLD .. "/rr config" .. RR.COLORS.WHITE .. RR.L["CMD_HELP_SETTINGS"])
+        print(RR.COLORS.GOLD .. "/rr minimap" .. RR.COLORS.WHITE .. RR.L["CMD_HELP_MINIMAP"])
         print(RR.COLORS.GOLD .. "/rr debug" .. RR.COLORS.WHITE .. " - Toggle verbose debug logging")
-    elseif cmd == "minimap" or cmd == "mm" then
-        local isShown = RR.UI.MinimapButton:Toggle()
-        if isShown then
-            print(RR.COLORS.TITLE .. "RecipeRadar: " .. RR.COLORS.WHITE .. (RR.L["CMD_MINIMAP_SHOWN"] or "Minimap button is now shown."))
-        else
-            print(RR.COLORS.TITLE .. "RecipeRadar: " .. RR.COLORS.WHITE .. (RR.L["CMD_MINIMAP_HIDDEN"] or "Minimap button is now hidden. Type '/rr minimap' to show it again."))
+    elseif cmd == "config" or cmd == "options" or cmd == "settings" or cmd == "opt" then
+        if RR.UI.SettingsWindow then
+            RR.UI.SettingsWindow:Toggle()
         end
+    elseif cmd == "reset" then
+        RR.Config:ResetWindowPosition()
+        RR.Config:ClearButtonOffset()
+        if RR.UI.MainWindow and RR.UI.MainWindow.frame then
+            RR.UI.MainWindow.frame:ClearAllPoints()
+            RR.UI.MainWindow.frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+        end
+        if RR.UI.AttachButton then
+            RR.UI.AttachButton:PositionButton()
+        end
+        print(RR.COLORS.TITLE .. "RecipeRadar: " .. RR.COLORS.WHITE .. RR.L["SETTINGS_POS_RESET_NOTICE"])
+    elseif cmd == "minimap" or cmd == "mm" then
+        RR.UI.MinimapButton:Toggle()
     elseif cmd == "debug" then
         RR.Debug = not RR.Debug
         print(RR.COLORS.TITLE .. "RecipeRadar: " .. RR.COLORS.WHITE .. "Debug logging is now " .. (RR.Debug and "|cff33ff33ENABLED|r" or "|cffff4444DISABLED|r"))

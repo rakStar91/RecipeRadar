@@ -10,6 +10,9 @@ local DEFAULT_CONFIG = {
     profile = {
         autoShow = false,
         tooltipAlts = true,
+        tooltipSpells = true,
+        tooltipCompact = false,
+        attachButton = true,
         minimap = { hide = false, angle = 220 },
         buttonPosition = { x = 0, y = 0, isCustom = false },
         windowPosition = { point = "CENTER", relativePoint = "CENTER", x = 0, y = 0 },
@@ -89,6 +92,54 @@ end
 
 function RR.Config:GetCurrentChar()
     return self.char
+end
+
+--- Returns the dictionary of characters recorded for a realm
+-- @param realm string: Optional realm name (defaults to current realm)
+-- @return table map of [charName] = charData
+function RR.Config:GetCharacters(realm)
+    realm = realm or GetRealmName() or "UnknownRealm"
+    if self.db and self.db.characters then
+        return self.db.characters[realm] or {}
+    end
+    return {}
+end
+
+--- Mutes or unmutes a character from recipe tooltips
+-- @param charName string: Character name
+-- @param muted boolean: true to mute, false to unmute
+-- @param realm string: Optional realm name
+function RR.Config:SetCharacterMuted(charName, muted, realm)
+    realm = realm or GetRealmName() or "UnknownRealm"
+    if self.db and self.db.characters and self.db.characters[realm] then
+        local charData = self.db.characters[realm][charName]
+        if charData then
+            charData.muted = (muted == true)
+        end
+    end
+end
+
+--- Checks if a character is muted from tooltips
+-- @param charName string: Character name
+-- @param realm string: Optional realm name
+-- @return boolean
+function RR.Config:IsCharacterMuted(charName, realm)
+    realm = realm or GetRealmName() or "UnknownRealm"
+    if self.db and self.db.characters and self.db.characters[realm] then
+        local charData = self.db.characters[realm][charName]
+        return charData and charData.muted == true
+    end
+    return false
+end
+
+--- Permanently deletes a character from the SavedVariables database
+-- @param charName string: Character name to delete
+-- @param realm string: Optional realm name
+function RR.Config:DeleteCharacter(charName, realm)
+    realm = realm or GetRealmName() or "UnknownRealm"
+    if self.db and self.db.characters and self.db.characters[realm] then
+        self.db.characters[realm][charName] = nil
+    end
 end
 
 function RR.Config:GetFilterSetting(key)
@@ -173,7 +224,13 @@ function RR.Config:SetMinimapButtonShown(shown)
     local profile = self:GetProfile()
     if profile then
         profile.minimap = profile.minimap or { angle = 220 }
-        profile.minimap.hide = not shown
+        profile.minimap.hide = not (shown == true)
+    end
+    if RR.UI.MinimapButton and RR.UI.MinimapButton.UpdateVisibility then
+        RR.UI.MinimapButton:UpdateVisibility()
+    end
+    if RR.UI.SettingsWindow and RR.UI.SettingsWindow.RefreshInterface then
+        RR.UI.SettingsWindow:RefreshInterface()
     end
 end
 
@@ -181,5 +238,90 @@ function RR.Config:ToggleMinimapButton()
     local newState = not self:IsMinimapButtonShown()
     self:SetMinimapButtonShown(newState)
     return newState
+end
+
+function RR.Config:IsTooltipAltsEnabled()
+    local profile = self:GetProfile()
+    return profile and profile.tooltipAlts ~= false
+end
+
+function RR.Config:SetTooltipAltsEnabled(enabled)
+    local profile = self:GetProfile()
+    if profile then
+        profile.tooltipAlts = (enabled == true)
+    end
+    if RR.UI.SettingsWindow and RR.UI.SettingsWindow.RefreshTooltips then
+        RR.UI.SettingsWindow:RefreshTooltips()
+    end
+end
+
+function RR.Config:IsTooltipSpellsEnabled()
+    local profile = self:GetProfile()
+    return profile and profile.tooltipSpells ~= false
+end
+
+function RR.Config:SetTooltipSpellsEnabled(enabled)
+    local profile = self:GetProfile()
+    if profile then
+        profile.tooltipSpells = (enabled == true)
+    end
+    if RR.UI.SettingsWindow and RR.UI.SettingsWindow.RefreshTooltips then
+        RR.UI.SettingsWindow:RefreshTooltips()
+    end
+end
+
+function RR.Config:IsTooltipCompactEnabled()
+    local profile = self:GetProfile()
+    return profile and profile.tooltipCompact == true
+end
+
+function RR.Config:SetTooltipCompactEnabled(enabled)
+    local profile = self:GetProfile()
+    if profile then
+        profile.tooltipCompact = (enabled == true)
+    end
+    if RR.UI.SettingsWindow and RR.UI.SettingsWindow.RefreshTooltips then
+        RR.UI.SettingsWindow:RefreshTooltips()
+    end
+end
+
+function RR.Config:IsAttachButtonShown()
+    local profile = self:GetProfile()
+    return profile and profile.attachButton ~= false
+end
+
+function RR.Config:SetAttachButtonShown(shown)
+    local profile = self:GetProfile()
+    if profile then
+        profile.attachButton = (shown == true)
+    end
+    if RR.UI.AttachButton and RR.UI.AttachButton.UpdateVisibility then
+        RR.UI.AttachButton:UpdateVisibility()
+    end
+    if RR.UI.SettingsWindow and RR.UI.SettingsWindow.RefreshInterface then
+        RR.UI.SettingsWindow:RefreshInterface()
+    end
+end
+
+function RR.Config:IsAutoShowEnabled()
+    local profile = self:GetProfile()
+    return profile and profile.autoShow == true
+end
+
+function RR.Config:SetAutoShowEnabled(enabled)
+    local profile = self:GetProfile()
+    if profile then
+        profile.autoShow = (enabled == true)
+    end
+    if RR.UI.SettingsWindow and RR.UI.SettingsWindow.RefreshInterface then
+        RR.UI.SettingsWindow:RefreshInterface()
+    end
+end
+
+function RR.Config:ResetWindowPosition()
+    local profile = self:GetProfile()
+    if profile then
+        profile.windowPosition = { point = "CENTER", relativePoint = "CENTER", x = 0, y = 0 }
+    end
 end
 
