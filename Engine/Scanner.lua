@@ -63,6 +63,8 @@ function RR.Scanner:ScanCharacterSkills()
     local charData = RR.Config:GetCurrentChar()
     if not charData then return end
     charData.professions = charData.professions or {}
+    charData.level = (UnitLevel and UnitLevel("player")) or charData.level or 1
+    charData.faction = (UnitFactionGroup and UnitFactionGroup("player")) or charData.faction or "Neutral"
 
     local primaryCraftingProf = nil
 
@@ -154,19 +156,21 @@ function RR.Scanner:ScanCraft()
     local profName, currentRank, maxRank = GetCraftDisplaySkillLine()
     if not profName or profName == "UNKNOWN" then return end
 
-    self.currentProfession = profName
+    local engProf = (RR.DB and RR.DB:GetEnglishProfessionName(profName)) or profName
+    self.currentProfession = engProf
     self.currentRank = currentRank or 0
     self.maxRank = maxRank or 0
 
     local charData = RR.Config:GetCurrentChar()
     if not charData then return end
 
-    charData.professions[profName] = charData.professions[profName] or {
+    charData.professions[engProf] = charData.professions[engProf] or {
         current = currentRank,
         max = maxRank,
         known = {},
     }
-    local knownTable = charData.professions[profName].known
+    charData.professions[profName] = charData.professions[engProf]
+    local knownTable = charData.professions[engProf].known
     charData.professions[profName].current = currentRank
     charData.professions[profName].max = maxRank
 
@@ -194,28 +198,43 @@ function RR.Scanner:ScanCraft()
 end
 
 --- Safely retrieves profession data table for a character regardless of localized key (German, English, etc.)
+-- Automatically heals and merges split entries (e.g. "Verzauberkunst" vs "Enchanting")
 -- @param charData table
 -- @param profName string
 -- @return table or nil
 function RR.Scanner:GetProfessionData(charData, profName)
     if not (charData and charData.professions and profName) then return nil end
-    
-    -- 1. Direct match (e.g. "Schneiderei" or "Tailoring")
-    if charData.professions[profName] then
-        return charData.professions[profName]
+
+    local engKey = (RR.DB and RR.DB:GetEnglishProfessionName(profName)) or profName
+    local locKey = (RR.DB and RR.DB:GetProfessionDisplayName(engKey)) or profName
+
+    local engTable = charData.professions[engKey]
+    local locTable = charData.professions[locKey]
+
+    -- If both tables exist as separate instances, merge them into one canonical table
+    if engTable and locTable and engTable ~= locTable then
+        if type(locTable.known) == "table" and type(engTable.known) == "table" then
+            for k, v in pairs(locTable.known) do
+                engTable.known[k] = v
+            end
+        end
+        engTable.current = math.max(engTable.current or 0, locTable.current or 0)
+        engTable.max = math.max(engTable.max or 0, locTable.max or 0)
+        charData.professions[locKey] = engTable
+        return engTable
     end
 
-    -- 2. English key match
-    local engKey = RR.DB and RR.DB:GetEnglishProfessionName(profName)
-    if engKey and charData.professions[engKey] then
-        return charData.professions[engKey]
+    if engTable then return engTable end
+    if locTable then
+        charData.professions[engKey] = locTable
+        return locTable
     end
 
-    -- 3. Match across any localized variation stored on this char
+    -- 3. Match across any other localized variation stored on this char
     if RR.DB then
-        local targetEng = engKey or profName
         for pName, pData in pairs(charData.professions) do
-            if RR.DB:GetEnglishProfessionName(pName) == targetEng then
+            if RR.DB:GetEnglishProfessionName(pName) == engKey then
+                charData.professions[engKey] = pData
                 return pData
             end
         end

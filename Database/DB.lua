@@ -467,6 +467,100 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
     return meta
 end
 
+--- Returns the total number of recipes in the database for a profession (filtered by character faction if provided)
+function RR.DB:GetTotalRecipesCount(profKey, faction)
+    local engProf = self:GetEnglishProfessionName(profKey)
+    self.totalRecipesCache = self.totalRecipesCache or {}
+    local cacheKey = engProf .. "_" .. (faction or "any")
+    if self.totalRecipesCache[cacheKey] ~= nil then
+        return self.totalRecipesCache[cacheKey]
+    end
+
+    local recipes = self:GetRecipesForProfession(engProf)
+    if not recipes or #recipes == 0 then
+        self.totalRecipesCache[cacheKey] = 0
+        return 0
+    end
+
+    if not faction or faction == "Neutral" or faction == "any" then
+        self.totalRecipesCache[cacheKey] = #recipes
+        return #recipes
+    end
+
+    local count = 0
+    for _, recipe in ipairs(recipes) do
+        local meta = self:GetRecipeAcquisitionMetadata(recipe)
+        if meta and meta.factions and next(meta.factions) then
+            local isHordeOnly = meta.factions["Horde"] and not meta.factions["Alliance"] and not meta.factions["Neutral"]
+            local isAllianceOnly = meta.factions["Alliance"] and not meta.factions["Horde"] and not meta.factions["Neutral"]
+            if faction == "Alliance" then
+                if not isHordeOnly then
+                    count = count + 1
+                end
+            elseif faction == "Horde" then
+                if not isAllianceOnly then
+                    count = count + 1
+                end
+            else
+                count = count + 1
+            end
+        else
+            count = count + 1
+        end
+    end
+
+    self.totalRecipesCache[cacheKey] = count
+    return count
+end
+
+--- Returns learned, total and missing recipe counts for a given character and profession
+-- Matches exact database recipe definitions and faction filtering
+-- @param charData table Character profile data from RecipeRadarDB
+-- @param profKey string English or localized profession name
+-- @return number knownCount, number totalCount, number missingCount
+function RR.DB:GetCharacterRecipeStats(charData, profKey)
+    local engProf = self:GetEnglishProfessionName(profKey)
+    local profData = RR.Scanner and RR.Scanner:GetProfessionData(charData, engProf)
+    local known = profData and profData.known or {}
+    local faction = charData and charData.faction or "Neutral"
+
+    local recipes = self:GetRecipesForProfession(engProf)
+    if not recipes or #recipes == 0 then
+        return 0, 0, 0
+    end
+
+    local totalCount = 0
+    local knownCount = 0
+
+    for _, recipe in ipairs(recipes) do
+        local meta = self:GetRecipeAcquisitionMetadata(recipe)
+        local passFaction = true
+        if meta and meta.factions and next(meta.factions) then
+            local isHordeOnly = meta.factions["Horde"] and not meta.factions["Alliance"] and not meta.factions["Neutral"]
+            local isAllianceOnly = meta.factions["Alliance"] and not meta.factions["Horde"] and not meta.factions["Neutral"]
+            if faction == "Alliance" and isHordeOnly then
+                passFaction = false
+            elseif faction == "Horde" and isAllianceOnly then
+                passFaction = false
+            end
+        end
+
+        local spellId = recipe.id or recipe.spell_id
+        local recipeName = self:GetLocalizedText(recipe.name)
+        local isKnown = (spellId and known[spellId]) or (recipeName and known[recipeName])
+
+        if isKnown or passFaction then
+            totalCount = totalCount + 1
+            if isKnown then
+                knownCount = knownCount + 1
+            end
+        end
+    end
+
+    local missingCount = math.max(0, totalCount - knownCount)
+    return knownCount, totalCount, missingCount
+end
+
 --- Returns true if currently running on The Burning Crusade Classic
 function RR.DB:IsTBC()
     local _, _, _, tocVersion = GetBuildInfo()

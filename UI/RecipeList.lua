@@ -161,7 +161,7 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
     emptyText:SetWidth(280)
     emptyText:SetJustifyH("CENTER")
     emptyText:SetTextColor(0.65, 0.65, 0.65, 1)
-    emptyText:SetText(RR.L["NO_RECIPES_FOUND"] or "Keine Rezepte für die aktuellen Filter gefunden.")
+    emptyText:SetText(RR.L["NO_RECIPES_FOUND"])
     emptyText:Hide()
     instance.emptyText = emptyText
 

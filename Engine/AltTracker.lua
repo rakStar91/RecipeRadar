@@ -23,8 +23,8 @@ function RR.AltTracker:GetAltStatusForRecipe(profName, spellId, spellName)
     local currentCharName = UnitName("player")
 
     for charName, charData in pairs(realmChars) do
-        -- Show alts from the same faction
-        if charData.faction == playerFaction and charName ~= currentCharName then
+        -- Show alts from the same faction, excluding characters muted by the user
+        if not charData.muted and charData.faction == playerFaction and charName ~= currentCharName then
             local isKnown = false
             local profData = RR.Scanner and RR.Scanner:GetProfessionData(charData, profName)
             if profData and profData.known then
