@@ -29,7 +29,7 @@ RR_DATA = RR_DATA or {
 }
 
 RR.NAME = "RecipeRadar"
-RR.VERSION = "1.0.4"
+RR.VERSION = "1.1.0"
 RR.AUTHOR = "rakStar"
 
 -- Addon path
@@ -52,6 +52,24 @@ RR.PROFESSIONS = {
     POISONS = "Poisons",
     SKINNING = "Skinning",
     TAILORING = "Tailoring",
+}
+
+-- Standard Blizzard Profession Texture Icons
+RR.PROFESSION_ICONS = {
+    [RR.PROFESSIONS.ALCHEMY]        = "Interface\\Icons\\Trade_Alchemy",
+    [RR.PROFESSIONS.BLACKSMITHING]  = "Interface\\Icons\\Trade_BlackSmithing",
+    [RR.PROFESSIONS.COOKING]        = "Interface\\Icons\\INV_Misc_Food_15",
+    [RR.PROFESSIONS.ENCHANTING]     = "Interface\\Icons\\Trade_Engraving",
+    [RR.PROFESSIONS.ENGINEERING]    = "Interface\\Icons\\Trade_Engineering",
+    [RR.PROFESSIONS.FIRST_AID]      = "Interface\\Icons\\Spell_Holy_SealOfSacrifice",
+    [RR.PROFESSIONS.FISHING]        = "Interface\\Icons\\Trade_Fishing",
+    [RR.PROFESSIONS.HERBALISM]      = "Interface\\Icons\\Spell_Nature_NatureTouchGrow",
+    [RR.PROFESSIONS.JEWELCRAFTING]  = "Interface\\Icons\\INV_Misc_Gem_01",
+    [RR.PROFESSIONS.LEATHERWORKING] = "Interface\\Icons\\Trade_LeatherWorking",
+    [RR.PROFESSIONS.MINING]         = "Interface\\Icons\\Trade_Mining",
+    [RR.PROFESSIONS.POISONS]        = "Interface\\Icons\\Trade_BrewPoison",
+    [RR.PROFESSIONS.SKINNING]       = "Interface\\Icons\\INV_Misc_Pelt_Wolf_01",
+    [RR.PROFESSIONS.TAILORING]      = "Interface\\Icons\\Trade_Tailoring",
 }
 
 -- Acquisition Source Types

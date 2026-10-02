@@ -10,7 +10,7 @@
 ## Notes-esES: Rastreador completo de recetas de profesiones con coordenadas TomTom.
 ## IconTexture: Interface\Icons\INV_Misc_Book_09
 ## SavedVariables: RecipeRadarDB
-## Version: 1.0.4
+## Version: 1.1.0
 
 # 1. Core Framework
 Core\Constants.lua
@@ -82,6 +82,7 @@ UI\ProgressBar.lua
 UI\DetailPane.lua
 UI\RecipeList.lua
 UI\FilterBar.lua
+UI\SettingsWindow.lua
 UI\MainWindow.lua
 UI\AttachButton.lua
 UI\MinimapButton.lua

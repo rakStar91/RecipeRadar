@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-10-03
+
+### Added
+- **Standalone Settings & Options Window**: Brand-new dedicated configuration interface accessible via `/rr config`, `/rr options`, or by right-clicking the minimap button.
+- **Character & Alt Management**:
+  - Full management of all tracked characters on the current realm.
+  - Toggle individual character visibility in recipe tooltips to mute inactive alts and keep item tooltips clean.
+  - Permanent character removal with a safe confirmation dialog to delete retired alts from the database.
+  - Interactive profession badges displaying skill rank, gold max-rank indicators, and rich hover tooltips with learned vs. missing recipe statistics.
+- **Direct Right-Click Settings Access**: Right-clicking the circular minimap button or the profession attach button now opens the Settings window directly without intermediate menus.
+- **Interactive About & Commands Overview**: Dedicated information tab displaying addon version, author credits, 1-click copy boxes with official brand icons for GitHub, CurseForge, and Ko-fi links, and a comprehensive chat commands reference.
+- **Universal Multi-Language Localization**: Full native translation of all settings, alt controls, and recipe statistics across all 10 official WoW client languages (`enUS`, `deDE`, `frFR`, `esES`, `esMX`, `ruRU`, `zhCN`, `zhTW`, `koKR`, `ptBR`).
+
+### Changed
+- **Streamlined Minimap Controls**: Removed redundant context dropdown and chat notice spam when toggling the minimap button. Button visibility is now cleanly configured inside the Interface settings tab.
+- **Neutral Vendor Accessibility**: Correctly classifies recipes sold by neutral vendors (such as traveling Goblin merchants) as accessible to both Alliance and Horde.
+
+### Fixed
+- **Recipe Counter Accuracy & Craft Sync**: Fixed an issue where localized profession keys could lead to recipe count discrepancies in tooltips for Craft-based skills (such as Enchanting), introducing automatic data synchronization and accurate faction-based recipe calculations.
+
+---
+
 ## [1.0.4] - 2026-09-21
 
 ### Fixed
