@@ -3,5 +3,6 @@ ToDos.md
 *.zip
 .vscode/changelists.json
 .projectatlas/
+.idea/
 
 docs/future_settings_backlog.md
