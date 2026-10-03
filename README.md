@@ -27,6 +27,7 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 
 ## ✨ Key Features
 
+* **Standalone Settings & Alt Management**: Dedicated configuration window (`/rr config`, `/rr options`, or right-click the minimap medallion / tradeskill button) to manage tracked characters on your realm, toggle tooltip visibility to mute inactive alts, permanently delete retired characters, and review exact learned vs. missing recipe statistics.
 * **3 Mode Filters**: Instantly switch between **[ Missing ]**, **[ Known ]**, and **[ All ]** recipes with distinct visual teal highlighting for skills you already learned.
 * **1-Click Filter Reset**: Dedicated **[ Reset Filters ]** button in Row 1 immediately restores all search terms, mode, source, faction, reputation, specialization, phase, and zone filters to default in one click.
 * **3-Button Quick Zone Bar**: Filter recipes on the fly by **[ Any Zone ]**, **[ Current Zone ]**, and **[ Last Zone ]** with per-character & per-profession persistence across logouts.
@@ -52,15 +53,17 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 1. Click the **Minimap button** or open your in-game **Profession / Trade Skill** window and click the attached **RR button** (or type `/rr`).
 2. Use the top filter bar to filter by status, zone, phase, faction, reputation, or acquisition source.
 3. Click on any NPC coordinate to automatically set a TomTom waypoint.
-4. Right-click the minimap button at any time to hide it (or type `/rr minimap` to toggle it back on).
+4. Right-click the minimap button or the attached RR button at any time to open the **Settings & Alt Management** window (or type `/rr config`).
 
 ---
 
 ## ⌨️ Slash Commands
 
-* `/rr` or `/reciperadar` – Toggle RecipeRadar window
+* `/rr` or `/reciperadar` – Toggle RecipeRadar main window
+* `/rr config`, `/rr options`, or `/rr opt` – Open Settings and Character/Alt Management window
 * `/rr minimap` or `/rr mm` – Toggle minimap button visibility
-* `/rr help` – Display available commands
+* `/rr reset` – Reset window and button positions to defaults
+* `/rr help` – Display available commands in chat
 * `/rr debug` – Toggle live verbose debug logging for recipe and tooltip resolution
 
 ---
