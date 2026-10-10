@@ -11,7 +11,7 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 <p align="center">
   <img src="images/RR_main_window.jpg" alt="RecipeRadar Main Window" width="800"/>
@@ -25,30 +25,21 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 
 ---
 
-## ✨ Key Features
+## Features
 
-* **Standalone Settings & Alt Management**: Dedicated configuration window (`/rr config`, `/rr options`, or right-click the minimap medallion / tradeskill button) to manage tracked characters on your realm, toggle tooltip visibility to mute inactive alts, permanently delete retired characters, and review exact learned vs. missing recipe statistics.
-* **3 Mode Filters**: Instantly switch between **[ Missing ]**, **[ Known ]**, and **[ All ]** recipes with distinct visual teal highlighting for skills you already learned.
-* **1-Click Filter Reset**: Dedicated **[ Reset Filters ]** button in Row 1 immediately restores all search terms, mode, source, faction, reputation, specialization, phase, and zone filters to default in one click.
-* **3-Button Quick Zone Bar**: Filter recipes on the fly by **[ Any Zone ]**, **[ Current Zone ]**, and **[ Last Zone ]** with per-character & per-profession persistence across logouts.
-* **Universal Multi-Select Filter Dropdowns**: Multi-select across all categories (**Source**, **Faction**, **Reputation**, **Specialization**, and **Phase**) with live updates, dynamic button counters, and in-place toggle checkmarks.
-* **Strict Faction Exclusivity Filtering**: Isolate **Alliance-only** (Lion Crest) and **Horde-only** (Horde Crest) exclusive recipes, or select **Neutral** for shared/cross-faction recipes. Combine them with multi-select to see everything your faction can obtain.
-* **Dedicated Reputation Filters**: Categorized reputation selection featuring authentic faction crests for Argent Dawn, Thorium Brotherhood, Timbermaw Hold, Zandalar Tribe, Hydraxian Waterlords, Darkmoon Faire, Cenarion Circle, and all TBC Outland factions.
-* **Expansion & Content Phase Separation**: 
-  * **Classic Era**: Phases 1–6 (Molten Core through Naxxramas with the Scourge Crest).
-  * **The Burning Crusade**: Visual section headers separating **TBC Phases 1–5** (Karazhan Key, Tempest Keep, Warglaive, Zul'Aman, Sunwell) and **Classic Era Phases 1–6** with 100% accurate expansion metadata and zero AQ/Sunwell phase mixing.
-* **Interactive Tooltip Item Hover**: Hovering over recipe names in the detail pane or list displays the exact crafted item tooltip, full stats, and profession requirements.
-* **Alt Character Tracking**: Tooltips display recipe learned status across all your characters on your realm & faction (both on recipes/patterns and crafted items).
-* **Starter Recipe Support**: Full tracking for baseline recipes acquired automatically upon learning a profession (e.g. Simple Linen Pants, Brown Linen Shirt, Linen Bandage, etc.).
-* **DragonflightUI & TradeSkill Frame Hooking**: The dark-themed `RR` button cleanly attaches to the profession window, moves synchronously when the window is dragged (e.g. via DragonflightUI Revived / ElvUI), and can be freely detached/repositioned.
-* **Mousewheel Scrollable Dropdowns**: Smooth hover-scrolling support across all dropdown popups (Zones, Continents, Specializations, Phases).
-* **TomTom Integration**: Click any coordinate or NPC name to instantly place a TomTom waypoint on your world map.
-* **Strict 10-Language Alignment**: 100% synchronized native translations across UI and database for English, German, French, Spanish, Mexican Spanish, Russian, Simplified Chinese, Traditional Chinese, Korean, and Portuguese.
-* **Streamlined Lightweight Assets**: Optimized high-resolution 3-slice and vector TGA textures with zero dead weight.
+* **Missing recipe finder**: Lists every recipe, pattern, plan, schematic, and formula for all primary and secondary professions, and shows where to get it (trainer, vendor, quest, drop, object, or holiday).
+* **Missing / Known / All views**: Switch between recipes you still need, the ones you already know, or everything.
+* **Filters**: Narrow the list by source, zone (any, current, or last visited), faction, reputation, specialization, and content phase. Classic Era phases 1–6 and TBC phases 1–5 are supported.
+* **TomTom waypoints**: Click a coordinate or NPC name to place a waypoint on your map.
+* **Alt tracking**: Tooltips on recipes and crafted items show which of your characters on the realm already know the recipe.
+* **Profession window button**: An `RR` button attaches to the trade skill window. It follows the window when other UI addons (DragonflightUI, ElvUI) move it, and can be detached and repositioned.
+* **Settings & alt management**: Choose which characters appear in tooltips, delete old characters, and see learned vs. missing recipe counts per profession.
+* **Minimap button**: A standard LibDBIcon button, so minimap button managers can collect and hide it.
+* **10 languages**: English, German, French, Spanish, Mexican Spanish, Russian, Simplified Chinese, Traditional Chinese, Korean, and Portuguese.
 
 ---
 
-## 📖 How to Use
+## How to Use
 
 1. Click the **Minimap button** or open your in-game **Profession / Trade Skill** window and click the attached **RR button** (or type `/rr`).
 2. Use the top filter bar to filter by status, zone, phase, faction, reputation, or acquisition source.
@@ -57,7 +48,7 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 
 ---
 
-## ⌨️ Slash Commands
+## Slash Commands
 
 * `/rr` or `/reciperadar` – Toggle RecipeRadar main window
 * `/rr config`, `/rr options`, or `/rr opt` – Open Settings and Character/Alt Management window
@@ -68,7 +59,7 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 
 ---
 
-## 📦 Installation
+## Installation
 
 1. Download the latest release package.
 2. Extract the folder into your `World of Warcraft\_classic_era_\Interface\AddOns\` directory.
@@ -77,7 +68,7 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 
 ---
 
-## 💖 Support & Feedback
+## Support & Feedback
 
 If you enjoy using RecipeRadar and want to support ongoing development, maintenance, and future expansions, consider buying me a coffee!
 
@@ -85,7 +76,7 @@ If you enjoy using RecipeRadar and want to support ongoing development, maintena
 
 ---
 
-## 📄 License & Credits
+## License & Credits
 
 * **Developer & Maintainer**: rakStar
 * **Donations**: [https://ko-fi.com/rakstar91](https://ko-fi.com/rakstar91)
