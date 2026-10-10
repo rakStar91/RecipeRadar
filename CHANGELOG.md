@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.1] - 2026-10-11
+
+### Changed
+- **Standard Minimap Button**: The minimap button is now a standard launcher button, so minimap button manager addons (such as DragonflightUI's "Hide Minimap Buttons" option) can collect, hide, and arrange it like any other addon button.
+---
+
 ## [1.1.0] - 2026-10-03
 
 ### Added
