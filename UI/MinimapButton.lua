@@ -1,100 +1,57 @@
 -- ============================================================================
 -- RecipeRadar: UI/MinimapButton.lua
--- Circular gold minimap button with dragging around minimap ring
+-- Minimap launcher button via LibDataBroker-1.1 / LibDBIcon-1.0
 -- ============================================================================
 
 local RR = RecipeRadar
 RR.UI = RR.UI or {}
 RR.UI.MinimapButton = {}
 
+local LDB_NAME = "RecipeRadar"
+
+local function GetIconLib()
+    return LibStub and LibStub("LibDBIcon-1.0", true)
+end
+
 function RR.UI.MinimapButton:Initialize()
-    if self.button then return end
+    if self.dataObject then return end
 
-    local btn = CreateFrame("Button", "RecipeRadarMinimapButton", Minimap)
-    btn:SetSize(31, 31)
-    -- Anchor button to LOW strata and disable toplevel so it renders cleanly above
-    -- Minimap textures, but stays strictly underneath all standard UI panels (MEDIUM/HIGH)
-    btn:SetFrameStrata("LOW")
-    btn:SetFrameLevel((Minimap:GetFrameLevel() or 1) + 8)
-    btn:SetToplevel(false)
-    btn:SetMovable(true)
-    btn:EnableMouse(true)
-    btn:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-    btn:RegisterForDrag("LeftButton")
+    local icon = GetIconLib()
+    local ldb = LibStub and LibStub("LibDataBroker-1.1", true)
+    if not icon or not ldb then return end
 
-    -- Overlay circular icon
-    local icon = btn:CreateTexture(nil, "BACKGROUND")
-    icon:SetSize(20, 20)
-    icon:SetPoint("CENTER", 0, 0)
-    icon:SetTexture(RR.ADDON_PATH .. "\\images\\minimap.tga")
-    btn.icon = icon
-
-    -- Circular border ring
-    local border = btn:CreateTexture(nil, "OVERLAY")
-    border:SetSize(53, 53)
-    border:SetPoint("TOPLEFT", 0, 0)
-    border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-    btn.border = border
-
-    btn:SetScript("OnClick", function(selfBtn, button)
-        if button == "LeftButton" then
-            RR.UI.MainWindow:Toggle()
-        elseif button == "RightButton" then
-            if RR.UI.SettingsWindow then
-                RR.UI.SettingsWindow:Toggle()
+    self.dataObject = ldb:NewDataObject(LDB_NAME, {
+        type = "launcher",
+        icon = RR.ADDON_PATH .. "\\images\\minimap.tga",
+        OnClick = function(_, button)
+            if button == "LeftButton" then
+                RR.UI.MainWindow:Toggle()
+            elseif button == "RightButton" then
+                if RR.UI.SettingsWindow then
+                    RR.UI.SettingsWindow:Toggle()
+                end
             end
-        end
-    end)
+        end,
+        OnTooltipShow = function(tooltip)
+            tooltip:SetText(RR.COLORS.TITLE .. "RecipeRadar (v" .. RR.VERSION .. ")")
+            tooltip:AddLine(" ")
+            tooltip:AddLine(RR.COLORS.WHITE .. RR.L["TOOLTIP_TOGGLE"])
+            tooltip:AddLine(RR.COLORS.WHITE .. RR.L["TOOLTIP_MINIMAP_RIGHTCLICK"])
+            tooltip:AddLine(RR.COLORS.GREY .. RR.L["TOOLTIP_MINIMAP_DRAG"])
+        end,
+    })
 
-    btn:SetScript("OnDragStart", function(selfBtn)
-        selfBtn.isDragging = true
-        selfBtn:SetScript("OnUpdate", function()
-            local mx, my = Minimap:GetCenter()
-            local px, py = GetCursorPosition()
-            local scale = Minimap:GetEffectiveScale()
-            px, py = px / scale, py / scale
-
-            local angle = math.deg(math.atan2(py - my, px - mx))
-            if angle < 0 then angle = angle + 360 end
-
-            local profile = RR.Config:GetProfile()
-            if profile and profile.minimap then
-                profile.minimap.angle = angle
-            end
-            RR.UI.MinimapButton:UpdatePosition()
-        end)
-    end)
-
-    btn:SetScript("OnDragStop", function(selfBtn)
-        selfBtn.isDragging = false
-        selfBtn:SetScript("OnUpdate", nil)
-    end)
-
-    btn:SetScript("OnEnter", function(selfBtn)
-        GameTooltip:SetOwner(selfBtn, "ANCHOR_BOTTOMLEFT")
-        GameTooltip:SetText(RR.COLORS.TITLE .. "RecipeRadar (v" .. RR.VERSION .. ")")
-        GameTooltip:AddLine(" ")
-        GameTooltip:AddLine(RR.COLORS.WHITE .. RR.L["TOOLTIP_TOGGLE"])
-        GameTooltip:AddLine(RR.COLORS.WHITE .. RR.L["TOOLTIP_MINIMAP_RIGHTCLICK"])
-        GameTooltip:AddLine(RR.COLORS.GREY .. RR.L["TOOLTIP_MINIMAP_DRAG"])
-        GameTooltip:Show()
-    end)
-
-    btn:SetScript("OnLeave", function()
-        GameTooltip:Hide()
-    end)
-
-    self.button = btn
-    self:UpdatePosition()
+    icon:Register(LDB_NAME, self.dataObject, RR.Config:GetProfile().minimap)
     self:UpdateVisibility()
 end
 
 function RR.UI.MinimapButton:UpdateVisibility()
-    if not self.button then return end
+    local icon = GetIconLib()
+    if not self.dataObject or not icon then return end
     if RR.Config:IsMinimapButtonShown() then
-        self.button:Show()
+        icon:Show(LDB_NAME)
     else
-        self.button:Hide()
+        icon:Hide(LDB_NAME)
     end
 end
 
@@ -110,16 +67,7 @@ function RR.UI.MinimapButton:Toggle()
 end
 
 function RR.UI.MinimapButton:UpdatePosition()
-    if not self.button then return end
-    local profile = RR.Config:GetProfile()
-    local angle = (profile and profile.minimap and profile.minimap.angle) or 220
-    local rad = math.rad(angle)
-
-    local radius = 80
-    local x = math.cos(rad) * radius
-    local y = math.sin(rad) * radius
-
-    self.button:ClearAllPoints()
-    self.button:SetPoint("CENTER", Minimap, "CENTER", x, y)
+    local icon = GetIconLib()
+    if not self.dataObject or not icon then return end
+    icon:Refresh(LDB_NAME, RR.Config:GetProfile().minimap)
 end
-

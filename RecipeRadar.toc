@@ -85,6 +85,7 @@ UI\FilterBar.lua
 UI\SettingsWindow.lua
 UI\MainWindow.lua
 UI\AttachButton.lua
+Libs\Libs.xml
 UI\MinimapButton.lua
 UI\Tooltips.lua
 
