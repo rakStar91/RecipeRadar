@@ -168,6 +168,7 @@ RR_DATA["skills"]["Leatherworking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -193,11 +194,13 @@ RR_DATA["skills"]["Leatherworking"] = {
 			["price"] = 100,
 			["sources"] = {
 				1632,
+				11096,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -252,6 +255,7 @@ RR_DATA["skills"]["Leatherworking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -306,6 +310,7 @@ RR_DATA["skills"]["Leatherworking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -360,6 +365,7 @@ RR_DATA["skills"]["Leatherworking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -414,6 +420,7 @@ RR_DATA["skills"]["Leatherworking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -511,6 +518,7 @@ RR_DATA["skills"]["Leatherworking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -560,11 +568,13 @@ RR_DATA["skills"]["Leatherworking"] = {
 			["price"] = 500,
 			["sources"] = {
 				1632,
+				11096,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -593,11 +603,13 @@ RR_DATA["skills"]["Leatherworking"] = {
 			["price"] = 500,
 			["sources"] = {
 				1632,
+				11096,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -626,11 +638,13 @@ RR_DATA["skills"]["Leatherworking"] = {
 			["price"] = 500,
 			["sources"] = {
 				1632,
+				11096,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -659,11 +673,13 @@ RR_DATA["skills"]["Leatherworking"] = {
 			["price"] = 500,
 			["sources"] = {
 				1632,
+				11096,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -718,6 +734,7 @@ RR_DATA["skills"]["Leatherworking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -793,6 +810,7 @@ RR_DATA["skills"]["Leatherworking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -847,6 +865,7 @@ RR_DATA["skills"]["Leatherworking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -901,6 +920,7 @@ RR_DATA["skills"]["Leatherworking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},
@@ -976,6 +996,7 @@ RR_DATA["skills"]["Leatherworking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1632,
+				11096,
 			},
 		},
 	},

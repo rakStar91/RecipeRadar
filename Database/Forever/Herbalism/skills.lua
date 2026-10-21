@@ -6,6 +6,36 @@ RR_DATA["skills"]["Herbalism"] = {
 	{
 		["forever"] = true,
 		["forever_new"] = true,
+		["id"] = 1229705,
+		["item_id"] = 279962,
+		["min_skill"] = 20,
+		["name"] = {
+			["Chinese"] = "熏香蜡烛",
+			["English"] = "Incense Candle",
+			["French"] = "Bougie d’encens",
+			["German"] = "Räucherkerze",
+			["Korean"] = "향기 나는 양초",
+			["Mexican"] = "Vela de incienso",
+			["Portuguese"] = "Vela de Incenso",
+			["Russian"] = "Ароматная свеча",
+			["Spanish"] = "Vela de incienso",
+			["Taiwanese"] = "薰香蠟燭",
+		},
+		["trainers"] = {
+			["price"] = 100,
+			["sources"] = {
+				5566,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5566,
+			},
+		},
+	},
+	{
+		["forever"] = true,
+		["forever_new"] = true,
 		["id"] = 1262980,
 		["item_id"] = 279964,
 		["items"] = {
@@ -46,24 +76,5 @@ RR_DATA["skills"]["Herbalism"] = {
 			["Spanish"] = "Hibridador de semillas",
 			["Taiwanese"] = "種子雜交機",
 		},
-	},
-	{
-		["forever"] = true,
-		["forever_new"] = true,
-		["id"] = 1229705,
-		["item_id"] = 279962,
-		["name"] = {
-			["Chinese"] = "熏香蜡烛",
-			["English"] = "Incense Candle",
-			["French"] = "Bougie d’encens",
-			["German"] = "Räucherkerze",
-			["Korean"] = "향기 나는 양초",
-			["Mexican"] = "Vela de incienso",
-			["Portuguese"] = "Vela de Incenso",
-			["Russian"] = "Ароматная свеча",
-			["Spanish"] = "Vela de incienso",
-			["Taiwanese"] = "薰香蠟燭",
-		},
-		["special_action"] = "source unknown",
 	},
 }

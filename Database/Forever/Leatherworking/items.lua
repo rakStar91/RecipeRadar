@@ -4136,7 +4136,17 @@ RR_DATA["items"]["Leatherworking"] = {
 			["Taiwanese"] = "圖樣：神秘中型護甲片",
 		},
 		["quality"] = "uncommon",
-		["special_action"] = "source unknown",
+		["vendors"] = {
+			["price"] = 500,
+			["sources"] = {
+				5565,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
+				5565,
+			},
+		},
 	},
 	{
 		["forever"] = true,
@@ -4154,7 +4164,17 @@ RR_DATA["items"]["Leatherworking"] = {
 			["Taiwanese"] = "圖樣：強力中型護甲片",
 		},
 		["quality"] = "uncommon",
-		["special_action"] = "source unknown",
+		["vendors"] = {
+			["price"] = 500,
+			["sources"] = {
+				5565,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
+				5565,
+			},
+		},
 	},
 	{
 		["forever"] = true,

@@ -207,6 +207,7 @@ RR_DATA["skills"]["Cooking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1430,
+				5482,
 			},
 		},
 	},
@@ -486,6 +487,7 @@ RR_DATA["skills"]["Cooking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1430,
+				5482,
 			},
 		},
 	},
@@ -592,6 +594,7 @@ RR_DATA["skills"]["Cooking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1430,
+				5482,
 			},
 		},
 	},
@@ -765,6 +768,7 @@ RR_DATA["skills"]["Cooking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1430,
+				5482,
 			},
 		},
 	},
@@ -852,6 +856,7 @@ RR_DATA["skills"]["Cooking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1430,
+				5482,
 			},
 		},
 	},
@@ -1340,6 +1345,7 @@ RR_DATA["skills"]["Cooking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1430,
+				5482,
 			},
 		},
 	},
@@ -1963,6 +1969,7 @@ RR_DATA["skills"]["Cooking"] = {
 		["verified"] = {
 			["trainers"] = {
 				1430,
+				5482,
 			},
 		},
 	},

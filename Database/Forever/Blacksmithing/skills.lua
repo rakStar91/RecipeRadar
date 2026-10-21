@@ -145,6 +145,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -194,6 +195,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -243,6 +245,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -292,6 +295,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -317,11 +321,13 @@ RR_DATA["skills"]["Blacksmithing"] = {
 			["price"] = 100,
 			["sources"] = {
 				514,
+				957,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -371,6 +377,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -420,6 +427,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -469,6 +477,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -518,6 +527,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -567,6 +577,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -616,6 +627,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -686,6 +698,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -735,6 +748,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -784,11 +798,13 @@ RR_DATA["skills"]["Blacksmithing"] = {
 			["price"] = 100,
 			["sources"] = {
 				514,
+				957,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -817,11 +833,13 @@ RR_DATA["skills"]["Blacksmithing"] = {
 			["price"] = 100,
 			["sources"] = {
 				514,
+				957,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -850,11 +868,13 @@ RR_DATA["skills"]["Blacksmithing"] = {
 			["price"] = 100,
 			["sources"] = {
 				514,
+				957,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -904,6 +924,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -953,6 +974,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -1002,6 +1024,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -1051,6 +1074,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -1100,6 +1124,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},
@@ -1259,6 +1284,7 @@ RR_DATA["skills"]["Blacksmithing"] = {
 		["verified"] = {
 			["trainers"] = {
 				514,
+				957,
 			},
 		},
 	},

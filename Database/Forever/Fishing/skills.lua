@@ -25,11 +25,13 @@ RR_DATA["skills"]["Fishing"] = {
 			["price"] = 100,
 			["sources"] = {
 				1651,
+				5493,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
 				1651,
+				5493,
 			},
 		},
 	},

@@ -5,25 +5,6 @@
 RR_DATA["skills"]["Alchemy"] = {
 	{
 		["forever"] = true,
-		["id"] = 2329,
-		["item_id"] = 2454,
-		["min_skill"] = 1,
-		["name"] = {
-			["Chinese"] = "初级力量药剂",
-			["English"] = "Elixir of Minor Strength",
-			["French"] = "Élixir de Force mineure",
-			["German"] = "Elixier der schwachen Stärke",
-			["Korean"] = "최하급 힘의 비약",
-			["Mexican"] = "Elixir de fuerza menor",
-			["Portuguese"] = "Elixir de Força Menor",
-			["Russian"] = "Малый эликсир силы",
-			["Spanish"] = "Elixir de fuerza menor",
-			["Taiwanese"] = "初級力量藥劑",
-		},
-		["special_action"] = "source unknown",
-	},
-	{
-		["forever"] = true,
 		["id"] = 7183,
 		["item_id"] = 5997,
 		["min_skill"] = 1,
@@ -82,6 +63,35 @@ RR_DATA["skills"]["Alchemy"] = {
 		["special_action"] = "auto learned",
 	},
 	{
+		["forever"] = true,
+		["id"] = 2329,
+		["item_id"] = 2454,
+		["min_skill"] = 15,
+		["name"] = {
+			["Chinese"] = "初级力量药剂",
+			["English"] = "Elixir of Minor Strength",
+			["French"] = "Élixir de Force mineure",
+			["German"] = "Elixier der schwachen Stärke",
+			["Korean"] = "최하급 힘의 비약",
+			["Mexican"] = "Elixir de fuerza menor",
+			["Portuguese"] = "Elixir de Força Menor",
+			["Russian"] = "Малый эликсир силы",
+			["Spanish"] = "Elixir de fuerza menor",
+			["Taiwanese"] = "初級力量藥劑",
+		},
+		["trainers"] = {
+			["price"] = 50,
+			["sources"] = {
+				5500,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5500,
+			},
+		},
+	},
+	{
 		["classic_source"] = true,
 		["forever"] = true,
 		["id"] = 3170,
@@ -128,6 +138,11 @@ RR_DATA["skills"]["Alchemy"] = {
 				11047,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				5500,
+			},
+		},
 	},
 	{
 		["forever"] = true,
@@ -149,6 +164,36 @@ RR_DATA["skills"]["Alchemy"] = {
 			["Russian"] = "Малый эликсир духа",
 			["Spanish"] = "Elixir de espíritu menor",
 			["Taiwanese"] = "初級精神藥劑",
+		},
+	},
+	{
+		["forever"] = true,
+		["forever_new"] = true,
+		["id"] = 1230564,
+		["item_id"] = 279956,
+		["min_skill"] = 20,
+		["name"] = {
+			["Chinese"] = "法力之井",
+			["English"] = "Mana Well",
+			["French"] = "Puits de mana",
+			["German"] = "Manabrunnen",
+			["Korean"] = "마나 우물",
+			["Mexican"] = "Pozo de maná",
+			["Portuguese"] = "Poço de Mana",
+			["Russian"] = "Колодец маны",
+			["Spanish"] = "Pozo de maná",
+			["Taiwanese"] = "法力井",
+		},
+		["trainers"] = {
+			["price"] = 100,
+			["sources"] = {
+				5500,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5500,
+			},
 		},
 	},
 	{
@@ -196,6 +241,11 @@ RR_DATA["skills"]["Alchemy"] = {
 				11044,
 				11046,
 				11047,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5500,
 			},
 		},
 	},
@@ -312,6 +362,71 @@ RR_DATA["skills"]["Alchemy"] = {
 				11047,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				5500,
+			},
+		},
+	},
+	{
+		["forever"] = true,
+		["forever_new"] = true,
+		["id"] = 1249630,
+		["item_id"] = 249409,
+		["min_skill"] = 40,
+		["name"] = {
+			["Chinese"] = "天蓝染料",
+			["English"] = "Cerulean Dye",
+			["French"] = "Teinture céruléenne",
+			["German"] = "Himmelblauer Farbstoff",
+			["Korean"] = "감청색 염료",
+			["Mexican"] = "Tinte cerúleo",
+			["Portuguese"] = "Pigmento Cerúleo",
+			["Russian"] = "Небесно-голубая краска",
+			["Spanish"] = "Tinte cerúleo",
+			["Taiwanese"] = "天藍染料",
+		},
+		["trainers"] = {
+			["price"] = 150,
+			["sources"] = {
+				5500,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5500,
+			},
+		},
+	},
+	{
+		["forever"] = true,
+		["forever_new"] = true,
+		["id"] = 1249633,
+		["item_id"] = 249410,
+		["min_skill"] = 40,
+		["name"] = {
+			["Chinese"] = "硫酸",
+			["English"] = "Sulfuric Acid",
+			["French"] = "Acide sulfurique",
+			["German"] = "Schwefelsäure",
+			["Korean"] = "유황산",
+			["Mexican"] = "Ácido sulfúrico",
+			["Portuguese"] = "Ácido Sulfúrico",
+			["Russian"] = "Серная кислота",
+			["Spanish"] = "Ácido sulfúrico",
+			["Taiwanese"] = "硫酸",
+		},
+		["trainers"] = {
+			["price"] = 150,
+			["sources"] = {
+				5500,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5500,
+			},
+		},
 	},
 	{
 		["forever"] = true,
@@ -405,6 +520,11 @@ RR_DATA["skills"]["Alchemy"] = {
 				11044,
 				11046,
 				11047,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5500,
 			},
 		},
 	},
@@ -3872,25 +3992,6 @@ RR_DATA["skills"]["Alchemy"] = {
 	{
 		["forever"] = true,
 		["forever_new"] = true,
-		["id"] = 1230564,
-		["item_id"] = 279956,
-		["name"] = {
-			["Chinese"] = "法力之井",
-			["English"] = "Mana Well",
-			["French"] = "Puits de mana",
-			["German"] = "Manabrunnen",
-			["Korean"] = "마나 우물",
-			["Mexican"] = "Pozo de maná",
-			["Portuguese"] = "Poço de Mana",
-			["Russian"] = "Колодец маны",
-			["Spanish"] = "Pozo de maná",
-			["Taiwanese"] = "法力井",
-		},
-		["special_action"] = "source unknown",
-	},
-	{
-		["forever"] = true,
-		["forever_new"] = true,
 		["id"] = 1244645,
 		["item_id"] = 247239,
 		["name"] = {
@@ -3967,25 +4068,6 @@ RR_DATA["skills"]["Alchemy"] = {
 	{
 		["forever"] = true,
 		["forever_new"] = true,
-		["id"] = 1249630,
-		["item_id"] = 249409,
-		["name"] = {
-			["Chinese"] = "天蓝染料",
-			["English"] = "Cerulean Dye",
-			["French"] = "Teinture céruléenne",
-			["German"] = "Himmelblauer Farbstoff",
-			["Korean"] = "감청색 염료",
-			["Mexican"] = "Tinte cerúleo",
-			["Portuguese"] = "Pigmento Cerúleo",
-			["Russian"] = "Небесно-голубая краска",
-			["Spanish"] = "Tinte cerúleo",
-			["Taiwanese"] = "天藍染料",
-		},
-		["special_action"] = "source unknown",
-	},
-	{
-		["forever"] = true,
-		["forever_new"] = true,
 		["id"] = 1249631,
 		["item_id"] = 249430,
 		["name"] = {
@@ -4018,25 +4100,6 @@ RR_DATA["skills"]["Alchemy"] = {
 			["Russian"] = "Изумрудная краска",
 			["Spanish"] = "Tinte viridiano",
 			["Taiwanese"] = "翠綠染料",
-		},
-		["special_action"] = "source unknown",
-	},
-	{
-		["forever"] = true,
-		["forever_new"] = true,
-		["id"] = 1249633,
-		["item_id"] = 249410,
-		["name"] = {
-			["Chinese"] = "硫酸",
-			["English"] = "Sulfuric Acid",
-			["French"] = "Acide sulfurique",
-			["German"] = "Schwefelsäure",
-			["Korean"] = "유황산",
-			["Mexican"] = "Ácido sulfúrico",
-			["Portuguese"] = "Ácido Sulfúrico",
-			["Russian"] = "Серная кислота",
-			["Spanish"] = "Ácido sulfúrico",
-			["Taiwanese"] = "硫酸",
 		},
 		["special_action"] = "source unknown",
 	},

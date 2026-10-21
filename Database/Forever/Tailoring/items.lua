@@ -623,6 +623,11 @@ RR_DATA["items"]["Tailoring"] = {
 				5944,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				1347,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -1308,6 +1313,11 @@ RR_DATA["items"]["Tailoring"] = {
 			["sources"] = {
 				1347,
 				3005,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
+				1347,
 			},
 		},
 	},
@@ -3203,6 +3213,11 @@ RR_DATA["items"]["Tailoring"] = {
 				5758,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				1318,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -3599,7 +3614,19 @@ RR_DATA["items"]["Tailoring"] = {
 			["Taiwanese"] = "圖樣：亞麻材料袋",
 		},
 		["quality"] = "uncommon",
-		["special_action"] = "source unknown",
+		["vendors"] = {
+			["price"] = 150,
+			["sources"] = {
+				1347,
+				258568,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
+				1347,
+				258568,
+			},
+		},
 	},
 	{
 		["forever"] = true,
@@ -3617,7 +3644,19 @@ RR_DATA["items"]["Tailoring"] = {
 			["Taiwanese"] = "圖樣：毛紡材料袋",
 		},
 		["quality"] = "uncommon",
-		["special_action"] = "source unknown",
+		["vendors"] = {
+			["price"] = 250,
+			["sources"] = {
+				1347,
+				258568,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
+				1347,
+				258568,
+			},
+		},
 	},
 	{
 		["forever"] = true,

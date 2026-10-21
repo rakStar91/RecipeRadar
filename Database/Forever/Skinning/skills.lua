@@ -24,11 +24,13 @@ RR_DATA["skills"]["Skinning"] = {
 		["trainers"] = {
 			["price"] = 100,
 			["sources"] = {
+				1292,
 				6306,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
+				1292,
 				6306,
 			},
 		},

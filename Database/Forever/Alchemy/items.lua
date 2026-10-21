@@ -727,6 +727,11 @@ RR_DATA["items"]["Alchemy"] = {
 				4610,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				1313,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,

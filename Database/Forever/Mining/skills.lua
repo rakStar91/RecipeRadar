@@ -23,6 +23,36 @@ RR_DATA["skills"]["Mining"] = {
 		["special_action"] = "auto learned",
 	},
 	{
+		["forever"] = true,
+		["forever_new"] = true,
+		["id"] = 1230161,
+		["item_id"] = 279960,
+		["min_skill"] = 20,
+		["name"] = {
+			["Chinese"] = "磁石",
+			["English"] = "Lodestone",
+			["French"] = "Magnétite",
+			["German"] = "Leitstein",
+			["Korean"] = "자철석",
+			["Mexican"] = "Magnetita",
+			["Portuguese"] = "Magnetita",
+			["Russian"] = "Магнетит",
+			["Spanish"] = "Magnetita",
+			["Taiwanese"] = "磁石",
+		},
+		["trainers"] = {
+			["price"] = 100,
+			["sources"] = {
+				5513,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5513,
+			},
+		},
+	},
+	{
 		["classic_source"] = true,
 		["forever"] = true,
 		["id"] = 2659,
@@ -56,6 +86,11 @@ RR_DATA["skills"]["Mining"] = {
 				5513,
 				6297,
 				8128,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5513,
 			},
 		},
 	},
@@ -93,6 +128,11 @@ RR_DATA["skills"]["Mining"] = {
 				5513,
 				6297,
 				8128,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5513,
 			},
 		},
 	},
@@ -169,6 +209,11 @@ RR_DATA["skills"]["Mining"] = {
 				8128,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				5513,
+			},
+		},
 	},
 	{
 		["forever"] = true,
@@ -228,6 +273,11 @@ RR_DATA["skills"]["Mining"] = {
 				8128,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				5513,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -263,6 +313,11 @@ RR_DATA["skills"]["Mining"] = {
 				5513,
 				6297,
 				8128,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5513,
 			},
 		},
 	},
@@ -302,6 +357,11 @@ RR_DATA["skills"]["Mining"] = {
 				8128,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				5513,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -337,6 +397,11 @@ RR_DATA["skills"]["Mining"] = {
 				5513,
 				6297,
 				8128,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5513,
 			},
 		},
 	},
@@ -399,6 +464,41 @@ RR_DATA["skills"]["Mining"] = {
 				8128,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				5513,
+			},
+		},
+	},
+	{
+		["forever"] = true,
+		["forever_new"] = true,
+		["id"] = 1249637,
+		["item_id"] = 249726,
+		["min_skill"] = 275,
+		["name"] = {
+			["Chinese"] = "熔炼艾泽拉斯金",
+			["English"] = "Smelt Azerothium",
+			["French"] = "Fonte d’azerothium",
+			["German"] = "Azerothium verhütten",
+			["Korean"] = "아제로시움 녹이기",
+			["Mexican"] = "Fundir azerotio",
+			["Portuguese"] = "Forjar Azerótio",
+			["Russian"] = "Выплавка азеротия",
+			["Spanish"] = "Azerothium fundido",
+			["Taiwanese"] = "熔煉艾澤源質",
+		},
+		["trainers"] = {
+			["price"] = 50000,
+			["sources"] = {
+				5513,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5513,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -451,46 +551,9 @@ RR_DATA["skills"]["Mining"] = {
 	{
 		["forever"] = true,
 		["forever_new"] = true,
-		["id"] = 1230161,
-		["item_id"] = 279960,
-		["name"] = {
-			["Chinese"] = "磁石",
-			["English"] = "Lodestone",
-			["French"] = "Magnétite",
-			["German"] = "Leitstein",
-			["Korean"] = "자철석",
-			["Mexican"] = "Magnetita",
-			["Portuguese"] = "Magnetita",
-			["Russian"] = "Магнетит",
-			["Spanish"] = "Magnetita",
-			["Taiwanese"] = "磁石",
-		},
-		["special_action"] = "source unknown",
-	},
-	{
-		["forever"] = true,
-		["forever_new"] = true,
-		["id"] = 1249637,
-		["item_id"] = 249726,
-		["name"] = {
-			["Chinese"] = "熔炼艾泽拉斯金",
-			["English"] = "Smelt Azerothium",
-			["French"] = "Fonte d’azerothium",
-			["German"] = "Azerothium verhütten",
-			["Korean"] = "아제로시움 녹이기",
-			["Mexican"] = "Fundir azerotio",
-			["Portuguese"] = "Forjar Azerótio",
-			["Russian"] = "Выплавка азеротия",
-			["Spanish"] = "Azerothium fundido",
-			["Taiwanese"] = "熔煉艾澤源質",
-		},
-		["special_action"] = "source unknown",
-	},
-	{
-		["forever"] = true,
-		["forever_new"] = true,
 		["id"] = 1306126,
 		["item_id"] = 251291,
+		["min_skill"] = 300,
 		["name"] = {
 			["Chinese"] = "熔炼重瑟银锭",
 			["English"] = "Smelt Heavy Thorium",
@@ -503,6 +566,16 @@ RR_DATA["skills"]["Mining"] = {
 			["Spanish"] = "Fundir torio pesado",
 			["Taiwanese"] = "熔煉重型瑟銀",
 		},
-		["special_action"] = "source unknown",
+		["trainers"] = {
+			["price"] = 50000,
+			["sources"] = {
+				5513,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				5513,
+			},
+		},
 	},
 }

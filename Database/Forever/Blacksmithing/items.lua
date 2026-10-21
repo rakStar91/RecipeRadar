@@ -1263,6 +1263,11 @@ RR_DATA["items"]["Blacksmithing"] = {
 				5512,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				5512,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,

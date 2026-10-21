@@ -40,6 +40,11 @@ RR_DATA["items"]["Enchanting"] = {
 				15419,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				1318,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -2122,6 +2127,11 @@ RR_DATA["items"]["Enchanting"] = {
 				15419,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				1318,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -2152,6 +2162,11 @@ RR_DATA["items"]["Enchanting"] = {
 				5757,
 				5758,
 				15419,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
+				1318,
 			},
 		},
 	},
@@ -2288,6 +2303,11 @@ RR_DATA["items"]["Enchanting"] = {
 				5757,
 				5758,
 				15419,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
+				1318,
 			},
 		},
 	},

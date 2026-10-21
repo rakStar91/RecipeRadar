@@ -1353,6 +1353,11 @@ RR_DATA["items"]["Engineering"] = {
 				5175,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				1304,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,

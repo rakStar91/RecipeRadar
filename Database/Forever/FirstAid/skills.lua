@@ -43,11 +43,13 @@ RR_DATA["skills"]["First Aid"] = {
 		["trainers"] = {
 			["price"] = 100,
 			["sources"] = {
+				2327,
 				2329,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
+				2327,
 				2329,
 			},
 		},
@@ -73,11 +75,13 @@ RR_DATA["skills"]["First Aid"] = {
 		["trainers"] = {
 			["price"] = 100,
 			["sources"] = {
+				2327,
 				2329,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
+				2327,
 				2329,
 			},
 		},
@@ -120,6 +124,7 @@ RR_DATA["skills"]["First Aid"] = {
 		},
 		["verified"] = {
 			["trainers"] = {
+				2327,
 				2329,
 			},
 		},
@@ -145,11 +150,13 @@ RR_DATA["skills"]["First Aid"] = {
 		["trainers"] = {
 			["price"] = 150,
 			["sources"] = {
+				2327,
 				2329,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
+				2327,
 				2329,
 			},
 		},
@@ -192,6 +199,7 @@ RR_DATA["skills"]["First Aid"] = {
 		},
 		["verified"] = {
 			["trainers"] = {
+				2327,
 				2329,
 			},
 		},
@@ -234,6 +242,7 @@ RR_DATA["skills"]["First Aid"] = {
 		},
 		["verified"] = {
 			["trainers"] = {
+				2327,
 				2329,
 			},
 		},
@@ -259,11 +268,13 @@ RR_DATA["skills"]["First Aid"] = {
 		["trainers"] = {
 			["price"] = 250,
 			["sources"] = {
+				2327,
 				2329,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
+				2327,
 				2329,
 			},
 		},
@@ -289,11 +300,13 @@ RR_DATA["skills"]["First Aid"] = {
 		["trainers"] = {
 			["price"] = 800,
 			["sources"] = {
+				2327,
 				2329,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
+				2327,
 				2329,
 			},
 		},
@@ -336,6 +349,7 @@ RR_DATA["skills"]["First Aid"] = {
 		},
 		["verified"] = {
 			["trainers"] = {
+				2327,
 				2329,
 			},
 		},
@@ -361,11 +375,13 @@ RR_DATA["skills"]["First Aid"] = {
 		["trainers"] = {
 			["price"] = 1200,
 			["sources"] = {
+				2327,
 				2329,
 			},
 		},
 		["verified"] = {
 			["trainers"] = {
+				2327,
 				2329,
 			},
 		},
@@ -473,6 +489,7 @@ RR_DATA["skills"]["First Aid"] = {
 		},
 		["verified"] = {
 			["trainers"] = {
+				2327,
 				2329,
 			},
 		},

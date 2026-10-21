@@ -29,6 +29,11 @@ RR_DATA["items"]["Cooking"] = {
 				340,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				340,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -53,6 +58,11 @@ RR_DATA["items"]["Cooking"] = {
 		["vendors"] = {
 			["price"] = 400,
 			["sources"] = {
+				340,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
 				340,
 			},
 		},
@@ -86,6 +96,11 @@ RR_DATA["items"]["Cooking"] = {
 				340,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				340,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -110,6 +125,11 @@ RR_DATA["items"]["Cooking"] = {
 		["vendors"] = {
 			["price"] = 800,
 			["sources"] = {
+				340,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
 				340,
 			},
 		},
@@ -143,6 +163,11 @@ RR_DATA["items"]["Cooking"] = {
 				340,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				340,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -167,6 +192,11 @@ RR_DATA["items"]["Cooking"] = {
 		["vendors"] = {
 			["price"] = 1600,
 			["sources"] = {
+				340,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
 				340,
 			},
 		},
@@ -197,6 +227,11 @@ RR_DATA["items"]["Cooking"] = {
 				340,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				340,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -221,6 +256,11 @@ RR_DATA["items"]["Cooking"] = {
 		["vendors"] = {
 			["price"] = 400,
 			["sources"] = {
+				340,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
 				340,
 			},
 		},
@@ -251,6 +291,11 @@ RR_DATA["items"]["Cooking"] = {
 				340,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				340,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -278,6 +323,11 @@ RR_DATA["items"]["Cooking"] = {
 				340,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				340,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -302,6 +352,11 @@ RR_DATA["items"]["Cooking"] = {
 		["vendors"] = {
 			["price"] = 1600,
 			["sources"] = {
+				340,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
 				340,
 			},
 		},
@@ -334,6 +389,11 @@ RR_DATA["items"]["Cooking"] = {
 				2821,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				340,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -358,6 +418,11 @@ RR_DATA["items"]["Cooking"] = {
 		["vendors"] = {
 			["price"] = 1600,
 			["sources"] = {
+				340,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
 				340,
 			},
 		},
@@ -762,6 +827,7 @@ RR_DATA["items"]["Cooking"] = {
 		["verified"] = {
 			["vendors"] = {
 				66,
+				5494,
 			},
 		},
 	},
@@ -882,6 +948,11 @@ RR_DATA["items"]["Cooking"] = {
 				5494,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				5494,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -913,6 +984,11 @@ RR_DATA["items"]["Cooking"] = {
 				5748,
 				5942,
 				10118,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
+				5494,
 			},
 		},
 	},
@@ -1842,6 +1918,11 @@ RR_DATA["items"]["Cooking"] = {
 				14738,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				5483,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -1877,6 +1958,11 @@ RR_DATA["items"]["Cooking"] = {
 				8307,
 				12033,
 				14738,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
+				5483,
 			},
 		},
 	},

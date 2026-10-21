@@ -143,6 +143,11 @@ RR_DATA["skills"]["Enchanting"] = {
 				11074,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				11068,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -184,6 +189,11 @@ RR_DATA["skills"]["Enchanting"] = {
 				11074,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				11068,
+			},
+		},
 	},
 	{
 		["forever"] = true,
@@ -203,6 +213,36 @@ RR_DATA["skills"]["Enchanting"] = {
 			["Russian"] = "Чары для нагрудника: слабый интеллект",
 			["Spanish"] = "Encantar torso: intelecto menor",
 			["Taiwanese"] = "附魔胸甲 - 初級智力",
+		},
+	},
+	{
+		["forever"] = true,
+		["forever_new"] = true,
+		["id"] = 1230643,
+		["item_id"] = 279976,
+		["min_skill"] = 20,
+		["name"] = {
+			["Chinese"] = "附魔的鲁特琴",
+			["English"] = "Enchanted Lute",
+			["French"] = "Luth enchanté",
+			["German"] = "Verzauberte Laute",
+			["Korean"] = "마력 깃든 류트",
+			["Mexican"] = "Laúd encantado",
+			["Portuguese"] = "Alaúde Encantado",
+			["Russian"] = "Зачарованная лютня",
+			["Spanish"] = "Laúd encantado",
+			["Taiwanese"] = "附魔魯特琴",
+		},
+		["trainers"] = {
+			["price"] = 100,
+			["sources"] = {
+				11068,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				11068,
+			},
 		},
 	},
 	{
@@ -243,6 +283,11 @@ RR_DATA["skills"]["Enchanting"] = {
 				11072,
 				11073,
 				11074,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				11068,
 			},
 		},
 	},
@@ -286,6 +331,11 @@ RR_DATA["skills"]["Enchanting"] = {
 				11074,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				11068,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -327,6 +377,11 @@ RR_DATA["skills"]["Enchanting"] = {
 				11074,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				11068,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -366,6 +421,11 @@ RR_DATA["skills"]["Enchanting"] = {
 				11072,
 				11073,
 				11074,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				11068,
 			},
 		},
 	},
@@ -428,6 +488,11 @@ RR_DATA["skills"]["Enchanting"] = {
 				11072,
 				11073,
 				11074,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				11068,
 			},
 		},
 	},
@@ -584,6 +649,11 @@ RR_DATA["skills"]["Enchanting"] = {
 				11072,
 				11073,
 				11074,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				11068,
 			},
 		},
 	},
@@ -4904,25 +4974,6 @@ RR_DATA["skills"]["Enchanting"] = {
 			["Spanish"] = "Ídolo de los gemelos osunos",
 			["Taiwanese"] = "雙熊塑像",
 		},
-	},
-	{
-		["forever"] = true,
-		["forever_new"] = true,
-		["id"] = 1230643,
-		["item_id"] = 279976,
-		["name"] = {
-			["Chinese"] = "附魔的鲁特琴",
-			["English"] = "Enchanted Lute",
-			["French"] = "Luth enchanté",
-			["German"] = "Verzauberte Laute",
-			["Korean"] = "마력 깃든 류트",
-			["Mexican"] = "Laúd encantado",
-			["Portuguese"] = "Alaúde Encantado",
-			["Russian"] = "Зачарованная лютня",
-			["Spanish"] = "Laúd encantado",
-			["Taiwanese"] = "附魔魯特琴",
-		},
-		["special_action"] = "source unknown",
 	},
 	{
 		["forever"] = true,

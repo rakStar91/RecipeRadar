@@ -63,6 +63,36 @@ RR_DATA["skills"]["Engineering"] = {
 	{
 		["forever"] = true,
 		["forever_new"] = true,
+		["id"] = 1230656,
+		["item_id"] = 279950,
+		["min_skill"] = 20,
+		["name"] = {
+			["Chinese"] = "试剂机器人",
+			["English"] = "Reagent Bot",
+			["French"] = "Robot vendeur de composants",
+			["German"] = "Materialbot",
+			["Korean"] = "재료 로봇",
+			["Mexican"] = "Robot de componentes",
+			["Portuguese"] = "Robô de Reagentes",
+			["Russian"] = "Реагентобот",
+			["Spanish"] = "Robot de componentes",
+			["Taiwanese"] = "材料機器人",
+		},
+		["trainers"] = {
+			["price"] = 100,
+			["sources"] = {
+				11026,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				11026,
+			},
+		},
+	},
+	{
+		["forever"] = true,
+		["forever_new"] = true,
 		["id"] = 1266893,
 		["item_id"] = 260784,
 		["items"] = {
@@ -145,6 +175,11 @@ RR_DATA["skills"]["Engineering"] = {
 				11037,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				11026,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -185,6 +220,11 @@ RR_DATA["skills"]["Engineering"] = {
 				11029,
 				11031,
 				11037,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				11026,
 			},
 		},
 	},
@@ -229,6 +269,11 @@ RR_DATA["skills"]["Engineering"] = {
 				11037,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				11026,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -271,6 +316,11 @@ RR_DATA["skills"]["Engineering"] = {
 				11037,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				11026,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -310,6 +360,11 @@ RR_DATA["skills"]["Engineering"] = {
 				11029,
 				11031,
 				11037,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				11026,
 			},
 		},
 	},
@@ -375,6 +430,11 @@ RR_DATA["skills"]["Engineering"] = {
 				11037,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				11026,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -415,6 +475,11 @@ RR_DATA["skills"]["Engineering"] = {
 				11029,
 				11031,
 				11037,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				11026,
 			},
 		},
 	},
@@ -502,6 +567,11 @@ RR_DATA["skills"]["Engineering"] = {
 				11037,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				11026,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -544,6 +614,11 @@ RR_DATA["skills"]["Engineering"] = {
 				11037,
 			},
 		},
+		["verified"] = {
+			["trainers"] = {
+				11026,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -584,6 +659,11 @@ RR_DATA["skills"]["Engineering"] = {
 				11029,
 				11031,
 				11037,
+			},
+		},
+		["verified"] = {
+			["trainers"] = {
+				11026,
 			},
 		},
 	},
@@ -5819,25 +5899,6 @@ RR_DATA["skills"]["Engineering"] = {
 			["Spanish"] = "Rifle de francotirador hiperlujoso Mk XVII",
 			["Taiwanese"] = "超豪華狙擊槍Mk XVII",
 		},
-	},
-	{
-		["forever"] = true,
-		["forever_new"] = true,
-		["id"] = 1230656,
-		["item_id"] = 279950,
-		["name"] = {
-			["Chinese"] = "试剂机器人",
-			["English"] = "Reagent Bot",
-			["French"] = "Robot vendeur de composants",
-			["German"] = "Materialbot",
-			["Korean"] = "재료 로봇",
-			["Mexican"] = "Robot de componentes",
-			["Portuguese"] = "Robô de Reagentes",
-			["Russian"] = "Реагентобот",
-			["Spanish"] = "Robot de componentes",
-			["Taiwanese"] = "材料機器人",
-		},
-		["special_action"] = "source unknown",
 	},
 	{
 		["forever"] = true,
