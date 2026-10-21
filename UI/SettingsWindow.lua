@@ -350,6 +350,7 @@ function RR.UI.SettingsWindow:Initialize()
         L["SETTINGS_OPT_TOOLTIP_ALTS_DESC"],
         function(selfCB, isChecked)
             RR.Config:SetTooltipAltsEnabled(isChecked)
+            self:RefreshTooltipPreview()
         end
     )
     self.cbAlts = cbAlts
@@ -359,6 +360,7 @@ function RR.UI.SettingsWindow:Initialize()
         L["SETTINGS_OPT_TOOLTIP_SPELLS_DESC"],
         function(selfCB, isChecked)
             RR.Config:SetTooltipSpellsEnabled(isChecked)
+            self:RefreshTooltipPreview()
         end
     )
     self.cbSpells = cbSpells
@@ -368,6 +370,7 @@ function RR.UI.SettingsWindow:Initialize()
         L["SETTINGS_OPT_TOOLTIP_COMPACT_DESC"],
         function(selfCB, isChecked)
             RR.Config:SetTooltipCompactEnabled(isChecked)
+            self:RefreshTooltipPreview()
         end
     )
     self.cbCompact = cbCompact
@@ -378,22 +381,74 @@ function RR.UI.SettingsWindow:Initialize()
     previewBox:SetPoint("BOTTOMRIGHT", -14, 14)
     RR.UI.Theme:SkinPanel(previewBox, 0.6)
 
-    local prevLabel = previewBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    prevLabel:SetPoint("TOPLEFT", 10, -8)
-    prevLabel:SetTextColor(1, 0.82, 0, 1)
-    prevLabel:SetText(L["TOOLTIP_SETTINGS"])
+    -- The preview shows the block the tooltips really get (built by the same code) and follows the options above
+    local prevTitle = previewBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    prevTitle:SetPoint("TOPLEFT", 10, -8)
+    prevTitle:SetTextColor(1, 0.82, 0, 1)
+    prevTitle:SetText(L["TOOLTIP_PREVIEW_TITLE"])
 
-    local prevLine1 = previewBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    prevLine1:SetPoint("TOPLEFT", 10, -28)
-    prevLine1:SetText(RR.COLORS.TITLE .. "RecipeRadar (" .. L["ALTS"] .. "):|r")
+    local prevDesc = previewBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    prevDesc:SetPoint("TOPLEFT", 10, -26)
+    prevDesc:SetPoint("TOPRIGHT", -10, -26)
+    prevDesc:SetJustifyH("LEFT")
+    prevDesc:SetTextColor(0.85, 0.85, 0.85, 1)
+    prevDesc:SetText(L["TOOLTIP_PREVIEW_DESC"])
 
-    local prevLine2 = previewBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    prevLine2:SetPoint("TOPLEFT", 14, -46)
-    prevLine2:SetText("|TInterface\\RAIDFRAME\\ReadyCheck-Ready:12:12:0:0|t |cff33ff33" .. L["LEARNED"] .. ":|r |cffff7d0aDruid|r, |cff0070deShaman|r")
+    -- the examples scroll, so the box keeps its size however long they get
+    local previewScroll = CreateFrame("ScrollFrame", nil, previewBox)
+    previewScroll:SetPoint("TOPLEFT", previewBox, "TOPLEFT", 6, -62)
+    previewScroll:SetPoint("BOTTOMRIGHT", previewBox, "BOTTOMRIGHT", -26, 6)
+    previewScroll:EnableMouseWheel(true)
 
-    local prevLine3 = previewBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    prevLine3:SetPoint("TOPLEFT", 14, -64)
-    prevLine3:SetText("|TInterface\\RAIDFRAME\\ReadyCheck-NotReady:12:12:0:0|t |cffff4444" .. L["MODE_MISSING"] .. ":|r |cffc79c6eWarrior|r")
+    local previewChild = CreateFrame("Frame", nil, previewScroll)
+    previewChild:SetPoint("TOPLEFT", 0, 0)
+    previewChild:SetSize(600, 200)
+    previewScroll:SetScrollChild(previewChild)
+
+    local previewBar = CreateFrame("Slider", nil, previewBox, "UIPanelScrollBarTemplate")
+    previewBar:SetPoint("TOPRIGHT", previewBox, "TOPRIGHT", -4, -78)
+    previewBar:SetPoint("BOTTOMRIGHT", previewBox, "BOTTOMRIGHT", -4, 22)
+    previewBar:SetWidth(14)
+    previewBar:SetMinMaxValues(0, 0)
+    previewBar:SetValue(0)
+    previewBar:SetValueStep(16)
+    previewBar:SetScript("OnValueChanged", function(_, value)
+        previewScroll:SetVerticalScroll(value)
+    end)
+    previewBar:Hide()
+    -- the height of the area is only known once the window is laid out, so the scroll range follows size changes
+    previewScroll:SetScript("OnSizeChanged", function()
+        self:RefreshTooltipPreview()
+    end)
+    previewScroll:SetScript("OnMouseWheel", function(_, delta)
+        local minValue, maxValue = previewBar:GetMinMaxValues()
+        previewBar:SetValue(math.max(minValue, math.min(maxValue, previewBar:GetValue() - delta * 24)))
+    end)
+
+    self.previewBox = previewBox
+    self.previewScroll = previewScroll
+    self.previewChild = previewChild
+    self.previewBar = previewBar
+    self.previewSections = {}
+    for _, def in ipairs({
+        { kind = "item", label = L["TOOLTIP_PREVIEW_ITEM"] },
+        { kind = "spell", label = L["TOOLTIP_PREVIEW_SPELL"] },
+    }) do
+        local section = { kind = def.kind, lines = {} }
+        section.label = previewChild:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        section.label:SetTextColor(0.7, 0.7, 0.7, 1)
+        section.label:SetText(def.label)
+        section.off = previewChild:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+        section.off:SetText(L["TOOLTIP_PREVIEW_OFF"])
+        for i = 1, 4 do
+            local left = previewChild:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            left:SetJustifyH("LEFT")
+            local right = previewChild:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            right:SetJustifyH("LEFT")
+            section.lines[i] = { left = left, right = right }
+        end
+        table.insert(self.previewSections, section)
+    end
 
     -- ========================================================================
     -- PANEL 3: Interface & Display
@@ -570,6 +625,11 @@ function RR.UI.SettingsWindow:Initialize()
         { cmd = "/rr debug", desc = L["SETTINGS_CMD_DEBUG"] },
         { cmd = "/rr help", desc = L["SETTINGS_CMD_HELP"] },
     }
+    if RR.Recorder then
+        -- WoW Forever: source recording (see the "Sources" tab)
+        table.insert(commandList, #commandList, { cmd = "/rr export", desc = L["SETTINGS_CMD_EXPORT"] })
+        table.insert(commandList, #commandList, { cmd = "/rr record", desc = L["SETTINGS_CMD_RECORD"] })
+    end
 
     local cmdY = -252
     for _, item in ipairs(commandList) do
@@ -598,6 +658,15 @@ function RR.UI.SettingsWindow:Initialize()
         { id = "tooltips", label = L["SETTINGS_TAB_TOOLTIPS"], panel = panelTooltips },
         { id = "interface", label = L["SETTINGS_TAB_INTERFACE"], panel = panelInterface },
     }
+    -- "Sources" tab: only present in builds that record sources (WoW Forever)
+    if RR.Recorder and RR.UI.RecorderPanel then
+        table.insert(tabDefs, {
+            id = "sources",
+            label = L["SETTINGS_TAB_SOURCES"],
+            panel = RR.UI.RecorderPanel:Create(contentArea, CreateSettingCheckbox),
+        })
+    end
+    table.insert(tabDefs, { id = "about", label = L["SETTINGS_TAB_ABOUT"], panel = panelAbout })
 
     local tabY = -34
     for _, def in ipairs(tabDefs) do
@@ -624,11 +693,6 @@ function RR.UI.SettingsWindow:Initialize()
     end)
     self.bottomCloseBtn = bottomCloseBtn
 
-    if RR.Recorder then
-        -- WoW Forever: source recording (see the "Sources" tab)
-        table.insert(commandList, #commandList, { cmd = "/rr export", desc = L["SETTINGS_CMD_EXPORT"] })
-        table.insert(commandList, #commandList, { cmd = "/rr record", desc = L["SETTINGS_CMD_RECORD"] })
-    end
     self.frame = f
 
     f:SetScript("OnShow", function()
@@ -658,15 +722,6 @@ function RR.UI.SettingsWindow:SelectTab(tabId)
         else
             tab.btn:SetActive(false)
             tab.panel:Hide()
-    -- "Sources" tab: only present in builds that record sources (WoW Forever)
-    if RR.Recorder and RR.UI.RecorderPanel then
-        table.insert(tabDefs, {
-            id = "sources",
-            label = L["SETTINGS_TAB_SOURCES"],
-            panel = RR.UI.RecorderPanel:Create(contentArea, CreateSettingCheckbox),
-        })
-    end
-    table.insert(tabDefs, { id = "about", label = L["SETTINGS_TAB_ABOUT"], panel = panelAbout })
         end
     end
 
@@ -677,6 +732,8 @@ function RR.UI.SettingsWindow:SelectTab(tabId)
         self:RefreshTooltips()
     elseif tabId == "interface" then
         self:RefreshInterface()
+    elseif self.tabs[tabId] and self.tabs[tabId].panel.RefreshPanel then
+        self.tabs[tabId].panel:RefreshPanel()
     end
 end
 
@@ -716,6 +773,81 @@ function RR.UI.SettingsWindow:RefreshTooltips()
     if self.cbCompact then
         self.cbCompact:SetChecked(RR.Config:IsTooltipCompactEnabled() == true)
     end
+    self:RefreshTooltipPreview()
+end
+
+--- Example characters for the tooltip preview (class names in the client language)
+local function PreviewAlts()
+    local names = LOCALIZED_CLASS_NAMES_MALE or {}
+    return {
+        { name = names.DRUID or "Druid", class = "DRUID", isKnown = true },
+        { name = names.SHAMAN or "Shaman", class = "SHAMAN", isKnown = true },
+        { name = names.WARRIOR or "Warrior", class = "WARRIOR", isKnown = false },
+    }
+end
+
+--- Rebuilds the tooltip preview from the current options: item/recipe tooltips need "alts", spellbook tooltips
+--- need "alts" and "spells", the layout follows "compact"
+function RR.UI.SettingsWindow:RefreshTooltipPreview()
+    if not self.previewSections then return end
+    local altsOn = RR.Config:IsTooltipAltsEnabled() == true
+    local spellsOn = RR.Config:IsTooltipSpellsEnabled() == true
+    local compact = RR.Config:IsTooltipCompactEnabled() == true
+    local child = self.previewChild
+
+    local y = -4
+    for _, section in ipairs(self.previewSections) do
+        local enabled = altsOn and (section.kind == "item" or spellsOn)
+        section.label:ClearAllPoints()
+        section.label:SetPoint("TOPLEFT", child, "TOPLEFT", 4, y)
+        y = y - 18
+
+        -- the block exactly as the tooltip code builds it
+        local lines = {}
+        if enabled then
+            local recorder = {}
+            function recorder:AddLine(text) if text ~= " " then lines[#lines + 1] = { left = text } end end
+            function recorder:AddDoubleLine(left, right) lines[#lines + 1] = { left = left, right = right } end
+            function recorder:Show() end
+            RR.UI.Tooltips:AppendAlts(recorder, PreviewAlts(), compact)
+        end
+
+        section.off:ClearAllPoints()
+        section.off:SetPoint("TOPLEFT", child, "TOPLEFT", 8, y)
+        section.off:SetShown(not enabled)
+        if not enabled then y = y - 16 end
+
+        for i, slot in ipairs(section.lines) do
+            local line = lines[i]
+            if line then
+                slot.left:ClearAllPoints()
+                slot.left:SetPoint("TOPLEFT", child, "TOPLEFT", 8, y)
+                slot.left:SetText(line.left)
+                slot.left:Show()
+                if line.right then
+                    slot.right:ClearAllPoints()
+                    slot.right:SetPoint("TOPLEFT", child, "TOPLEFT", 190, y)
+                    slot.right:SetText(line.right)
+                    slot.right:Show()
+                else
+                    slot.right:Hide()
+                end
+                y = y - 16
+            else
+                slot.left:Hide()
+                slot.right:Hide()
+            end
+        end
+        y = y - 12
+    end
+
+    -- scroll range: the bar only appears when the examples are taller than the box
+    local contentHeight = -y
+    child:SetHeight(contentHeight)
+    local overflow = math.max(0, contentHeight - (self.previewScroll:GetHeight() or 0))
+    self.previewBar:SetMinMaxValues(0, overflow)
+    if self.previewBar:GetValue() > overflow then self.previewBar:SetValue(overflow) end
+    self.previewBar:SetShown(overflow > 0)
 end
 
 function RR.UI.SettingsWindow:RefreshInterface()
@@ -732,8 +864,6 @@ end
 
 function RR.UI.SettingsWindow:RefreshCharacters()
     if not self.frame or not self.frame:IsShown() then return end
-    elseif self.tabs[tabId] and self.tabs[tabId].panel.RefreshPanel then
-        self.tabs[tabId].panel:RefreshPanel()
 
     local realm = GetRealmName() or "UnknownRealm"
     if self.realmHeader then
