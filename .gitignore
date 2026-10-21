@@ -10,3 +10,6 @@ docs/future_settings_backlog.md
 # Forever tooling
 tools/forever/node_modules/
 tools/forever/cache/
+
+# Python bytecode
+__pycache__/
