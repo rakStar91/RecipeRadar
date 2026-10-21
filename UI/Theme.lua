@@ -241,3 +241,98 @@ function RR.UI.Theme:AddTooltip(frame, title, text, anchor)
         GameTooltip:Hide()
     end)
 end
+
+-- WoW Forever ships the scroll bar of the current client (flagged in its data); Classic Era and TBC keep the old template.
+function RR.UI.Theme:HasModernScrollBar()
+    return RR_DATA["modern_scrollbar"] == true
+end
+
+-- Horizontal room a scroll bar takes at the edge of its list, so rows can stay clear of it
+function RR.UI.Theme:GetScrollBarSpace()
+    return self:HasModernScrollBar() and 24 or 22
+end
+
+--- Creates a vertical scroll bar that is used like a Slider (SetMinMaxValues, SetValue, GetValue, Show, Hide)
+-- opts.name: global name (optional)
+-- opts.onValueChanged(bar, value): called when the value changes, by the user or by SetValue
+-- opts.step: value change of one arrow click
+-- opts.visible: size of the visible area in value units (number or function), the thumb size follows from it
+-- opts.integer: whole values only (list rows)
+-- opts.width: width of the old template
+-- opts.right, opts.inset: distance to the right edge of the parent and to its top and bottom (old template)
+function RR.UI.Theme:CreateScrollBar(parent, opts)
+    if not self:HasModernScrollBar() then
+        -- the template calls SetVerticalScroll on its parent, which plain frames do not have
+        if not parent.SetVerticalScroll then parent.SetVerticalScroll = function() end end
+        local bar = CreateFrame("Slider", opts.name, parent, "UIPanelScrollBarTemplate")
+        bar:SetWidth(opts.width or 16)
+        bar:SetPoint("TOPRIGHT", parent, "TOPRIGHT", opts.right or -4, -(opts.inset or 18))
+        bar:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", opts.right or -4, opts.inset or 18)
+        -- own handler first: the template's one runs on the first SetValue otherwise
+        bar:SetScript("OnValueChanged", function(_, value) opts.onValueChanged(bar, value) end)
+        bar:SetMinMaxValues(0, 0)
+        bar:SetValue(0)
+        bar:SetValueStep(opts.step or 1)
+        return bar
+    end
+
+    local bar = CreateFrame("EventFrame", opts.name, parent, "MinimalScrollBar")
+    bar:SetPoint("TOPRIGHT", parent, "TOPRIGHT", (opts.right or -4) - 5, -3)
+    bar:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", (opts.right or -4) - 5, 3)
+    local minValue, maxValue, value, step = 0, 0, 0, opts.step or 1
+
+    local function percentOf(v)
+        local range = maxValue - minValue
+        return range > 0 and (v - minValue) / range or 0
+    end
+
+    -- the thumb size and the arrow step are fractions of the whole scroll range
+    local function updateExtents()
+        local range = maxValue - minValue
+        if range > 0 then
+            local visible = type(opts.visible) == "function" and opts.visible() or opts.visible or 0
+            bar:SetPanExtentPercentage(step / range)
+            bar:SetVisibleExtentPercentage(visible / (visible + range))
+        else
+            bar:SetVisibleExtentPercentage(1)
+        end
+    end
+
+    bar:RegisterCallback("OnScroll", function(_, percentage)
+        local newValue = minValue + percentage * (maxValue - minValue)
+        if opts.integer then newValue = math.floor(newValue + 0.5) end
+        if math.abs(newValue - value) > 0.000001 then
+            value = newValue
+            opts.onValueChanged(bar, value)
+        end
+    end, bar)
+
+    function bar:SetMinMaxValues(minV, maxV)
+        local oldValue = value
+        minValue, maxValue = minV, maxV
+        value = math.max(minV, math.min(maxV, value))
+        updateExtents()
+        self:SetScrollPercentage(percentOf(value), true)
+        if value ~= oldValue then opts.onValueChanged(self, value) end
+    end
+
+    function bar:GetMinMaxValues()
+        return minValue, maxValue
+    end
+
+    function bar:SetValue(v)
+        -- the scroll event stores the value and tells the owner
+        self:SetScrollPercentage(percentOf(math.max(minValue, math.min(maxValue, v))), true)
+    end
+
+    function bar:GetValue()
+        return value
+    end
+
+    function bar:SetValueStep(s)
+        step = s
+        updateExtents()
+    end
+
+    return bar
+end

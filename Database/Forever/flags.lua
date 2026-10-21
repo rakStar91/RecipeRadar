@@ -10,6 +10,8 @@ RR_DATA["has_unknown_sources"] = true
 RR_DATA["addon_compartment"] = true
 -- Recipes that are new in Forever carry forever_new; the list marks them with the Forever symbol.
 RR_DATA["new_recipe_marker"] = true
+-- The client has the modern scroll bar template (MinimalScrollBar); the lists use it instead of the old one.
+RR_DATA["modern_scrollbar"] = true
 -- Professions offered in the profession menu (the Era/TBC menu is a fixed list without gatherers).
 RR_DATA["profession_menu"] = {
 	"Leatherworking",

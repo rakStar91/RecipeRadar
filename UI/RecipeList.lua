@@ -29,7 +29,7 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
     for i = 1, NUM_VISIBLE_ROWS do
         local row = CreateFrame("Button", nil, listPane, BackdropTemplateMixin and "BackdropTemplate")
         row:SetPoint("TOPLEFT", 4, -((i - 1) * ROW_HEIGHT + 4))
-        row:SetPoint("TOPRIGHT", -22, -((i - 1) * ROW_HEIGHT + 4))
+        row:SetPoint("TOPRIGHT", -RR.UI.Theme:GetScrollBarSpace(), -((i - 1) * ROW_HEIGHT + 4))
         row:SetHeight(ROW_HEIGHT)
 
         -- Alternating zebra background
@@ -147,20 +147,18 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
 
     -- Scrollbar for list
     instance.scrollOffset = 0
-    listPane.SetVerticalScroll = function() end
-    local scrollbar = CreateFrame("Slider", "RecipeRadarScroll", listPane, "UIPanelScrollBarTemplate")
-    scrollbar:SetPoint("TOPRIGHT", -4, -18)
-    scrollbar:SetPoint("BOTTOMRIGHT", -4, 18)
-    scrollbar:SetWidth(16)
-    scrollbar:SetScript("OnValueChanged", function(_, val)
-        instance.scrollOffset = math.floor(val or 0)
-        if instance.Render then
-            instance:Render()
-        end
-    end)
-    scrollbar:SetMinMaxValues(0, 0)
-    scrollbar:SetValue(0)
-    scrollbar:SetValueStep(1)
+    local scrollbar = RR.UI.Theme:CreateScrollBar(listPane, {
+        name = "RecipeRadarScroll",
+        step = 1,
+        visible = NUM_VISIBLE_ROWS,
+        integer = true,
+        onValueChanged = function(_, val)
+            instance.scrollOffset = math.floor(val or 0)
+            if instance.Render then
+                instance:Render()
+            end
+        end,
+    })
     instance.scrollbar = scrollbar
 
     listPane:EnableMouseWheel(true)

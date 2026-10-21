@@ -166,7 +166,7 @@ function RR.UI.SettingsWindow:Initialize()
     for i = 1, VISIBLE_ROWS do
         local row = CreateFrame("Frame", nil, listPanel, BACKDROP_TEMPLATE)
         row:SetPoint("TOPLEFT", 6, -((i - 1) * ROW_HEIGHT + 6))
-        row:SetPoint("TOPRIGHT", -26, -((i - 1) * ROW_HEIGHT + 6))
+        row:SetPoint("TOPRIGHT", -(RR.UI.Theme:GetScrollBarSpace() + 4), -((i - 1) * ROW_HEIGHT + 6))
         row:SetHeight(ROW_HEIGHT - 2)
 
         row.bg = row:CreateTexture(nil, "BACKGROUND")
@@ -294,18 +294,16 @@ function RR.UI.SettingsWindow:Initialize()
         self.rows[i] = row
     end
 
-    listPanel.SetVerticalScroll = function() end
-    local scrollbar = CreateFrame("Slider", "RecipeRadarSettingsScrollBar", listPanel, "UIPanelScrollBarTemplate")
-    scrollbar:SetPoint("TOPRIGHT", -4, -18)
-    scrollbar:SetPoint("BOTTOMRIGHT", -4, 18)
-    scrollbar:SetWidth(16)
-    scrollbar:SetScript("OnValueChanged", function(_, val)
-        self.scrollOffset = math.floor((val or 0) + 0.5)
-        self:RenderRows()
-    end)
-    scrollbar:SetMinMaxValues(0, 0)
-    scrollbar:SetValue(0)
-    scrollbar:SetValueStep(1)
+    local scrollbar = RR.UI.Theme:CreateScrollBar(listPanel, {
+        name = "RecipeRadarSettingsScrollBar",
+        step = 1,
+        visible = VISIBLE_ROWS,
+        integer = true,
+        onValueChanged = function(_, val)
+            self.scrollOffset = math.floor((val or 0) + 0.5)
+            self:RenderRows()
+        end,
+    })
     self.scrollbar = scrollbar
 
     local function onMouseWheel(_, delta)
@@ -397,7 +395,7 @@ function RR.UI.SettingsWindow:Initialize()
     -- the examples scroll, so the box keeps its size however long they get
     local previewScroll = CreateFrame("ScrollFrame", nil, previewBox)
     previewScroll:SetPoint("TOPLEFT", previewBox, "TOPLEFT", 6, -62)
-    previewScroll:SetPoint("BOTTOMRIGHT", previewBox, "BOTTOMRIGHT", -26, 6)
+    previewScroll:SetPoint("BOTTOMRIGHT", previewBox, "BOTTOMRIGHT", -6, 6)
     previewScroll:EnableMouseWheel(true)
 
     local previewChild = CreateFrame("Frame", nil, previewScroll)
@@ -405,16 +403,17 @@ function RR.UI.SettingsWindow:Initialize()
     previewChild:SetSize(600, 200)
     previewScroll:SetScrollChild(previewChild)
 
-    local previewBar = CreateFrame("Slider", nil, previewBox, "UIPanelScrollBarTemplate")
-    previewBar:SetPoint("TOPRIGHT", previewBox, "TOPRIGHT", -4, -78)
-    previewBar:SetPoint("BOTTOMRIGHT", previewBox, "BOTTOMRIGHT", -4, 22)
-    previewBar:SetWidth(14)
-    previewBar:SetMinMaxValues(0, 0)
-    previewBar:SetValue(0)
-    previewBar:SetValueStep(16)
-    previewBar:SetScript("OnValueChanged", function(_, value)
-        previewScroll:SetVerticalScroll(value)
-    end)
+    -- a child of the scroll frame: the old template calls SetVerticalScroll on its parent
+    local previewBar = RR.UI.Theme:CreateScrollBar(previewScroll, {
+        step = 16,
+        width = 14,
+        right = -2,
+        inset = 16,
+        visible = function() return previewScroll:GetHeight() end,
+        onValueChanged = function(_, value)
+            previewScroll:SetVerticalScroll(value)
+        end,
+    })
     previewBar:Hide()
     -- the height of the area is only known once the window is laid out, so the scroll range follows size changes
     previewScroll:SetScript("OnSizeChanged", function()

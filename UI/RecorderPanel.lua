@@ -43,9 +43,30 @@ function RR.UI.RecorderPanel:Create(contentArea, createCheckbox)
     hint:SetTextColor(0.75, 0.75, 0.75, 1)
     hint:SetText(L["REC_EXPORT_HINT"])
 
-    local scroll = CreateFrame("ScrollFrame", "RecipeRadarExportScroll", panel, "UIPanelScrollFrameTemplate")
+    local scroll = CreateFrame("ScrollFrame", "RecipeRadarExportScroll", panel)
     scroll:SetPoint("TOPLEFT", 14, -222)
     scroll:SetPoint("BOTTOMRIGHT", -36, 52)
+
+    local bar = RR.UI.Theme:CreateScrollBar(panel, {
+        step = 24,
+        visible = function() return scroll:GetHeight() end,
+        onValueChanged = function(_, value)
+            scroll:SetVerticalScroll(value)
+        end,
+    })
+    bar:ClearAllPoints()
+    bar:SetPoint("TOPLEFT", scroll, "TOPRIGHT", 13, 0)
+    bar:SetPoint("BOTTOMLEFT", scroll, "BOTTOMRIGHT", 13, 0)
+    scroll:EnableMouseWheel(true)
+    scroll:SetScript("OnMouseWheel", function(_, delta)
+        local minValue, maxValue = bar:GetMinMaxValues()
+        bar:SetValue(math.max(minValue, math.min(maxValue, bar:GetValue() - delta * 48)))
+    end)
+    -- the range follows the length of the export text
+    scroll:SetScript("OnScrollRangeChanged", function(_, _, yRange)
+        bar:SetMinMaxValues(0, yRange or 0)
+        bar:SetShown((yRange or 0) > 0)
+    end)
 
     local edit = CreateFrame("EditBox", nil, scroll)
     edit:SetMultiLine(true)

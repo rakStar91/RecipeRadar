@@ -213,16 +213,17 @@ function RR.UI.DetailPane:Create(parent)
     instance.srcScrollFrame = srcScrollFrame
     instance.srcScrollChild = srcScrollChild
 
-    local srcScrollBar = CreateFrame("Slider", "RecipeRadarSourceScrollBar", srcScrollFrame, "UIPanelScrollBarTemplate")
-    srcScrollBar:SetPoint("TOPRIGHT", srcScrollFrame, "TOPRIGHT", -2, -16)
-    srcScrollBar:SetPoint("BOTTOMRIGHT", srcScrollFrame, "BOTTOMRIGHT", -2, 16)
-    srcScrollBar:SetWidth(14)
-    srcScrollBar:SetMinMaxValues(0, 0)
-    srcScrollBar:SetValue(0)
-    srcScrollBar:SetValueStep(14)
-    srcScrollBar:SetScript("OnValueChanged", function(sb, val)
-        srcScrollFrame:SetVerticalScroll(val)
-    end)
+    local srcScrollBar = RR.UI.Theme:CreateScrollBar(srcScrollFrame, {
+        name = "RecipeRadarSourceScrollBar",
+        step = 14,
+        width = 14,
+        right = -2,
+        inset = 16,
+        visible = function() return srcScrollFrame:GetHeight() end,
+        onValueChanged = function(_, val)
+            srcScrollFrame:SetVerticalScroll(val)
+        end,
+    })
     srcScrollBar:Hide()
     instance.srcScrollBar = srcScrollBar
 
@@ -790,7 +791,7 @@ function instance:Display(recipeItem)
     -- Populate interactive source rows inside srcScrollChild
     local curY = 0
     if self.sourceRows and self.srcScrollChild then
-        local childWidth = (self.srcScrollFrame and self.srcScrollFrame:GetWidth() or 300) - 22
+        local childWidth = (self.srcScrollFrame and self.srcScrollFrame:GetWidth() or 300) - RR.UI.Theme:GetScrollBarSpace()
         if childWidth > 50 then
             self.srcScrollChild:SetWidth(childWidth)
         end

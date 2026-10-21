@@ -411,6 +411,8 @@ def main():
         f.write('RR_DATA["addon_compartment"] = true\n')
         f.write("-- Recipes that are new in Forever carry forever_new; the list marks them with the Forever symbol.\n")
         f.write('RR_DATA["new_recipe_marker"] = true\n')
+        f.write("-- The client has the modern scroll bar template (MinimalScrollBar); the lists use it instead of the old one.\n")
+        f.write('RR_DATA["modern_scrollbar"] = true\n')
         menu = [p for p in PROFESSION_MENU_ORDER if skills.get(p)]
         f.write("-- Professions offered in the profession menu (the Era/TBC menu is a fixed list without gatherers).\n")
         f.write(f'RR_DATA["profession_menu"] = {lua(menu)}\n')
