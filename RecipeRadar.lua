@@ -18,6 +18,7 @@ coreFrame:SetScript("OnEvent", function(_, event, arg1)
         -- 2. Initialize Database & Scanner
         RR.DB:Initialize()
         RR.Scanner:Initialize()
+        if RR.Recorder then RR.Recorder:Initialize() end -- WoW Forever only (RecipeRadar_Camelot.toc)
 
         -- 3. Initialize UI Components
         RR.UI.AttachButton:Initialize()
@@ -45,6 +46,10 @@ SlashCmdList["RECIPERADAR"] = function(msg)
         print(RR.COLORS.GOLD .. "/rr config" .. RR.COLORS.WHITE .. RR.L["CMD_HELP_SETTINGS"])
         print(RR.COLORS.GOLD .. "/rr minimap" .. RR.COLORS.WHITE .. RR.L["CMD_HELP_MINIMAP"])
         print(RR.COLORS.GOLD .. "/rr debug" .. RR.COLORS.WHITE .. " - Toggle verbose debug logging")
+        if RR.Recorder then
+            print(RR.COLORS.GOLD .. "/rr export" .. RR.COLORS.WHITE .. RR.L["CMD_HELP_EXPORT"])
+            print(RR.COLORS.GOLD .. "/rr record" .. RR.COLORS.WHITE .. RR.L["CMD_HELP_RECORD"])
+        end
     elseif cmd == "config" or cmd == "options" or cmd == "settings" or cmd == "opt" then
         if RR.UI.SettingsWindow then
             RR.UI.SettingsWindow:Toggle()
@@ -62,6 +67,11 @@ SlashCmdList["RECIPERADAR"] = function(msg)
         print(RR.COLORS.TITLE .. "RecipeRadar: " .. RR.COLORS.WHITE .. RR.L["SETTINGS_POS_RESET_NOTICE"])
     elseif cmd == "minimap" or cmd == "mm" then
         RR.UI.MinimapButton:Toggle()
+    elseif RR.Recorder and cmd == "export" then
+        RR.UI.SettingsWindow:Show("sources")
+        RR.UI.RecorderPanel:FocusExport()
+    elseif RR.Recorder and cmd:match("^record") then
+        RR.Recorder:HandleCommand(cmd:match("^record%s*(.-)%s*$"))
     elseif cmd == "debug" then
         RR.Debug = not RR.Debug
         print(RR.COLORS.TITLE .. "RecipeRadar: " .. RR.COLORS.WHITE .. "Debug logging is now " .. (RR.Debug and "|cff33ff33ENABLED|r" or "|cffff4444DISABLED|r"))

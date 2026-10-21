@@ -597,7 +597,6 @@ function RR.UI.SettingsWindow:Initialize()
         { id = "chars", label = L["SETTINGS_TAB_CHARACTERS"], panel = panelChars },
         { id = "tooltips", label = L["SETTINGS_TAB_TOOLTIPS"], panel = panelTooltips },
         { id = "interface", label = L["SETTINGS_TAB_INTERFACE"], panel = panelInterface },
-        { id = "about", label = L["SETTINGS_TAB_ABOUT"], panel = panelAbout },
     }
 
     local tabY = -34
@@ -625,6 +624,11 @@ function RR.UI.SettingsWindow:Initialize()
     end)
     self.bottomCloseBtn = bottomCloseBtn
 
+    if RR.Recorder then
+        -- WoW Forever: source recording (see the "Sources" tab)
+        table.insert(commandList, #commandList, { cmd = "/rr export", desc = L["SETTINGS_CMD_EXPORT"] })
+        table.insert(commandList, #commandList, { cmd = "/rr record", desc = L["SETTINGS_CMD_RECORD"] })
+    end
     self.frame = f
 
     f:SetScript("OnShow", function()
@@ -654,6 +658,15 @@ function RR.UI.SettingsWindow:SelectTab(tabId)
         else
             tab.btn:SetActive(false)
             tab.panel:Hide()
+    -- "Sources" tab: only present in builds that record sources (WoW Forever)
+    if RR.Recorder and RR.UI.RecorderPanel then
+        table.insert(tabDefs, {
+            id = "sources",
+            label = L["SETTINGS_TAB_SOURCES"],
+            panel = RR.UI.RecorderPanel:Create(contentArea, CreateSettingCheckbox),
+        })
+    end
+    table.insert(tabDefs, { id = "about", label = L["SETTINGS_TAB_ABOUT"], panel = panelAbout })
         end
     end
 
@@ -719,6 +732,8 @@ end
 
 function RR.UI.SettingsWindow:RefreshCharacters()
     if not self.frame or not self.frame:IsShown() then return end
+    elseif self.tabs[tabId] and self.tabs[tabId].panel.RefreshPanel then
+        self.tabs[tabId].panel:RefreshPanel()
 
     local realm = GetRealmName() or "UnknownRealm"
     if self.realmHeader then
