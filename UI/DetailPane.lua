@@ -719,6 +719,11 @@ function instance:Display(recipeItem)
 
     -- 5. Special Actions (e.g. Book in Scholomance, Tablet in Zul'Gurub, Mind Control in BWL)
     local specActionKey = data.special_action or meta.special_action
+    -- "source not documented yet" is no news once the recipe has a documented source (e.g. a trainer), even if one of
+    -- its recipe items is still unknown
+    if specActionKey == "source unknown" and #allSources > 0 then
+        specActionKey = nil
+    end
     if specActionKey then
         local saText = RR.DB:GetSpecialActionText(specActionKey)
         if saText then
