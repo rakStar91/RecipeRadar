@@ -66,6 +66,15 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 3. Ensure the folder is named `RecipeRadar`.
 4. Restart World of Warcraft or reload your UI with `/reload`.
 
+### WoW Forever (experimental)
+
+`RecipeRadar_Camelot.toc` loads a recipe database of its own for WoW Forever, generated from the Forever client's data: every Classic recipe Forever still hands out plus the recipes that are new in Forever. Forever reworked parts of Classic, so the Classic recipe lists are not reused as they are.
+
+* Trainers, vendors, drops and quests of the Classic recipes are carried over from the Classic database. They are **not verified for Forever** and the detail pane says so.
+* The trainer/vendor/drop sources of the **new** recipes are not available from the game client. They are marked "Unknown source" until a player has seen them. Skill requirements come from the recipe items and from trainers you visit; where neither is known yet the list shows "?" and puts the recipe last.
+* New recipes carry the Forever logo. Forever has no content phases, so the phase filter is hidden.
+* **Help fill the gaps:** RecipeRadar records which vendor sells, which trainer teaches and which creature drops a recipe while you play. Open the "Sources" tab in the settings (or `/rr export`), copy the export and share it with the maintainer. It contains no character, realm or account names and is never sent automatically. The same tab switches recording off.
+
 ---
 
 ## Support & Feedback
