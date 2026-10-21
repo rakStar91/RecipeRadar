@@ -13,7 +13,7 @@
 ## AddonCompartmentFuncOnEnter: RecipeRadar_AddonCompartmentEnter
 ## AddonCompartmentFuncOnLeave: RecipeRadar_AddonCompartmentLeave
 ## SavedVariables: RecipeRadarDB
-## Version: 1.1.1
+## Version: 1.2.0
 
 # 1. Core Framework
 Core\Constants.lua

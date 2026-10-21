@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-10-21
+
+### Added
+- **Support for World of Warcraft: Forever (experimental)**: RecipeRadar now has a recipe database of its own for Forever, built from the game's data: the 1243 Classic recipes that still exist plus 934 recipes that are new in Forever (Alchemy, Blacksmithing, Cooking, Enchanting, Engineering, First Aid, Leatherworking, Tailoring and the new camping recipes of Mining, Herbalism, Skinning and Fishing), with names in all 10 languages and reputation requirements. The 8 Classic recipes Forever no longer hands out are left out. Forever has no Jewelcrafting and no TBC content, so none is shown. Classic Era and TBC Anniversary are not affected.
+- **Works with Forever's profession windows**: The "RR" button appears on the profession window and the profession overview, the RecipeRadar window opens on the profession you have open, learned recipes are read from the new profession window, and Mining, Herbalism, Skinning and Fishing are in the profession menu.
+- **Forever minimap "Addons" menu**: RecipeRadar is listed there (left click opens the window, right click the settings). The separate minimap button starts hidden in Forever; `/rr minimap` or the settings bring it back.
+- **Forever logo on new recipes**: Recipes that are new in Forever show the game's Forever logo in the recipe list and the detail pane, with the tooltip "New in WoW Forever".
+- **Sources recorded by players (Forever)**: The sources of new recipes are not in the game's data, so RecipeRadar notes them while you play: vendors that sell a recipe, trainers that teach one, recipe items in loot and recipes offered as quest rewards, with the NPC, its zone and its position. The new "Sources" tab in the settings switches recording on or off and offers the recorded data to copy and share. `/rr export` opens it, `/rr record [on|off|clear]` works from the chat, and both are listed in the About tab. Only facts about recipes are kept, nothing is sent anywhere, and no character, realm or account names are included.
+- **Confirmed and unverified sources (Forever)**: Sources carried over from Classic are not verified for Forever. While a recipe still has such sources, its list is split under the headings "Confirmed in Forever" (with a check mark in front of each source) and "From Classic, not verified for Forever". Once everything is confirmed, the headings disappear.
+- **Unknown sources and skill levels (Forever)**: Recipes without a documented source are labeled "Unknown source" and can be filtered. Skill requirements come from the recipe items and from the trainers you visit, which also corrects Classic values that Forever lowered. Where a requirement is not known yet it shows "?", and these recipes are listed last.
+- **Hint about incomplete data (Forever)**: The detail pane ends with a note that the source data may be incomplete and that `/rr export` helps to complete it.
+
+### Changed
+- **Tooltip settings preview**: The box at the bottom of the tooltip settings was a fixed picture that never changed. It is now a live preview with an explanation. It shows what recipe and item tooltips and spellbook tooltips really get, follows the three options above it, and scrolls when it does not fit.
+- **Forever has no phases**: The phase filter and the phase row in the detail pane are hidden.
+- **Faction of new Forever recipes**: A recipe that is new in Forever is no longer shown as Alliance-only or Horde-only just because the only trainer recorded so far belongs to one faction.
+- **Forever start**: Parts of the interface that the Forever client does not have are skipped, so RecipeRadar starts there and its buttons appear.
+
+---
+
 ## [1.1.1] - 2026-10-11
 
 ### Changed
