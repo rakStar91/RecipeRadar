@@ -36,6 +36,12 @@ RR.AUTHOR = "rakStar"
 local addonName = ...
 RR.ADDON_PATH = "Interface\\AddOns\\" .. (addonName or "RecipeRadar")
 
+-- Marker for recipes that are new in WoW Forever: the game's own logo (Interface\Glues\Common\Glues-WoW-ForeverLogo-Infinity,
+-- file id 8363869, a 512x256 texture). It is read from the client, so no copy of the artwork ships with the addon.
+RR.FOREVER_ICON = 8363869
+RR.FOREVER_ICON_CROP = { 43 / 512, 299 / 512, 0, 1 } -- the emblem inside the texture
+RR.FOREVER_ICON_ESCAPE = "|T8363869:14:14:0:0:512:256:43:299:0:256|t"
+
 -- Profession IDs and English Names
 RR.PROFESSIONS = {
     ALCHEMY = "Alchemy",

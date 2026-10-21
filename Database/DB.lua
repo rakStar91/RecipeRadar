@@ -40,6 +40,11 @@ local LOCALE_TO_DB_KEY = {
     ["ptBR"] = "Portuguese",
 }
 
+--- Key of the client language in the database's name tables ("English", "German", ...)
+function RR.DB:GetLocaleKey()
+    return LOCALE_TO_DB_KEY[GetLocale()] or "English"
+end
+
 function RR.DB:GetLocalizedText(nameTable)
     if not nameTable then return "" end
     if type(nameTable) == "string" then return nameTable end
@@ -275,6 +280,8 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
         dropRange = nil,
         special_action = recipe.special_action,
         objects = recipe.objects,
+        -- WoW Forever: sources carried over from the Classic database, not verified for Forever
+        classicSource = recipe.classic_source,
     }
 
     local function addNPC(npcId, sType)
@@ -391,6 +398,7 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
         for _, itemId in ipairs(recipe.items) do
             local itm = self:GetItem(itemId)
             if itm then
+                if itm.classic_source then meta.classicSource = true end
                 if itm.expansion then meta.expansion = itm.expansion end
                 if itm.phase then meta.phase = itm.phase end
                 if itm.vendors then
@@ -459,9 +467,21 @@ function RR.DB:GetRecipeAcquisitionMetadata(recipe)
     if recipe.holiday then meta.sourceTypes["holiday"] = true end
     if recipe.objects then meta.sourceTypes["object"] = true end
 
+    -- Recipes new in WoW Forever: only the sources players have seen so far are known, and the client has no race
+    -- restriction for them. The NPCs seen say nothing about who can learn the recipe (the other faction's trainers
+    -- simply have not been recorded yet), so the recipe is not limited to a faction.
+    if recipe.forever_new then
+        meta.factions = {}
+    end
+
     -- Fallback only if absolutely no source found
     if not next(meta.sourceTypes) then
-        meta.sourceTypes["trainer"] = true
+        if meta.special_action == "source unknown" then
+            -- Recipes new in WoW Forever whose trainer/vendor/drop data is not documented yet
+            meta.sourceTypes["unknown"] = true
+        else
+            meta.sourceTypes["trainer"] = true
+        end
     end
 
     return meta
@@ -573,6 +593,29 @@ function RR.DB:IsTBC()
     return false
 end
 
+--- Returns the profession list the data wants in the menu (WoW Forever, incl. gathering professions),
+-- or nil when the data does not define one (Era/TBC keep their fixed list).
+function RR.DB:GetCustomProfessionMenu()
+    return RR_DATA and RR_DATA["profession_menu"]
+end
+
+--- Returns true when the loaded data has recipes without a documented source (WoW Forever), so the
+-- "Unknown source" filter is offered.
+function RR.DB:HasUnknownSources()
+    return RR_DATA and RR_DATA["has_unknown_sources"] == true
+end
+
+--- Returns true when the data has recipes that are new in WoW Forever, so the list shows the Forever marker column
+function RR.DB:HasNewRecipeMarker()
+    return RR_DATA and RR_DATA["new_recipe_marker"] == true
+end
+
+--- Returns false when the loaded data has no content phases (WoW Forever), so the phase
+-- filter and label are not shown. Era and TBC data do not set the flag.
+function RR.DB:HasPhases()
+    return not (RR_DATA and RR_DATA["no_phases"])
+end
+
 --- Returns localized name for content phase (Era vs TBC)
 function RR.DB:GetPhaseName(phaseVal, expansionId)
     if not phaseVal or phaseVal == 0 or phaseVal == "any" then return RR.L["PHASE_ALL"] or "All Phases" end
@@ -607,7 +650,12 @@ end
 
 --- Returns current player zone ID in Classic DB
 function RR.DB:GetCurrentZoneId()
-    local zName = GetRealZoneText() or ""
+    return self:GetZoneIdByName(GetRealZoneText())
+end
+
+--- Returns the zone id for a zone name in any language of the zone table, or nil
+function RR.DB:GetZoneIdByName(zName)
+    zName = zName or ""
     if zName == "" then return nil end
 
     if self.zoneMap then
@@ -724,6 +772,11 @@ function RR.DB:GetReputationFactions(factionFilter)
         return res
     end
 
+    -- Factions introduced by WoW Forever (Database/Expansions/Forever/factions.lua)
+    for _, id in ipairs(RR_DATA["forever_reputation_factions"] or {}) do
+        table.insert(classicFactions, id)
+    end
+
     local classicSorted = buildList(classicFactions)
     local tbcSorted = isTBC and buildList(tbcFactions) or {}
 
@@ -747,6 +800,10 @@ end
 --- Returns localized description for a special action key
 function RR.DB:GetSpecialActionText(actionKey)
     if not actionKey then return nil end
+    -- Only a key in the data; the text is part of the localization
+    if actionKey == "source unknown" then
+        return RR.L["SPECIAL_ACTION_SOURCE_UNKNOWN"]
+    end
     local sa = RR_DATA and RR_DATA["special_actions"] and RR_DATA["special_actions"][actionKey]
     if sa and sa.name then
         return self:GetLocalizedText(sa.name)

@@ -47,13 +47,16 @@ function RR.UI.MainWindow:Initialize()
 
     local function buildProfessionMenu()
         local menu = {}
-        local allProfs = {
-            "Leatherworking", "Tailoring", "Blacksmithing", "Alchemy", 
-            "Engineering", "Enchanting", "Jewelcrafting", "Cooking", "First Aid", "Poisons"
-        }
-        if RR.DB and not RR.DB:IsTBC() then
-            for i = #allProfs, 1, -1 do
-                if allProfs[i] == "Jewelcrafting" then table.remove(allProfs, i) end
+        local allProfs = RR.DB:GetCustomProfessionMenu()
+        if not allProfs then
+            allProfs = {
+                "Leatherworking", "Tailoring", "Blacksmithing", "Alchemy",
+                "Engineering", "Enchanting", "Jewelcrafting", "Cooking", "First Aid", "Poisons"
+            }
+            if RR.DB and not RR.DB:IsTBC() then
+                for i = #allProfs, 1, -1 do
+                    if allProfs[i] == "Jewelcrafting" then table.remove(allProfs, i) end
+                end
             end
         end
 
@@ -140,6 +143,8 @@ end
 
 function RR.UI.MainWindow:Show()
     if not self.frame then self:Initialize() end
+    -- Open on the profession that is open in the game's profession window (WoW Forever)
+    RR.Scanner:SyncWithOpenProfession()
     self.frame:Show()
     self:Refresh()
 end

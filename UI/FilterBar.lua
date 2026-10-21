@@ -118,6 +118,10 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
         { text = RR.L["SOURCE_HOLIDAY"], value = "holiday", icon = "Interface\\Icons\\INV_Misc_Gift_01" },
         { text = RR.L["SOURCE_REPUTATION"], value = "reputation", icon = "Interface\\Icons\\INV_BannerPVP_02" },
     }
+    -- Only WoW Forever ships recipes whose source is not documented yet
+    if RR.DB:HasUnknownSources() then
+        table.insert(sourceMenuData, { text = RR.L["SOURCE_UNKNOWN"], value = "unknown", icon = "Interface\\Icons\\INV_Misc_QuestionMark" })
+    end
 
     local function buildSourceMenu()
         local curSource = RR.Config:GetFilterSetting("sourceFilter") or "any"
@@ -533,6 +537,9 @@ function RR.UI.FilterBar:Create(parent, onRefresh)
     end)
     instance.phaseBtn:SetPoint("LEFT", instance.specBtn, "RIGHT", 6, 0)
     RR.UI.Theme:AddTooltip(instance.phaseBtn, RR.L["TOOLTIP_PHASE_FILTER_TITLE"], RR.L["TOOLTIP_PHASE_FILTER_DESC"])
+    if not RR.DB:HasPhases() then
+        instance.phaseBtn:Hide()
+    end
 
     -- ROW 3: Zone: [ Region v ] [ Zone v ] [ Any Zone ] [ Current Zone ] [ <Last Zone> ]
     local zoneLabel = filterArea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")

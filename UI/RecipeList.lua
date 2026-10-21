@@ -54,8 +54,17 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
         if hl then hl:SetVertexColor(1, 1, 1, 0.10) end
 
         -- Text: [Skill] Recipe Name
+        -- Marker column for recipes that are new in WoW Forever (only when the data has such recipes)
+        local markerWidth = RR.DB:HasNewRecipeMarker() and 18 or 0
+        row.iconForever = row:CreateTexture(nil, "OVERLAY")
+        row.iconForever:SetSize(14, 14)
+        row.iconForever:SetPoint("LEFT", row, "LEFT", 4, 0)
+        row.iconForever:SetTexture(RR.FOREVER_ICON)
+        row.iconForever:SetTexCoord(unpack(RR.FOREVER_ICON_CROP))
+        row.iconForever:Hide()
+
         row.text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-        row.text:SetPoint("LEFT", 6, 0)
+        row.text:SetPoint("LEFT", 6 + markerWidth, 0)
         row.text:SetPoint("RIGHT", -56, 0)
         row.text:SetJustifyH("LEFT")
         row.text:SetWordWrap(false)
@@ -87,6 +96,12 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
             if selfR.recipeData then
                 GameTooltip:SetOwner(selfR, "ANCHOR_RIGHT")
                 GameTooltip:AddLine(selfR.recipeData.name or "Rezept", 1, 0.82, 0)
+                if selfR.recipeData.isNew then
+                    GameTooltip:AddLine(RR.FOREVER_ICON_ESCAPE .. " " .. RR.L["FOREVER_NEW_RECIPE"], 1, 0.82, 0.29)
+                end
+                if selfR.recipeData.skillReq == nil then
+                    GameTooltip:AddLine(string.format("%s: ? (%s)", RR.L["LABEL_MIN_SKILL"], RR.L["SKILL_UNKNOWN"]), 0.75, 0.75, 0.75)
+                end
                 if selfR.sourceTooltipSources and selfR.sourceTooltipSources ~= "" then
                     GameTooltip:AddLine(RR.L["LABEL_SOURCE_COLON"] .. " " .. selfR.sourceTooltipSources, 1, 1, 1)
                 end
@@ -107,11 +122,10 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
                 local itemId = data and (data.item_id or (data.items and data.items[1]) or (spellId and RR.DB and RR.DB:GetCraftedItemId(spellId)))
                 local itemLink = nil
                 if itemId and itemId > 0 then
-                    local _, link = GetItemInfo(itemId)
-                    itemLink = link
+                    itemLink = RR.Utils:GetItemLink(itemId)
                 end
-                if not itemLink and spellId and spellId > 0 and GetSpellLink then
-                    itemLink = GetSpellLink(spellId)
+                if not itemLink and spellId and spellId > 0 then
+                    itemLink = RR.Utils:GetSpellLink(spellId)
                 end
 
                 if itemLink and (IsModifiedClick("CHATLINK") or IsShiftKeyDown()) then
@@ -206,7 +220,8 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
                 -- Skill bracket colored + Name
                 local skillColor = "|cff00ff00" -- Green
                 if not item.isKnown then skillColor = "|cff44ff44" end
-                row.text:SetText(string.format("%s[%d]|r %s", skillColor, item.skillReq or 1, item.name))
+                row.text:SetText(string.format("%s[%s]|r %s", skillColor, item.skillReq and tostring(item.skillReq) or "?", item.name))
+                if item.isNew then row.iconForever:Show() else row.iconForever:Hide() end
 
                 if item.isKnown then
                     row.text:SetTextColor(0.18, 0.83, 0.75, 1) -- Cyan / Turquoise
@@ -242,6 +257,11 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
                 if meta.sourceTypes["object"] then
                     table.insert(sources, "object")
                     table.insert(sourceLabels, RR.L["SOURCE_OBJECT"])
+                end
+
+                if meta.sourceTypes["unknown"] then
+                    table.insert(sources, "unknown")
+                    table.insert(sourceLabels, RR.L["SOURCE_UNKNOWN"])
                 end
 
                 if #sources == 0 then
