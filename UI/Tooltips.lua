@@ -124,11 +124,15 @@ function RR.UI.Tooltips:Initialize()
     local function HookTooltip(tt)
         if not tt then return end
         if tt.HookScript then
-            tt:HookScript("OnTooltipSetItem", OnTooltipSetItem)
-            tt:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)
-            tt:HookScript("OnTooltipCleared", function(self)
-                self._rr_hasAppended = nil
-            end)
+            -- Hooking a script type the client does not have raises an error (WoW Forever has no
+            -- OnTooltipSet* scripts), so only hook the ones the tooltip supports.
+            if tt:HasScript("OnTooltipSetItem") then tt:HookScript("OnTooltipSetItem", OnTooltipSetItem) end
+            if tt:HasScript("OnTooltipSetSpell") then tt:HookScript("OnTooltipSetSpell", OnTooltipSetSpell) end
+            if tt:HasScript("OnTooltipCleared") then
+                tt:HookScript("OnTooltipCleared", function(self)
+                    self._rr_hasAppended = nil
+                end)
+            end
         end
     end
 

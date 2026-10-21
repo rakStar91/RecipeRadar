@@ -6,6 +6,34 @@
 local RR = RecipeRadar
 RR.Utils = {}
 
+--- Registers the given events on a frame, skipping events this client does not know
+-- (e.g. WoW Forever has no CRAFT_* events and registering an unknown event raises an error).
+-- Known events are registered directly, so real errors are not hidden.
+function RR.Utils:RegisterEvents(frame, events)
+    local isValid = C_EventUtils and C_EventUtils.IsEventValid
+    for _, event in ipairs(events) do
+        if not isValid or isValid(event) then
+            frame:RegisterEvent(event)
+        end
+    end
+end
+
+--- Returns the hyperlink of an item, or nil while it is not cached.
+-- The legacy global is preferred so Classic Era and TBC behave as before; clients that dropped it
+-- (WoW Forever) fall back to C_Item.
+function RR.Utils:GetItemLink(itemId)
+    local getInfo = GetItemInfo or (C_Item and C_Item.GetItemInfo)
+    if not getInfo then return nil end
+    local _, link = getInfo(itemId)
+    return link
+end
+
+--- Returns the hyperlink of a spell, using the legacy global when the client still has it.
+function RR.Utils:GetSpellLink(spellId)
+    local getLink = GetSpellLink or (C_Spell and C_Spell.GetSpellLink)
+    return getLink and getLink(spellId) or nil
+end
+
 --- Adds a waypoint to TomTom if installed
 -- Robustly handles (title, zoneName, x, y) or (zoneName, x, y, title)
 function RR.Utils:AddTomTomWaypoint(arg1, arg2, arg3, arg4)

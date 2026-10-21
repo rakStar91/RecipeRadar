@@ -13,22 +13,36 @@ RR.Scanner.maxRank = 0
 --- Initializes event hooks for scanning
 function RR.Scanner:Initialize()
     local frame = CreateFrame("Frame")
-    frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-    frame:RegisterEvent("SKILL_LINES_CHANGED")
-    frame:RegisterEvent("TRADE_SKILL_SHOW")
-    frame:RegisterEvent("TRADE_SKILL_UPDATE")
-    frame:RegisterEvent("CRAFT_SHOW")
-    frame:RegisterEvent("CRAFT_UPDATE")
+    -- The last three exist only in clients with the modern profession window (WoW Forever)
+    RR.Utils:RegisterEvents(frame, {
+        "PLAYER_ENTERING_WORLD", "SKILL_LINES_CHANGED",
+        "TRADE_SKILL_SHOW", "TRADE_SKILL_UPDATE",
+        "CRAFT_SHOW", "CRAFT_UPDATE",
+        "TRADE_SKILL_LIST_UPDATE", "TRADE_SKILL_DATA_SOURCE_CHANGED", "NEW_RECIPE_LEARNED",
+    })
 
     frame:SetScript("OnEvent", function(_, event, ...)
         if event == "PLAYER_ENTERING_WORLD" or event == "SKILL_LINES_CHANGED" then
             RR.Scanner:ScanCharacterSkills()
         elseif event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_UPDATE" then
             RR.Scanner:ScanTradeSkill()
+        elseif event == "TRADE_SKILL_LIST_UPDATE" or event == "TRADE_SKILL_DATA_SOURCE_CHANGED"
+                or event == "NEW_RECIPE_LEARNED" then
+            RR.Scanner:QueueScanTradeSkill()
         elseif event == "CRAFT_SHOW" or event == "CRAFT_UPDATE" then
             RR.Scanner:ScanCraft()
         end
     end)
+end
+
+--- True on clients that only have the modern profession API (WoW Forever): no GetTradeSkillLine & co.
+local function UsesModernTradeSkillAPI()
+    return not (GetTradeSkillLine and GetNumTradeSkills)
+        and C_TradeSkillUI and C_TradeSkillUI.GetBaseProfessionInfo and C_TradeSkillUI.GetRecipeInfo
+end
+
+local function IsSecret(value)
+    return issecretvalue and issecretvalue(value)
 end
 
 --- Returns the current active profession key (e.g. Leatherworking), scanning character skills if needed
@@ -45,7 +59,8 @@ function RR.Scanner:GetCurrentProfession()
 
     local charData = RR.Config:GetCurrentChar()
     if charData and charData.professions then
-        local craftingProfs = { "Leatherworking", "Tailoring", "Blacksmithing", "Alchemy", "Engineering", "Enchanting", "Jewelcrafting", "Cooking", "First Aid", "Poisons" }
+        local craftingProfs = RR.DB:GetCustomProfessionMenu()
+            or { "Leatherworking", "Tailoring", "Blacksmithing", "Alchemy", "Engineering", "Enchanting", "Jewelcrafting", "Cooking", "First Aid", "Poisons" }
         for _, profKey in ipairs(craftingProfs) do
             local locName = RR.DB:GetProfessionDisplayName(profKey)
             if charData.professions[profKey] or (locName and charData.professions[locName]) then
@@ -67,6 +82,7 @@ function RR.Scanner:ScanCharacterSkills()
     charData.faction = (UnitFactionGroup and UnitFactionGroup("player")) or charData.faction or "Neutral"
 
     local primaryCraftingProf = nil
+    local firstGatheringProf = nil
 
     if GetNumSkillLines and GetSkillLineInfo then
         local numSkills = GetNumSkillLines()
@@ -81,23 +97,52 @@ function RR.Scanner:ScanCharacterSkills()
                     charData.professions[skillName] = charData.professions[engKey]
 
                     -- Exclude gathering-only professions from being the default recipe window
-                    if not primaryCraftingProf and engKey ~= "Skinning" and engKey ~= "Herbalism" and engKey ~= "Mining" and engKey ~= "Fishing" then
-                        primaryCraftingProf = engKey
+                    local gathering = engKey == "Skinning" or engKey == "Herbalism" or engKey == "Mining" or engKey == "Fishing"
+                    if not gathering then
+                        primaryCraftingProf = primaryCraftingProf or engKey
+                    else
+                        firstGatheringProf = firstGatheringProf or engKey
                     end
                 end
             end
         end
     end
 
-    if not self.currentProfession and primaryCraftingProf then
-        self.currentProfession = primaryCraftingProf
+    if not self.currentProfession then
+        -- Only data with its own profession menu (WoW Forever) offers the gathering professions
+        self.currentProfession = primaryCraftingProf or (RR.DB:GetCustomProfessionMenu() and firstGatheringProf) or nil
+    end
+
+    if UsesModernTradeSkillAPI() then
+        self:ScanKnownSpells(charData)
+    end
+end
+
+--- Marks recipes as known that the spell book reports as known (modern clients only).
+-- This works without opening the profession window; it can only add recipes, never remove them.
+function RR.Scanner:ScanKnownSpells(charData)
+    local isKnown = C_SpellBook and C_SpellBook.IsSpellKnown or IsPlayerSpell
+    if not isKnown then return end
+    for profKey, profData in pairs(charData.professions or {}) do
+        -- English keys only: localized keys point to the same table
+        if type(profData) == "table" and RR.DB.Raw.professions and RR.DB.Raw.professions[profKey] then
+            profData.known = profData.known or {}
+            for _, recipe in ipairs(RR.DB:GetRecipesForProfession(profKey)) do
+                if not profData.known[recipe.id] and isKnown(recipe.id) == true then
+                    profData.known[recipe.id] = true
+                end
+            end
+        end
     end
 end
 
 --- Scans standard TradeSkill frame (Blacksmithing, Tailoring, Alchemy, etc.)
 function RR.Scanner:ScanTradeSkill()
+    if UsesModernTradeSkillAPI() then
+        return self:ScanTradeSkillModern()
+    end
     if not (GetTradeSkillLine and GetNumTradeSkills) then return end
-    
+
     local profName, currentRank, maxRank = GetTradeSkillLine()
     if not profName or profName == "UNKNOWN" or profName == "Header" then return end
 
@@ -147,6 +192,87 @@ function RR.Scanner:ScanTradeSkill()
     if RR.UI and RR.UI.MainWindow and RR.UI.MainWindow.IsShown and RR.UI.MainWindow:IsShown() then
         RR.UI.MainWindow:Refresh()
     end
+end
+
+--- Returns the English profession key for a ProfessionInfo of the modern profession API.
+local function ResolveProfessionKey(info)
+    for _, name in ipairs({ info.professionName, info.parentProfessionName }) do
+        if name and not IsSecret(name) and name ~= "" then
+            local key = RR.DB:GetEnglishProfessionName(name)
+            if RR.DB.Raw.professions and RR.DB.Raw.professions[key] then
+                return key, name
+            end
+        end
+    end
+end
+
+--- Reads which profession the game's profession window currently shows (modern API) and makes it
+-- the current profession. Returns the key and the ProfessionInfo, or nil when none is open.
+function RR.Scanner:ReadOpenProfession()
+    local info = C_TradeSkillUI.GetBaseProfessionInfo()
+    if type(info) ~= "table" or IsSecret(info) then return nil end
+    local key, name = ResolveProfessionKey(info)
+    if not key then return nil end
+
+    self.currentProfession = key
+    self.currentRank = info.skillLevel or 0
+    self.maxRank = info.maxSkillLevel or 0
+    return key, info, name
+end
+
+--- Called when the RR window opens: follow the profession shown in the game's profession window.
+-- Classic clients do this through the TRADE_SKILL events, so only modern clients need it here.
+function RR.Scanner:SyncWithOpenProfession()
+    if not UsesModernTradeSkillAPI() then return end
+    local window = _G.ProfessionsFrame
+    if window and window:IsShown() then
+        self:ReadOpenProfession()
+    end
+end
+
+--- Scans the profession window of clients without GetTradeSkillLine (WoW Forever)
+function RR.Scanner:ScanTradeSkillModern()
+    local key, info, name = self:ReadOpenProfession()
+    if not key then return end
+
+    local charData = RR.Config:GetCurrentChar()
+    if not charData then return end
+    charData.professions = charData.professions or {}
+
+    local profData = charData.professions[key] or { known = {} }
+    profData.known = profData.known or {}
+    profData.current = self.currentRank
+    profData.max = self.maxRank
+    charData.professions[key] = profData
+    charData.professions[name] = profData
+
+    for _, recipe in ipairs(RR.DB:GetRecipesForProfession(key)) do
+        local recipeInfo = C_TradeSkillUI.GetRecipeInfo(recipe.id)
+        if type(recipeInfo) == "table" and not IsSecret(recipeInfo) and not IsSecret(recipeInfo.learned)
+                and recipeInfo.learned == true then
+            profData.known[recipe.id] = true
+            if recipeInfo.name and not IsSecret(recipeInfo.name) then
+                profData.known[recipeInfo.name] = true
+            end
+        end
+    end
+
+    if RR.UI and RR.UI.MainWindow and RR.UI.MainWindow.IsShown and RR.UI.MainWindow:IsShown() then
+        RR.UI.MainWindow:Refresh()
+    end
+end
+
+--- The modern profession window fires list updates in bursts (every search/filter change), so scans are merged.
+function RR.Scanner:QueueScanTradeSkill()
+    if self.scanQueued then return end
+    if not (C_Timer and C_Timer.After) then
+        return self:ScanTradeSkill()
+    end
+    self.scanQueued = true
+    C_Timer.After(0.2, function()
+        self.scanQueued = false
+        self:ScanTradeSkill()
+    end)
 end
 
 --- Scans Craft frame (Enchanting / Beast Training)
