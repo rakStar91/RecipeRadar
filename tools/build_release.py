@@ -6,6 +6,7 @@ import zipfile
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOC_CLASSIC = os.path.join(ROOT_DIR, "RecipeRadar.toc")
 TOC_BCC = os.path.join(ROOT_DIR, "RecipeRadar-BCC.toc")
+TOC_FOREVER = os.path.join(ROOT_DIR, "RecipeRadar_Camelot.toc")
 CONSTANTS_FILE = os.path.join(ROOT_DIR, "Core", "Constants.lua")
 
 def get_current_version():
@@ -90,7 +91,14 @@ def main():
             rf"\g<1>{target_ver}"
         )
 
-        # 3. Update Core/Constants.lua
+        # 3. Update RecipeRadar_Camelot.toc
+        update_file_version(
+            TOC_FOREVER,
+            r"(##\s*Version:\s*)([^\s\r\n]+)",
+            rf"\g<1>{target_ver}"
+        )
+
+        # 4. Update Core/Constants.lua
         update_file_version(
             CONSTANTS_FILE,
             r'(RR\.VERSION\s*=\s*")[^"]+(")',

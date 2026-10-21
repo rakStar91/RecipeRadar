@@ -1,0 +1,112 @@
+## Interface: 16001
+## Title: RecipeRadar
+## Title-deDE: RecipeRadar
+## Author: rakStar
+## Notes: Comprehensive profession recipe and skill tracker with TomTom waypoints for WoW Forever.
+## Notes-deDE: Umfassender Berufe- und Rezept-Tracker mit TomTom-Wegpunkten.
+## Notes-frFR: Traqueur complet de recettes et compétences de métiers avec points de cheminement TomTom.
+## Notes-ruRU: Полный трекер рецептов профессий с координатами TomTom.
+## Notes-zhCN: 完整的专业技能与配方追踪插件，支持 TomTom 导航。
+## Notes-esES: Rastreador completo de recetas de profesiones con coordenadas TomTom.
+## IconTexture: Interface\AddOns\RecipeRadar\images\minimap.tga
+## AddonCompartmentFunc: RecipeRadar_AddonCompartmentClick
+## AddonCompartmentFuncOnEnter: RecipeRadar_AddonCompartmentEnter
+## AddonCompartmentFuncOnLeave: RecipeRadar_AddonCompartmentLeave
+## SavedVariables: RecipeRadarDB
+## Version: 1.1.1
+
+# 1. Core Framework
+Core\Constants.lua
+Core\Localization.lua
+Core\Config.lua
+Core\Utils.lua
+
+# 2. Database (Classic Era Core)
+Database\Base\global_variables.lua
+Database\Base\continents.lua
+Database\Base\factions.lua
+Database\Base\holidays.lua
+Database\Base\profession_ranks.lua
+Database\Base\professions.lua
+Database\Base\reputation_levels.lua
+Database\Base\special_actions.lua
+Database\Base\spell_items.lua
+Database\Base\zones.lua
+Database\Base\objects.lua
+Database\Base\quests.lua
+Database\Base\npcs.lua
+Database\Base\Alchemy\levels.lua
+Database\Base\Blacksmithing\levels.lua
+Database\Base\Blacksmithing\specialisations.lua
+Database\Base\Cooking\levels.lua
+Database\Base\Enchanting\levels.lua
+Database\Base\Engineering\levels.lua
+Database\Base\Engineering\specialisations.lua
+Database\Base\FirstAid\levels.lua
+Database\Base\Fishing\levels.lua
+Database\Base\Herbalism\levels.lua
+Database\Base\Leatherworking\levels.lua
+Database\Base\Leatherworking\specialisations.lua
+Database\Base\Mining\levels.lua
+Database\Base\Poisons\levels.lua
+Database\Base\Skinning\levels.lua
+Database\Base\Tailoring\levels.lua
+Database\DB.lua
+
+# 2b. Database (WoW Forever recipes; replaces the Base skills and items)
+Database\Forever\flags.lua
+Database\Forever\factions.lua
+Database\Forever\spell_items.lua
+Database\Forever\npcs.lua
+Database\Forever\quests.lua
+Database\Forever\objects.lua
+Database\Forever\Alchemy\items.lua
+Database\Forever\Alchemy\skills.lua
+Database\Forever\Blacksmithing\items.lua
+Database\Forever\Blacksmithing\skills.lua
+Database\Forever\Cooking\items.lua
+Database\Forever\Cooking\skills.lua
+Database\Forever\Enchanting\items.lua
+Database\Forever\Enchanting\skills.lua
+Database\Forever\Engineering\items.lua
+Database\Forever\Engineering\skills.lua
+Database\Forever\FirstAid\items.lua
+Database\Forever\FirstAid\skills.lua
+Database\Forever\Fishing\items.lua
+Database\Forever\Fishing\skills.lua
+Database\Forever\Herbalism\items.lua
+Database\Forever\Herbalism\skills.lua
+Database\Forever\Leatherworking\items.lua
+Database\Forever\Leatherworking\skills.lua
+Database\Forever\Mining\items.lua
+Database\Forever\Mining\skills.lua
+Database\Forever\Poisons\items.lua
+Database\Forever\Poisons\skills.lua
+Database\Forever\Skinning\items.lua
+Database\Forever\Skinning\skills.lua
+Database\Forever\Tailoring\items.lua
+Database\Forever\Tailoring\skills.lua
+
+# 3. Engine & Scanning
+Engine\Scanner.lua
+Engine\Filter.lua
+Engine\AltTracker.lua
+Engine\Recorder.lua
+
+# 4. User Interface
+UI\Theme.lua
+UI\Dropdown.lua
+UI\ProgressBar.lua
+UI\DetailPane.lua
+UI\RecipeList.lua
+UI\FilterBar.lua
+UI\SettingsWindow.lua
+UI\RecorderPanel.lua
+UI\MainWindow.lua
+UI\AttachButton.lua
+Libs\Libs.xml
+UI\MinimapButton.lua
+UI\Tooltips.lua
+
+# 5. Main Entry Point
+RecipeRadar.lua

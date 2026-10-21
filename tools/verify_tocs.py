@@ -29,7 +29,8 @@ def check_toc(toc_file):
 if __name__ == "__main__":
     t1 = check_toc("RecipeRadar.toc")
     t2 = check_toc("RecipeRadar-BCC.toc")
-    if t1 and t2:
+    t3 = check_toc("RecipeRadar_Camelot.toc")
+    if t1 and t2 and t3:
         print("\nSUCCESS: All TOC files verified 100%!")
     else:
         exit(1)
