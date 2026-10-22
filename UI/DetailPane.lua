@@ -543,10 +543,10 @@ function instance:Display(recipeItem)
     for _, itemId in ipairs(data.items or {}) do
         addVerified(RR.DB:GetItem(itemId))
     end
+    local isForever = (data and data.forever) or (RR_DATA and (RR_DATA["no_phases"] or RR_DATA["new_recipe_marker"]))
     local CHECK = "|TInterface\\RAIDFRAME\\ReadyCheck-Ready:12:12:0:0|t "
-    -- the check marks only mean something next to the group headings, which are shown while Classic-only sources remain
     local function mark(kind, id, text)
-        return (meta.classicSource and verified[kind][id]) and (CHECK .. text) or text
+        return (isForever and verified[kind][id]) and (CHECK .. text) or text
     end
 
     -- Collect ALL possible sources for detailed display
@@ -565,6 +565,7 @@ function instance:Display(recipeItem)
                     text = lineText,
                     verified = verified.vendors[id],
                     waypoint = wp,
+                    zone = zName,
                     faction = effFaction,
                     isPlayerFaction = isFactionMatch,
                     isOtherFaction = isOtherFaction,
@@ -585,6 +586,7 @@ function instance:Display(recipeItem)
                     text = lineText,
                     verified = verified.trainers[id],
                     waypoint = wp,
+                    zone = zName,
                     faction = effFaction,
                     isPlayerFaction = isFactionMatch,
                     isOtherFaction = isOtherFaction,
@@ -656,6 +658,7 @@ function instance:Display(recipeItem)
                 table.insert(allSources, {
                     text = lineText,
                     waypoint = wp,
+                    zone = zName,
                     faction = qFaction,
                     verified = verified.quests[qId],
                     isPlayerFaction = isMatch,
@@ -683,6 +686,7 @@ function instance:Display(recipeItem)
                     text = lineText,
                     verified = verified.objects[objId],
                     waypoint = wp,
+                    zone = zName,
                     faction = "Neutral",
                     isPlayerFaction = true,
                 })
@@ -702,6 +706,7 @@ function instance:Display(recipeItem)
                     text = lineText,
                     verified = verified.drops[id],
                     waypoint = wp,
+                    zone = zName,
                     faction = effFaction or "Neutral",
                     isPlayerFaction = isFactionMatch,
                     isOtherFaction = isOtherFaction,
@@ -715,6 +720,7 @@ function instance:Display(recipeItem)
             text = string.format(RR.L["SOURCE_DROP_LEVEL_RANGE"] or "Drop (Level %d-%d)", meta.dropRange.min_xp_level or 1, meta.dropRange.max_xp_level or 60),
             waypoint = nil,
             isPlayerFaction = true,
+            verified = not meta.classicSource,
         })
     end
 
@@ -733,20 +739,32 @@ function instance:Display(recipeItem)
                 waypoint = nil,
                 faction = "Neutral",
                 isPlayerFaction = true,
+                verified = (specActionKey ~= "source unknown" and not meta.classicSource),
             })
         end
     end
 
-    -- Sort sources: player's faction first, then others!
+    -- Sort sources: own faction, then neutral, then the other faction; within a group by zone name (entries without a
+    -- zone last), then by text so the order is stable
+    local function factionRank(src)
+        if src.faction == playerFaction then return 1 end
+        if src.isOtherFaction then return 3 end
+        return 2
+    end
     table.sort(allSources, function(a, b)
-        if a.isPlayerFaction and not b.isPlayerFaction then return true end
-        if not a.isPlayerFaction and b.isPlayerFaction then return false end
-        return false
+        local rankA, rankB = factionRank(a), factionRank(b)
+        if rankA ~= rankB then return rankA < rankB end
+        local zoneA, zoneB = a.zone and a.zone:lower(), b.zone and b.zone:lower()
+        if zoneA ~= zoneB then
+            if not zoneA then return false end
+            if not zoneB then return true end
+            return zoneA < zoneB
+        end
+        return a.text < b.text
     end)
 
-    -- WoW Forever: while some sources come from Classic only, split the list into two groups with headings:
-    -- the sources a player has seen in Forever (check mark) and the ones taken from Classic, not verified
-    if meta.classicSource then
+    -- WoW Forever: split the list into confirmed sources and Classic unverified sources
+    if isForever then
         local confirmed, others = {}, {}
         for _, src in ipairs(allSources) do
             if src.verified then
@@ -755,14 +773,21 @@ function instance:Display(recipeItem)
                 others[#others + 1] = src
             end
         end
-        allSources = {}
-        if #confirmed > 0 then
-            allSources[#allSources + 1] = { text = CHECK .. RR.L["SOURCES_HEADER_VERIFIED"], header = "verified" }
-            for _, src in ipairs(confirmed) do allSources[#allSources + 1] = src end
-        end
         if #others > 0 then
+            allSources = {}
+            if #confirmed > 0 then
+                allSources[#allSources + 1] = { text = CHECK .. RR.L["SOURCES_HEADER_VERIFIED"], header = "verified" }
+                for _, src in ipairs(confirmed) do allSources[#allSources + 1] = src end
+            end
             allSources[#allSources + 1] = { text = RR.L["SOURCES_HEADER_CLASSIC"], header = "classic" }
             for _, src in ipairs(others) do allSources[#allSources + 1] = src end
+        else
+            -- All sources are confirmed in Forever: clean display without warning/grouping headers
+            for _, src in ipairs(allSources) do
+                if src.text then
+                    src.text = src.text:gsub("^|TInterface\\RAIDFRAME\\ReadyCheck%-Ready:12:12:0:0|t%s*", "")
+                end
+            end
         end
     end
 
