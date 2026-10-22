@@ -51,8 +51,9 @@ RR_DATA["items"]["Fishing"] = {
 	},
 	{
 		["drops"] = {
-			["sources"] = {
-				6243,
+			["range"] = {
+				["max_xp_level"] = 26,
+				["min_xp_level"] = 26,
 			},
 		},
 		["forever"] = true,
@@ -77,9 +78,6 @@ RR_DATA["items"]["Fishing"] = {
 			},
 		},
 		["verified"] = {
-			["drops"] = {
-				6243,
-			},
 			["vendors"] = {
 				277945,
 			},

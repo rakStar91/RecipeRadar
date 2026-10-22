@@ -70,23 +70,10 @@ RR_DATA["items"]["Cooking"] = {
 		},
 	},
 	{
-		["classic_source"] = true,
 		["drops"] = {
 			["range"] = {
-				["max_xp_level"] = 20,
-				["min_xp_level"] = 10,
-			},
-			["sources"] = {
-				36,
-				95,
-				98,
-				114,
-				117,
-				121,
-				122,
-				123,
-				124,
-				126,
+				["max_xp_level"] = 21,
+				["min_xp_level"] = 9,
 			},
 		},
 		["forever"] = true,
@@ -111,18 +98,6 @@ RR_DATA["items"]["Cooking"] = {
 			},
 		},
 		["verified"] = {
-			["drops"] = {
-				36,
-				95,
-				98,
-				114,
-				117,
-				121,
-				122,
-				123,
-				124,
-				126,
-			},
 			["vendors"] = {
 				340,
 			},
@@ -161,23 +136,10 @@ RR_DATA["items"]["Cooking"] = {
 		},
 	},
 	{
-		["classic_source"] = true,
 		["drops"] = {
 			["range"] = {
-				["max_xp_level"] = 25,
+				["max_xp_level"] = 26,
 				["min_xp_level"] = 10,
-			},
-			["sources"] = {
-				335,
-				345,
-				422,
-				423,
-				424,
-				426,
-				428,
-				430,
-				431,
-				432,
 			},
 		},
 		["forever"] = true,
@@ -202,18 +164,6 @@ RR_DATA["items"]["Cooking"] = {
 			},
 		},
 		["verified"] = {
-			["drops"] = {
-				335,
-				345,
-				422,
-				423,
-				424,
-				426,
-				428,
-				430,
-				431,
-				432,
-			},
 			["vendors"] = {
 				340,
 			},
@@ -1232,23 +1182,10 @@ RR_DATA["items"]["Cooking"] = {
 		},
 	},
 	{
-		["classic_source"] = true,
 		["drops"] = {
 			["range"] = {
-				["max_xp_level"] = 25,
+				["max_xp_level"] = 44,
 				["min_xp_level"] = 10,
-			},
-			["sources"] = {
-				3234,
-				3238,
-				3239,
-				3240,
-				3241,
-				3242,
-				3243,
-				3244,
-				3245,
-				3246,
 			},
 		},
 		["forever"] = true,
@@ -1266,20 +1203,6 @@ RR_DATA["items"]["Cooking"] = {
 			["Taiwanese"] = "食譜：美味風蛇",
 		},
 		["quality"] = "uncommon",
-		["verified"] = {
-			["drops"] = {
-				3234,
-				3238,
-				3239,
-				3240,
-				3241,
-				3242,
-				3243,
-				3244,
-				3245,
-				3246,
-			},
-		},
 	},
 	{
 		["forever"] = true,
@@ -2224,7 +2147,12 @@ RR_DATA["items"]["Cooking"] = {
 		},
 	},
 	{
+		["classic_source"] = true,
 		["drops"] = {
+			["range"] = {
+				["max_xp_level"] = 57,
+				["min_xp_level"] = 57,
+			},
 			["sources"] = {
 				14354,
 			},
@@ -2244,11 +2172,6 @@ RR_DATA["items"]["Cooking"] = {
 			["Taiwanese"] = "食譜：洛恩塔姆薯塊",
 		},
 		["quality"] = "uncommon",
-		["verified"] = {
-			["drops"] = {
-				14354,
-			},
-		},
 	},
 	{
 		["forever"] = true,
@@ -2457,8 +2380,9 @@ RR_DATA["items"]["Cooking"] = {
 	},
 	{
 		["drops"] = {
-			["sources"] = {
-				1397,
+			["range"] = {
+				["max_xp_level"] = 9,
+				["min_xp_level"] = 8,
 			},
 		},
 		["forever"] = true,
@@ -2476,16 +2400,12 @@ RR_DATA["items"]["Cooking"] = {
 			["Taiwanese"] = "食譜：平靜茶",
 		},
 		["quality"] = "common",
-		["verified"] = {
-			["drops"] = {
-				1397,
-			},
-		},
 	},
 	{
 		["drops"] = {
-			["sources"] = {
-				4003,
+			["range"] = {
+				["max_xp_level"] = 21,
+				["min_xp_level"] = 20,
 			},
 		},
 		["forever"] = true,
@@ -2503,16 +2423,12 @@ RR_DATA["items"]["Cooking"] = {
 			["Taiwanese"] = "食譜：皇家茶",
 		},
 		["quality"] = "common",
-		["verified"] = {
-			["drops"] = {
-				4003,
-			},
-		},
 	},
 	{
 		["drops"] = {
-			["sources"] = {
-				2376,
+			["range"] = {
+				["max_xp_level"] = 31,
+				["min_xp_level"] = 30,
 			},
 		},
 		["forever"] = true,
@@ -2530,11 +2446,6 @@ RR_DATA["items"]["Cooking"] = {
 			["Taiwanese"] = "食譜：樹根茶",
 		},
 		["quality"] = "common",
-		["verified"] = {
-			["drops"] = {
-				2376,
-			},
-		},
 	},
 	{
 		["forever"] = true,
@@ -2928,8 +2839,9 @@ RR_DATA["items"]["Cooking"] = {
 	},
 	{
 		["drops"] = {
-			["sources"] = {
-				3809,
+			["range"] = {
+				["max_xp_level"] = 22,
+				["min_xp_level"] = 21,
 			},
 		},
 		["forever"] = true,
@@ -2947,11 +2859,6 @@ RR_DATA["items"]["Cooking"] = {
 			["Taiwanese"] = "食譜：熊胸肉",
 		},
 		["quality"] = "common",
-		["verified"] = {
-			["drops"] = {
-				3809,
-			},
-		},
 	},
 	{
 		["forever"] = true,
@@ -2991,8 +2898,9 @@ RR_DATA["items"]["Cooking"] = {
 	},
 	{
 		["drops"] = {
-			["sources"] = {
-				855,
+			["range"] = {
+				["max_xp_level"] = 31,
+				["min_xp_level"] = 30,
 			},
 		},
 		["forever"] = true,
@@ -3014,9 +2922,6 @@ RR_DATA["items"]["Cooking"] = {
 			95697,
 		},
 		["verified"] = {
-			["drops"] = {
-				855,
-			},
 			["quests"] = {
 				95697,
 			},
@@ -3042,9 +2947,9 @@ RR_DATA["items"]["Cooking"] = {
 	},
 	{
 		["drops"] = {
-			["sources"] = {
-				1020,
-				3255,
+			["range"] = {
+				["max_xp_level"] = 23,
+				["min_xp_level"] = 13,
 			},
 		},
 		["forever"] = true,
@@ -3062,17 +2967,12 @@ RR_DATA["items"]["Cooking"] = {
 			["Taiwanese"] = "食譜：美味迅猛龍肉塊",
 		},
 		["quality"] = "common",
-		["verified"] = {
-			["drops"] = {
-				1020,
-				3255,
-			},
-		},
 	},
 	{
 		["drops"] = {
-			["sources"] = {
-				428,
+			["range"] = {
+				["max_xp_level"] = 19,
+				["min_xp_level"] = 18,
 			},
 		},
 		["forever"] = true,
@@ -3090,11 +2990,6 @@ RR_DATA["items"]["Cooking"] = {
 			["Taiwanese"] = "食譜：早餐歐姆蛋",
 		},
 		["quality"] = "common",
-		["verified"] = {
-			["drops"] = {
-				428,
-			},
-		},
 	},
 	{
 		["forever"] = true,
@@ -3116,17 +3011,9 @@ RR_DATA["items"]["Cooking"] = {
 	},
 	{
 		["drops"] = {
-			["sources"] = {
-				334,
-				422,
-				426,
-				428,
-				442,
-				446,
-				485,
-				578,
-				580,
-				1083,
+			["range"] = {
+				["max_xp_level"] = 26,
+				["min_xp_level"] = 14,
 			},
 		},
 		["forever"] = true,
@@ -3144,20 +3031,6 @@ RR_DATA["items"]["Cooking"] = {
 			["Taiwanese"] = "食譜：美味怪鰭魚大餐",
 		},
 		["quality"] = "uncommon",
-		["verified"] = {
-			["drops"] = {
-				334,
-				422,
-				426,
-				428,
-				442,
-				446,
-				485,
-				578,
-				580,
-				1083,
-			},
-		},
 	},
 	{
 		["forever"] = true,
@@ -3211,8 +3084,9 @@ RR_DATA["items"]["Cooking"] = {
 	},
 	{
 		["drops"] = {
-			["sources"] = {
-				3673,
+			["range"] = {
+				["max_xp_level"] = 21,
+				["min_xp_level"] = 21,
 			},
 		},
 		["forever"] = true,
@@ -3237,9 +3111,6 @@ RR_DATA["items"]["Cooking"] = {
 			},
 		},
 		["verified"] = {
-			["drops"] = {
-				3673,
-			},
 			["vendors"] = {
 				277945,
 			},
@@ -3265,8 +3136,9 @@ RR_DATA["items"]["Cooking"] = {
 	},
 	{
 		["drops"] = {
-			["sources"] = {
-				645,
+			["range"] = {
+				["max_xp_level"] = 20,
+				["min_xp_level"] = 20,
 			},
 		},
 		["forever"] = true,
@@ -3291,9 +3163,6 @@ RR_DATA["items"]["Cooking"] = {
 			},
 		},
 		["verified"] = {
-			["drops"] = {
-				645,
-			},
 			["vendors"] = {
 				277945,
 			},

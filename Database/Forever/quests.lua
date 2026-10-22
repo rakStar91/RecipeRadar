@@ -17,6 +17,9 @@ local forever_quests = {
 			["Spanish"] = "Gaffer Jacks",
 			["Taiwanese"] = "Gaffer Jacks",
 		},
+		["npcs"] = {
+			3666,
+		},
 	},
 	{
 		["id"] = 1580,
@@ -31,6 +34,27 @@ local forever_quests = {
 			["Russian"] = "Electropellers",
 			["Spanish"] = "Electropellers",
 			["Taiwanese"] = "Electropellers",
+		},
+		["npcs"] = {
+			3666,
+		},
+	},
+	{
+		["id"] = 1581,
+		["name"] = {
+			["Chinese"] = "Elixirs for the Bladeleafs",
+			["English"] = "Elixirs for the Bladeleafs",
+			["French"] = "Elixirs for the Bladeleafs",
+			["German"] = "Elixiere für die Bladeleafs",
+			["Korean"] = "Elixirs for the Bladeleafs",
+			["Mexican"] = "Elixirs for the Bladeleafs",
+			["Portuguese"] = "Elixirs for the Bladeleafs",
+			["Russian"] = "Elixirs for the Bladeleafs",
+			["Spanish"] = "Elixirs for the Bladeleafs",
+			["Taiwanese"] = "Elixirs for the Bladeleafs",
+		},
+		["npcs"] = {
+			2083,
 		},
 	},
 	{
@@ -47,6 +71,9 @@ local forever_quests = {
 			["Spanish"] = "You Too Good.",
 			["Taiwanese"] = "You Too Good.",
 		},
+		["npcs"] = {
+			3332,
+		},
 	},
 	{
 		["id"] = 6609,
@@ -61,6 +88,9 @@ local forever_quests = {
 			["Russian"] = "I Got Nothin' Left!",
 			["Spanish"] = "I Got Nothin' Left!",
 			["Taiwanese"] = "I Got Nothin' Left!",
+		},
+		["npcs"] = {
+			5161,
 		},
 	},
 	{
@@ -113,6 +143,9 @@ local forever_quests = {
 			["Spanish"] = "Horde Trauma",
 			["Taiwanese"] = "Horde Trauma",
 		},
+		["npcs"] = {
+			3373,
+		},
 	},
 	{
 		["id"] = 6625,
@@ -127,6 +160,9 @@ local forever_quests = {
 			["Russian"] = "Alliance Trauma",
 			["Spanish"] = "Alliance Trauma",
 			["Taiwanese"] = "Alliance Trauma",
+		},
+		["npcs"] = {
+			5150,
 		},
 	},
 	{
@@ -143,6 +179,9 @@ local forever_quests = {
 			["Spanish"] = "Master Angler",
 			["Taiwanese"] = "Master Angler",
 		},
+		["npcs"] = {
+			15077,
+		},
 	},
 	{
 		["id"] = 8194,
@@ -157,6 +196,9 @@ local forever_quests = {
 			["Russian"] = "Apprentice Angler",
 			["Spanish"] = "Apprentice Angler",
 			["Taiwanese"] = "Apprentice Angler",
+		},
+		["npcs"] = {
+			15078,
 		},
 	},
 	{
@@ -173,6 +215,9 @@ local forever_quests = {
 			["Spanish"] = "Rare Fish - Keefer's Angelfish",
 			["Taiwanese"] = "Rare Fish - Keefer's Angelfish",
 		},
+		["npcs"] = {
+			15079,
+		},
 	},
 	{
 		["id"] = 8224,
@@ -188,6 +233,9 @@ local forever_quests = {
 			["Spanish"] = "Rare Fish - Dezian Queenfish",
 			["Taiwanese"] = "Rare Fish - Dezian Queenfish",
 		},
+		["npcs"] = {
+			15079,
+		},
 	},
 	{
 		["id"] = 8225,
@@ -202,6 +250,9 @@ local forever_quests = {
 			["Russian"] = "Rare Fish - Brownell's Blue Striped Racer",
 			["Spanish"] = "Rare Fish - Brownell's Blue Striped Racer",
 			["Taiwanese"] = "Rare Fish - Brownell's Blue Striped Racer",
+		},
+		["npcs"] = {
+			15079,
 		},
 	},
 	{
@@ -238,6 +289,42 @@ local forever_quests = {
 		},
 		["npcs"] = {
 			15174,
+		},
+	},
+	{
+		["id"] = 91920,
+		["name"] = {
+			["Chinese"] = "Wild Eyes",
+			["English"] = "Wild Eyes",
+			["French"] = "Wild Eyes",
+			["German"] = "Wilde Augen",
+			["Korean"] = "Wild Eyes",
+			["Mexican"] = "Wild Eyes",
+			["Portuguese"] = "Wild Eyes",
+			["Russian"] = "Wild Eyes",
+			["Spanish"] = "Wild Eyes",
+			["Taiwanese"] = "Wild Eyes",
+		},
+		["npcs"] = {
+			1951,
+		},
+	},
+	{
+		["id"] = 92110,
+		["name"] = {
+			["Chinese"] = "My First Real Potion",
+			["English"] = "My First Real Potion",
+			["French"] = "My First Real Potion",
+			["German"] = "Mein erster echter Trank",
+			["Korean"] = "My First Real Potion",
+			["Mexican"] = "My First Real Potion",
+			["Portuguese"] = "My First Real Potion",
+			["Russian"] = "My First Real Potion",
+			["Spanish"] = "My First Real Potion",
+			["Taiwanese"] = "My First Real Potion",
+		},
+		["npcs"] = {
+			249713,
 		},
 	},
 	{
