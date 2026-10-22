@@ -734,12 +734,18 @@ function instance:Display(recipeItem)
     if specActionKey then
         local saText = RR.DB:GetSpecialActionText(specActionKey)
         if saText then
+            -- notes that are not a Classic source (source unknown, notes added for Forever) must not end up under the
+            -- "from Classic" header; they stand on top of the list
+            local sa = RR_DATA and RR_DATA["special_actions"] and RR_DATA["special_actions"][specActionKey]
+            local isForeverNote = specActionKey == "source unknown" or (sa and sa.forever) or false
             table.insert(allSources, {
                 text = string.format(RR.L["LABEL_NOTE"], saText),
                 waypoint = nil,
                 faction = "Neutral",
                 isPlayerFaction = true,
                 verified = (specActionKey ~= "source unknown" and not meta.classicSource),
+                noHeader = isForeverNote,
+                pinned = isForeverNote,
             })
         end
     end
@@ -752,6 +758,7 @@ function instance:Display(recipeItem)
         return 2
     end
     table.sort(allSources, function(a, b)
+        if (a.pinned or false) ~= (b.pinned or false) then return a.pinned or false end
         local rankA, rankB = factionRank(a), factionRank(b)
         if rankA ~= rankB then return rankA < rankB end
         local zoneA, zoneB = a.zone and a.zone:lower(), b.zone and b.zone:lower()
@@ -767,7 +774,7 @@ function instance:Display(recipeItem)
     if isForever then
         local confirmed, others = {}, {}
         for _, src in ipairs(allSources) do
-            if src.verified then
+            if src.verified or src.noHeader then
                 confirmed[#confirmed + 1] = src
             else
                 others[#others + 1] = src

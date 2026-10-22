@@ -242,4 +242,20 @@ RR_DATA["special_actions"] = {
             ["Taiwanese"] = "完成任務後與NPC對話",
         },
     },
+    ["raid dungeon world boss loot"] = {
+        ["id"] = 16,
+        ["forever"] = true,
+        ["name"] = {
+            ["Chinese"] = "团队首领、高等级地下城首领和世界首领的掉落",
+            ["English"] = "Loot from raid bosses, high-level dungeon bosses and world bosses",
+            ["French"] = "Butin des boss de raid, des boss de donjons de haut niveau et des boss mondiaux",
+            ["German"] = "Beute von Raid-Bossen, Hochstufen-Dungeon-Bossen und Weltbossen",
+            ["Korean"] = "공격대 우두머리, 고레벨 던전 우두머리, 야외 우두머리의 전리품",
+            ["Mexican"] = "Botín de jefes de banda, jefes de mazmorras de alto nivel y jefes de mundo",
+            ["Portuguese"] = "Saque de chefes de raide, chefes de masmorras de alto nível e chefes mundiais",
+            ["Russian"] = "Добыча с боссов рейдов, боссов подземелий высокого уровня и мировых боссов",
+            ["Spanish"] = "Botín de jefes de banda, jefes de mazmorras de alto nivel y jefes de mundo",
+            ["Taiwanese"] = "團隊首領、高等級地城首領和世界首領的掉落",
+        },
+    },
 }
