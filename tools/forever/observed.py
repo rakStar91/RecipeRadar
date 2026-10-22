@@ -108,6 +108,14 @@ def _names(value):
     return out
 
 
+def _drop_range(value):
+    """{"min_xp_level", "max_xp_level"} of mobs that drop an item, or None."""
+    if not isinstance(value, dict):
+        return None
+    low, high = _int(value.get("min_xp_level"), 1, 100), _int(value.get("max_xp_level"), 1, 100)
+    return {"min_xp_level": low, "max_xp_level": high} if low and high and low <= high else None
+
+
 def _location(value):
     if not isinstance(value, dict):
         return None
@@ -192,8 +200,14 @@ def clean_export(data, known_items, known_spells, allow_build=False):
         if vendors:
             entry["vendors"] = vendors
         drops = e.get("drops")
-        if isinstance(drops, dict) and _ids(drops.get("sources")):
-            entry["drops"] = {"sources": _ids(drops["sources"])}
+        if isinstance(drops, dict):
+            clean_drops = {}
+            if _ids(drops.get("sources")):
+                clean_drops["sources"] = _ids(drops["sources"])
+            if _drop_range(drops.get("range")):
+                clean_drops["range"] = _drop_range(drops["range"])
+            if clean_drops:
+                entry["drops"] = clean_drops
         for key in ("quests", "objects"):
             if _ids(e.get(key)):
                 entry[key] = _ids(e[key])
@@ -303,7 +317,19 @@ def merge_into_store(store, clean):
         if "vendors" in e:
             _merge_priced(entry, "vendors", e["vendors"])
         if "drops" in e:
-            entry["drops"] = {"sources": _union(entry.get("drops", {}).get("sources", []), e["drops"]["sources"])}
+            old = entry.get("drops", {})
+            new_drops = {}
+            if "sources" in e["drops"]:
+                new_drops["sources"] = _union(old.get("sources", []), e["drops"]["sources"])
+            elif "range" not in e["drops"]:
+                new_drops["sources"] = old.get("sources", [])
+            # a level range without mobs says "world drop": the mobs recorded earlier are replaced by it
+            ranges = [r for r in (old.get("range"), e["drops"].get("range")) if r]
+            if ranges:  # the level range widens
+                new_drops["range"] = {"min_xp_level": min(r["min_xp_level"] for r in ranges),
+                                      "max_xp_level": max(r["max_xp_level"] for r in ranges)}
+            if new_drops:
+                entry["drops"] = new_drops
         for key in ("quests", "objects"):
             if key in e:
                 entry[key] = _union(entry.get(key, []), e[key])
@@ -387,7 +413,12 @@ def apply_store(store, skills, items, base_ids, unknown_source, auto_learned, tr
                 entry["vendors"]["price"] = price
         if "drops" in o:
             current = entry.get("drops", {})
-            entry["drops"] = {**current, "sources": _union(current.get("sources", []), o["drops"]["sources"])}
+            entry["drops"] = dict(current)
+            sources = _union(current.get("sources", []), o["drops"].get("sources", []))
+            if sources:
+                entry["drops"]["sources"] = sources
+            if "range" in o["drops"]:  # what Forever shows beats the Classic level range
+                entry["drops"]["range"] = o["drops"]["range"]
         for field in ("quests", "objects"):
             if field in o:
                 entry[field] = _union(entry.get(field, []), o[field])
@@ -396,7 +427,7 @@ def apply_store(store, skills, items, base_ids, unknown_source, auto_learned, tr
         verified = {}
         if "vendors" in o:
             verified["vendors"] = list(o["vendors"]["sources"])
-        if "drops" in o:
+        if o.get("drops", {}).get("sources"):
             verified["drops"] = list(o["drops"]["sources"])
         for field in ("quests", "objects"):
             if field in o:
@@ -436,10 +467,17 @@ def apply_store(store, skills, items, base_ids, unknown_source, auto_learned, tr
 
     zones = zone_map(store)
     new_npcs, new_quests, new_objects = [], [], []
+    # only NPCs that a source still points to; the store keeps the others (e.g. mobs that a level range replaced)
+    referenced = {n for kind in ("items", "skills") for e in store[kind].values()
+                  for source in ("vendors", "drops", "trainers") for n in e.get(source, {}).get("sources", [])}
+    referenced.update(n for q in store["quests"].values() for n in q.get("npcs", []))
     for key in sorted(store["npcs"], key=int):
         o = store["npcs"][key]
         if o["id"] in base_ids["npcs"]:
             report["npcs known"] += 1
+            continue
+        if o["id"] not in referenced:
+            report["npcs left out (no source uses them)"] = report.get("npcs left out (no source uses them)", 0) + 1
             continue
         entry = {"id": o["id"], "name": _fill_names(o.get("name"), f"NPC {o['id']}")}
         if "location" in o:

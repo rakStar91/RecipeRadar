@@ -85,6 +85,11 @@ SKILL_SOURCE_KEYS = ("trainers", "quests", "reputation", "objects", "special_act
 SKILL_OTHER_KEYS = ("specialisation", "classes", "min_xp_level")
 ITEM_SOURCE_KEYS = ("drops", "quests", "vendors", "holiday", "reputation", "objects", "special_action")
 ITEM_OTHER_KEYS = ("min_xp_level",)
+# Notes (keys of Database/Base/special_actions.lua, marked "forever") for recipe items whose sources the NPC lists alone
+# describe badly; set by hand because the recorder cannot observe them
+ITEM_SPECIAL_ACTIONS = {
+    13487: "raid dungeon world boss loot",  # Recipe: Transmute Water to Undeath
+}
 
 
 def load(cache, build, locale, table):
@@ -233,6 +238,7 @@ def main():
     # entries whose carried Classic facts a player can never confirm (holidays, special actions, level-range drops,
     # Classic reputation); they keep the "unverified" warning even when all their NPC sources were seen
     unverifiable_items, unverifiable_skills = set(), set()
+    range_unverified = set()
     # skills whose min_skill is a Classic value or the client's skill line rank (not the number on a recipe item);
     # the rank a trainer asks for in Forever replaces it
     trainer_replaceable = set()
@@ -263,9 +269,10 @@ def main():
         if carried:
             entry["classic_source"] = True
             has_gate = bool(sparse and sparse["MinFactionID"])
-            if (any(k in classic for k in ("holiday", "special_action")) or classic.get("drops", {}).get("range")
-                    or ("reputation" in classic and not has_gate)):
+            if any(k in classic for k in ("holiday", "special_action")) or ("reputation" in classic and not has_gate):
                 unverifiable_items.add(item_id)
+            elif classic.get("drops", {}).get("range"):
+                range_unverified.add(item_id)  # unverifiable unless a recorded level range replaces it (see 2b)
         if not classic:
             entry["special_action"] = UNKNOWN_SOURCE
         return entry
@@ -352,8 +359,14 @@ def main():
             stats["Classic items dropped (recipe removed in Forever)"] += 1
 
     # ---- 2b. sources recorded by players (tools/forever/observed/observed.json, see merge_observed.py) -----
+    store = load_store()
     observed_report, new_npcs, new_quests, new_objects = apply_store(
-        load_store(), skills, items, load_base_ids(), UNKNOWN_SOURCE, AUTO_LEARNED, trainer_replaceable)
+        store, skills, items, load_base_ids(), UNKNOWN_SOURCE, AUTO_LEARNED, trainer_replaceable)
+    unverifiable_items |= {i for i in range_unverified if "range" not in store["items"].get(str(i), {}).get("drops", {})}
+    for per_prof in items.values():
+        for item_id, action in ITEM_SPECIAL_ACTIONS.items():
+            if item_id in per_prof:
+                per_prof[item_id]["special_action"] = action
     for key, value in observed_report.items():
         stats[f"recorded sources: {key}"] = value
     stats["recorded sources: new npcs / quests / objects"] = f"{len(new_npcs)} / {len(new_quests)} / {len(new_objects)}"
