@@ -55,6 +55,7 @@ Database\DB.lua
 
 # 2b. Database (WoW Forever recipes; replaces the Base skills and items)
 Database\Forever\flags.lua
+Database\Forever\zones.lua
 Database\Forever\factions.lua
 Database\Forever\spell_items.lua
 Database\Forever\npcs.lua

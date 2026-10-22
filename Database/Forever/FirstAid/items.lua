@@ -10,6 +10,18 @@ RR_DATA["items"]["First Aid"] = {
 				["max_xp_level"] = 35,
 				["min_xp_level"] = 20,
 			},
+			["sources"] = {
+				202,
+				205,
+				206,
+				210,
+				424,
+				432,
+				435,
+				565,
+				570,
+				587,
+			},
 		},
 		["forever"] = true,
 		["id"] = 6454,
@@ -25,10 +37,45 @@ RR_DATA["items"]["First Aid"] = {
 			["Spanish"] = "Manual: antídoto fuerte",
 			["Taiwanese"] = "手冊：強力抗毒藥劑",
 		},
+		["objects"] = {
+			2850,
+			2852,
+			2855,
+			74447,
+			74448,
+			75295,
+			75296,
+			75298,
+			75299,
+		},
 		["quality"] = "uncommon",
+		["verified"] = {
+			["drops"] = {
+				202,
+				205,
+				206,
+				210,
+				424,
+				432,
+				435,
+				565,
+				570,
+				587,
+			},
+			["objects"] = {
+				2850,
+				2852,
+				2855,
+				74447,
+				74448,
+				75295,
+				75296,
+				75298,
+				75299,
+			},
+		},
 	},
 	{
-		["classic_source"] = true,
 		["forever"] = true,
 		["id"] = 16084,
 		["name"] = {
@@ -51,9 +98,14 @@ RR_DATA["items"]["First Aid"] = {
 				13476,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				2805,
+				13476,
+			},
+		},
 	},
 	{
-		["classic_source"] = true,
 		["forever"] = true,
 		["id"] = 16112,
 		["name"] = {
@@ -76,9 +128,14 @@ RR_DATA["items"]["First Aid"] = {
 				13476,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				2805,
+				13476,
+			},
+		},
 	},
 	{
-		["classic_source"] = true,
 		["forever"] = true,
 		["id"] = 16113,
 		["name"] = {
@@ -101,9 +158,14 @@ RR_DATA["items"]["First Aid"] = {
 				13476,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				2805,
+				13476,
+			},
+		},
 	},
 	{
-		["classic_source"] = true,
 		["forever"] = true,
 		["id"] = 19442,
 		["name"] = {
@@ -131,8 +193,20 @@ RR_DATA["items"]["First Aid"] = {
 				11536,
 			},
 		},
+		["verified"] = {
+			["vendors"] = {
+				10856,
+				10857,
+				11536,
+			},
+		},
 	},
 	{
+		["drops"] = {
+			["sources"] = {
+				2589,
+			},
+		},
 		["forever"] = true,
 		["id"] = 255723,
 		["name"] = {
@@ -148,9 +222,18 @@ RR_DATA["items"]["First Aid"] = {
 			["Taiwanese"] = "手冊：強效治療藥水",
 		},
 		["quality"] = "uncommon",
-		["special_action"] = "source unknown",
+		["verified"] = {
+			["drops"] = {
+				2589,
+			},
+		},
 	},
 	{
+		["drops"] = {
+			["sources"] = {
+				910,
+			},
+		},
 		["forever"] = true,
 		["id"] = 255724,
 		["name"] = {
@@ -166,7 +249,11 @@ RR_DATA["items"]["First Aid"] = {
 			["Taiwanese"] = "手冊：機敏膏藥",
 		},
 		["quality"] = "uncommon",
-		["special_action"] = "source unknown",
+		["verified"] = {
+			["drops"] = {
+				910,
+			},
+		},
 	},
 	{
 		["forever"] = true,
@@ -223,6 +310,11 @@ RR_DATA["items"]["First Aid"] = {
 		["special_action"] = "source unknown",
 	},
 	{
+		["drops"] = {
+			["sources"] = {
+				760,
+			},
+		},
 		["forever"] = true,
 		["id"] = 255728,
 		["name"] = {
@@ -238,7 +330,11 @@ RR_DATA["items"]["First Aid"] = {
 			["Taiwanese"] = "手冊：特強抗毒藥劑",
 		},
 		["quality"] = "uncommon",
-		["special_action"] = "source unknown",
+		["verified"] = {
+			["drops"] = {
+				760,
+			},
+		},
 	},
 	{
 		["forever"] = true,
@@ -256,7 +352,17 @@ RR_DATA["items"]["First Aid"] = {
 			["Taiwanese"] = "手冊：極效治療藥水",
 		},
 		["quality"] = "uncommon",
-		["special_action"] = "source unknown",
+		["vendors"] = {
+			["price"] = 80000,
+			["sources"] = {
+				266901,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
+				266901,
+			},
+		},
 	},
 	{
 		["forever"] = true,
@@ -295,6 +401,11 @@ RR_DATA["items"]["First Aid"] = {
 		["special_action"] = "source unknown",
 	},
 	{
+		["drops"] = {
+			["sources"] = {
+				4278,
+			},
+		},
 		["forever"] = true,
 		["id"] = 273105,
 		["name"] = {
@@ -310,7 +421,20 @@ RR_DATA["items"]["First Aid"] = {
 			["Taiwanese"] = "藍圖：毒素研究區",
 		},
 		["quality"] = "uncommon",
-		["special_action"] = "source unknown",
+		["vendors"] = {
+			["price"] = 1350,
+			["sources"] = {
+				277945,
+			},
+		},
+		["verified"] = {
+			["drops"] = {
+				4278,
+			},
+			["vendors"] = {
+				277945,
+			},
+		},
 	},
 	{
 		["forever"] = true,

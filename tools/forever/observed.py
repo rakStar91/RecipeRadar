@@ -206,12 +206,16 @@ def clean_export(data, known_items, known_spells, allow_build=False):
             warnings.append("skill without a valid id skipped"); continue
         if spell_id not in known_spells:
             warnings.append(f"spell {spell_id} is not a known Forever recipe, skipped"); continue
+        entry = {"id": spell_id}
         trainers = priced(e.get("trainers"))
         if trainers:
-            entry = {"id": spell_id, "trainers": trainers}
+            entry["trainers"] = trainers
             min_skill = _int(e.get("min_skill"), 1, 450)  # skill rank the trainer asks for
             if min_skill:
                 entry["min_skill"] = min_skill
+        if _ids(e.get("quests")):
+            entry["quests"] = _ids(e["quests"])
+        if len(entry) > 1:
             clean["skills"].append(entry)
 
     for e in data.get("quests", []):
@@ -305,9 +309,12 @@ def merge_into_store(store, clean):
                 entry[key] = _union(entry.get(key, []), e[key])
 
     def skill(entry, e):
-        _merge_priced(entry, "trainers", e["trainers"])
+        if "trainers" in e:
+            _merge_priced(entry, "trainers", e["trainers"])
         if "min_skill" in e:
             entry.setdefault("min_skill", e["min_skill"])
+        if "quests" in e:
+            entry["quests"] = _union(entry.get("quests", []), e["quests"])
 
     def quest(entry, e):
         _merge_names(entry, e["name"])
@@ -358,7 +365,7 @@ def _fill_names(names, fallback):
     return {locale: names.get(locale, default) for locale in LOCALE_KEYS}
 
 
-def apply_store(store, skills, items, base_ids, unknown_source, trainer_replaceable=()):
+def apply_store(store, skills, items, base_ids, unknown_source, auto_learned, trainer_replaceable=()):
     """Applies the store to the generated entries and returns the report plus the new npcs, quests and objects.
 
     skills: {profession: [skill entry]}, items: {profession: {item id: item entry}}. Entries are changed in place.
@@ -403,14 +410,20 @@ def apply_store(store, skills, items, base_ids, unknown_source, trainer_replacea
         if entry is None:
             report["skills missing"] += 1
             continue
-        current = entry.get("trainers", {"sources": []})
-        entry["trainers"] = {"sources": _union(current.get("sources", []), o["trainers"]["sources"])}
-        price = current.get("price") or o["trainers"].get("price")
-        if price:
-            entry["trainers"]["price"] = price
+        # learned together with the profession: nobody teaches it, whatever a trainer list showed
+        taught = entry.get("special_action") != auto_learned
+        if "trainers" in o and taught:
+            current = entry.get("trainers", {"sources": []})
+            entry["trainers"] = {"sources": _union(current.get("sources", []), o["trainers"]["sources"])}
+            price = current.get("price") or o["trainers"].get("price")
+            if price:
+                entry["trainers"]["price"] = price
+            entry.setdefault("verified", {})["trainers"] = list(o["trainers"]["sources"])
+        if "quests" in o and taught:
+            entry["quests"] = _union(entry.get("quests", []), o["quests"])
+            entry.setdefault("verified", {})["quests"] = list(o["quests"])
         if entry.get("special_action") == unknown_source:
             del entry["special_action"]
-        entry["verified"] = {"trainers": list(o["trainers"]["sources"])}
         if "min_skill" in o:
             if "min_skill" not in entry:
                 entry["min_skill"] = o["min_skill"]

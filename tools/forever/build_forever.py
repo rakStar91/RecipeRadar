@@ -307,9 +307,12 @@ def main():
                 spell_to_item[spell] = crafted
 
         carried = False
+        auto_learned = row["AcquireMethod"] == ACQUIRE_AUTO_LEARNED
         if classic:
             for key in SKILL_SOURCE_KEYS + SKILL_OTHER_KEYS:
                 if key in classic:
+                    if auto_learned and key in SKILL_SOURCE_KEYS:
+                        continue  # learned together with the profession: nobody teaches it
                     if key == "special_action" and classic[key] == AUTO_LEARNED:
                         continue  # decided from the client below
                     entry[key] = classic[key]
@@ -350,7 +353,7 @@ def main():
 
     # ---- 2b. sources recorded by players (tools/forever/observed/observed.json, see merge_observed.py) -----
     observed_report, new_npcs, new_quests, new_objects = apply_store(
-        load_store(), skills, items, load_base_ids(), UNKNOWN_SOURCE, trainer_replaceable)
+        load_store(), skills, items, load_base_ids(), UNKNOWN_SOURCE, AUTO_LEARNED, trainer_replaceable)
     for key, value in observed_report.items():
         stats[f"recorded sources: {key}"] = value
     stats["recorded sources: new npcs / quests / objects"] = f"{len(new_npcs)} / {len(new_quests)} / {len(new_objects)}"
@@ -424,6 +427,133 @@ def main():
             f.write(f"local forever_{kind} = {lua(entries)}\n\n")
             f.write(f'for _, entry in ipairs(forever_{kind}) do\n\ttable.insert(RR_DATA["{kind}"], entry)\nend\n')
 
+    # Zones new in WoW Forever
+    forever_zones = [
+        {
+            "cont_id": 1,
+            "id": 616,
+            "name": {
+                "Chinese": "海加尔山",
+                "English": "Mount Hyjal",
+                "French": "Mont Hyjal",
+                "German": "Hyjal",
+                "Korean": "하이잘 산",
+                "Mexican": "Monte Hyjal",
+                "Portuguese": "Monte Hyjal",
+                "Russian": "Гора Хиджал",
+                "Spanish": "Monte Hyjal",
+                "Taiwanese": "海加爾山",
+            },
+            "levels": {"min": 58, "max": 60},
+        },
+        {
+            "cont_id": 2,
+            "id": 16591,
+            "name": {
+                "Chinese": "河林",
+                "English": "Riverglades",
+                "French": "Rives Claires",
+                "German": "Flusslande",
+                "Korean": "강물터",
+                "Mexican": "Claros del Río",
+                "Portuguese": "Sendas do Rio",
+                "Russian": "Лесоречье",
+                "Spanish": "Clarofluvial",
+                "Taiwanese": "大河林地",
+            },
+            "levels": {"min": 35, "max": 45},
+        },
+        {
+            "cont_id": 2,
+            "id": 16593,
+            "name": {
+                "Chinese": "泽风岛",
+                "English": "Zephras Isle",
+                "French": "Île de Zéphras",
+                "German": "Insel Zephras",
+                "Korean": "제프라스 섬",
+                "Mexican": "Isla Zephras",
+                "Portuguese": "Ilha de Zefras",
+                "Russian": "Остров Зефрис",
+                "Spanish": "Isla de Zephras",
+                "Taiwanese": "微風島",
+            },
+            "levels": {"min": 1, "max": 12},
+        },
+        {
+            "cont_id": 1,
+            "id": 16651,
+            "name": {
+                "Chinese": "辛德拉",
+                "English": "Shen'dralas",
+                "French": "Shen’dralas",
+                "German": "Shen'dralas",
+                "Korean": "셴드랄라스",
+                "Mexican": "Shen'dralas",
+                "Portuguese": "Shen'dralas",
+                "Russian": "Шен'дралас",
+                "Spanish": "Shen'dralas",
+                "Taiwanese": "申德拉斯",
+            },
+            "levels": {"min": 35, "max": 48},
+        },
+        {
+            "cont_id": 2,
+            "id": 16560,
+            "name": {
+                "Chinese": "达拉然城",
+                "English": "City of Dalaran",
+                "French": "Cité de Dalaran",
+                "German": "Dalaran",
+                "Korean": "달라란",
+                "Mexican": "Ciudad de Dalaran",
+                "Portuguese": "Dalaran",
+                "Russian": "Даларан",
+                "Spanish": "Ciudad de Dalaran",
+                "Taiwanese": "達拉然城",
+            },
+            "levels": {"min": 45, "max": 60},
+        },
+        {
+            "cont_id": 1,
+            "id": 16606,
+            "name": {
+                "Chinese": "暗矛群岛",
+                "English": "Darkspear Islands",
+                "French": "Îles des Sombrelances",
+                "German": "Darkspear-Inseln",
+                "Korean": "검은창 군도",
+                "Mexican": "Islas Lanza Negra",
+                "Portuguese": "Ilhas Lançanegra",
+                "Russian": "Острова Черного Копья",
+                "Spanish": "Islas Lanza Negra",
+                "Taiwanese": "暗矛島嶼",
+            },
+            "levels": {"min": 1, "max": 12},
+        },
+        {
+            "cont_id": 2,
+            "id": 17065,
+            "name": {
+                "Chinese": "吉尔尼斯",
+                "English": "Gilneas",
+                "French": "Gilnéas",
+                "German": "Gilneas",
+                "Korean": "길니아스",
+                "Mexican": "Gilneas",
+                "Portuguese": "Guilnéas",
+                "Russian": "Гилнеас",
+                "Spanish": "Gilneas",
+                "Taiwanese": "吉爾尼斯",
+            },
+            "levels": {"min": 1, "max": 20},
+        },
+    ]
+    with open(os.path.join(OUT_DIR, "zones.lua"), "w", encoding="utf-8", newline="\n") as f:
+        f.write(banner("Zones added in WoW Forever (appended to Base zones)"))
+        f.write(f"local forever_zones = {lua(forever_zones)}\n\n")
+        f.write('for _, entry in ipairs(forever_zones) do\n\ttable.insert(RR_DATA["zones"], entry)\nend\n')
+
     with open(os.path.join(OUT_DIR, "spell_items.lua"), "w", encoding="utf-8", newline="\n") as f:
         f.write(banner("Spell-ID to crafted Item-ID (additions to Database/Base/spell_items.lua)"))
         for spell, item in sorted(spell_to_item.items()):
@@ -449,7 +579,7 @@ def main():
         assert anchor in toc, anchor
         toc = toc.replace(anchor, anchor + "\n" + addition, 1)
     block = ["# 2b. Database (WoW Forever recipes; replaces the Base skills and items)"]
-    block += [OUT_DIR_REL + n for n in ("flags.lua", "factions.lua", "spell_items.lua", "npcs.lua", "quests.lua", "objects.lua")]
+    block += [OUT_DIR_REL + n for n in ("flags.lua", "zones.lua", "factions.lua", "spell_items.lua", "npcs.lua", "quests.lua", "objects.lua")]
     block += sorted(written)
     toc = toc.replace("# 3. Engine & Scanning", "\n".join(block) + "\n\n# 3. Engine & Scanning")
     with open(os.path.join(ROOT, "RecipeRadar_Camelot.toc"), "w", encoding="utf-8", newline="\n") as f:
