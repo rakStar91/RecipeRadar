@@ -650,7 +650,13 @@ end
 
 --- Returns current player zone ID in Classic DB
 function RR.DB:GetCurrentZoneId()
-    return self:GetZoneIdByName(GetRealZoneText())
+    local zoneId = self:GetZoneIdByName(GetRealZoneText())
+    if zoneId then return zoneId end
+    -- the zone text can differ from the zone table name ("Die Insel Zephras" vs "Insel Zephras"); the map name is the
+    -- same name the recorder stores
+    local mapId = C_Map and C_Map.GetBestMapForUnit and C_Map.GetBestMapForUnit("player")
+    local info = mapId and C_Map.GetMapInfo and C_Map.GetMapInfo(mapId)
+    return info and self:GetZoneIdByName(info.name) or nil
 end
 
 --- Returns the zone id for a zone name in any language of the zone table, or nil
