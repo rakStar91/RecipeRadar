@@ -54,13 +54,43 @@ function RR.Utils:AddTomTomWaypoint(arg1, arg2, arg3, arg4)
     end
 
     if not (numX and numY and zoneName and zoneName ~= "") then return end
-    
-    if SlashCmdList and SlashCmdList["TOMTOM_WAY"] then
-        SlashCmdList["TOMTOM_WAY"](string.format("%s %.1f %.1f %s", zoneName, numX, numY, title))
-        print(RR.COLORS.TEAL .. "RecipeRadar: " .. RR.COLORS.WHITE .. string.format(RR.L["TOMTOM_ADDED"], title, zoneName, string.format("%.1f", numX), string.format("%.1f", numY)))
-    elseif _G["TomTom"] and _G["TomTom"].AddWaypoint then
-        -- Direct TomTom API fallback if slash command differs
-        print(RR.COLORS.TEAL .. "RecipeRadar: " .. RR.COLORS.WHITE .. string.format(RR.L["TOMTOM_ADDED"], title, zoneName, string.format("%.1f", numX), string.format("%.1f", numY)))
+
+    -- Normalize zone name: strip leading German/English articles ("Die ", "Der ", "Das ", "The ") as safety guard
+    local cleanZone = zoneName:gsub("^[Dd][ieaer]+%s+", ""):gsub("^[Tt]he%s+", "")
+    local added = false
+
+    local TomTom = _G["TomTom"]
+    if TomTom and TomTom.AddWaypoint and TomTom.NameToMapId then
+        local mapId = TomTom.NameToMapId[zoneName] or TomTom.NameToMapId[cleanZone]
+        if not mapId then
+            local lz = zoneName:lower():gsub("[%s]", "")
+            local clz = cleanZone:lower():gsub("[%s]", "")
+            for name, id in pairs(TomTom.NameToMapId) do
+                local ln = name:lower():gsub("[%s]", "")
+                if ln == lz or ln == clz or ln:find(clz, 1, true) then
+                    mapId = type(id) == "table" and id[1] or id
+                    break
+                end
+            end
+        end
+
+        if mapId then
+            if type(mapId) == "table" then mapId = mapId[1] end
+            TomTom:AddWaypoint(mapId, numX / 100, numY / 100, {
+                title = title,
+                from = "RecipeRadar",
+            })
+            added = true
+        end
+    end
+
+    if not added and SlashCmdList and SlashCmdList["TOMTOM_WAY"] then
+        SlashCmdList["TOMTOM_WAY"](string.format("%s %.1f %.1f %s", cleanZone, numX, numY, title))
+        added = true
+    end
+
+    if added then
+        print(RR.COLORS.TEAL .. "RecipeRadar: " .. RR.COLORS.WHITE .. string.format(RR.L["TOMTOM_ADDED"], title, cleanZone, string.format("%.1f", numX), string.format("%.1f", numY)))
     else
         print(RR.COLORS.ORANGE .. "RecipeRadar: " .. RR.COLORS.WHITE .. RR.L["TOMTOM_NOT_INSTALLED"] .. zoneName .. " (" .. string.format("%.1f", numX) .. ", " .. string.format("%.1f", numY) .. ")")
     end
