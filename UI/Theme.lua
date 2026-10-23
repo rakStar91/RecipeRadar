@@ -223,6 +223,34 @@ function RR.UI.Theme:CreateDropDownFrame(parent, width, titleText, onClick)
     return f
 end
 
+local STRATA_ORDER = { "BACKGROUND", "LOW", "MEDIUM", "HIGH", "DIALOG", "FULLSCREEN", "FULLSCREEN_DIALOG", "TOOLTIP" }
+
+local function strataIndex(name)
+    for i, strata in ipairs(STRATA_ORDER) do
+        if strata == name then return i end
+    end
+    return #STRATA_ORDER
+end
+
+--- Keeps a window one strata below the world map while the map is open, so it never covers the map
+-- @param frame Frame the window
+-- @param normalStrata string the strata the window has otherwise
+function RR.UI.Theme:KeepBehindWorldMap(frame, normalStrata)
+    local map = WorldMapFrame
+    if not (map and map.HookScript) then return end
+
+    local function update()
+        local index = strataIndex(normalStrata)
+        if map:IsShown() then
+            index = math.max(1, math.min(index, strataIndex(map:GetFrameStrata()) - 1))
+        end
+        frame:SetFrameStrata(STRATA_ORDER[index])
+    end
+    map:HookScript("OnShow", update)
+    map:HookScript("OnHide", update)
+    update()
+end
+
 --- Standardized tooltip attachment using HookScript
 function RR.UI.Theme:AddTooltip(frame, title, text, anchor)
     if not frame then return end

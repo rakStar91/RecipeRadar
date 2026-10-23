@@ -23,6 +23,7 @@ function RR.UI.MainWindow:Initialize()
     end
 
     f:SetFrameStrata("HIGH")
+    RR.UI.Theme:KeepBehindWorldMap(f, "HIGH")
     f:SetMovable(true)
     f:EnableMouse(true)
     f:RegisterForDrag("LeftButton")
