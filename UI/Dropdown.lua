@@ -158,10 +158,10 @@ function RR.UI.Dropdown:Render(items, isInitial)
             btn.check:SetPoint("RIGHT", -4, 0)
 
             btn:SetScript("OnEnter", function(selfB)
-                if selfB.SetBackdropColor then selfB:SetBackdropColor(0.25, 0.28, 0.35, 1) end
+                if selfB.SetBackdropColor then selfB:SetBackdropColor(unpack(RR.UI.Theme:GetSkin().popupHover)) end
             end)
             btn:SetScript("OnLeave", function(selfB)
-                if selfB.SetBackdropColor then selfB:SetBackdropColor(0.04, 0.05, 0.06, 0.6) end
+                if selfB.SetBackdropColor then selfB:SetBackdropColor(unpack(RR.UI.Theme:GetSkin().popupItem)) end
             end)
             btn:EnableMouseWheel(true)
             btn:SetScript("OnMouseWheel", function(selfB, delta)
@@ -182,12 +182,12 @@ function RR.UI.Dropdown:Render(items, isInitial)
             btn.text:SetPoint("LEFT", 8, 0)
             btn.text:SetTextColor(1, 0.82, 0, 1)
             btn.text:SetFontObject("GameFontNormalSmall")
-            if btn.SetBackdropColor then btn:SetBackdropColor(0.12, 0.14, 0.20, 0.95) end
+            if btn.SetBackdropColor then btn:SetBackdropColor(unpack(RR.UI.Theme:GetSkin().popupHeader)) end
             btn:SetScript("OnClick", nil)
         else
             btn:Enable()
             btn.text:SetFontObject("GameFontHighlightSmall")
-            if btn.SetBackdropColor then btn:SetBackdropColor(0.04, 0.05, 0.06, 0.6) end
+            if btn.SetBackdropColor then btn:SetBackdropColor(unpack(RR.UI.Theme:GetSkin().popupItem)) end
 
             if itm.icon then
                 btn.icon:SetTexture(itm.icon)

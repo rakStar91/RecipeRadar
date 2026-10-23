@@ -28,12 +28,114 @@ RR.UI.Theme.BackdropPanel = {
     insets = { left = 1, right = 1, top = 1, bottom = 1 },
 }
 
+-- ----------------------------------------------------------------------------
+-- Skins: every color of the frame art lives here, so a skin is only a new entry.
+-- window / panel colors are the backdrop colors (panels get their alpha from the caller),
+-- button holds the tints of the button art per state, plaque the tint of the title banner art,
+-- dropdown the tint of the dropdown label art, popup* the colors of the dropdown list entries.
+-- ----------------------------------------------------------------------------
+-- "dark" is shown as "Classic Era" and "bronze" as "WoW Forever"; the keys stay for saved settings
+RR.UI.Theme.SKIN_ORDER = { "dark", "bronze", "tbc" }
+
+RR.UI.Theme.SKINS = {
+    dark = {
+        nameKey = "SKIN_DARK",
+        window = { 0.07, 0.08, 0.10, 0.98 },
+        windowBorder = { 0.42, 0.35, 0.20, 1.0 },
+        panel = { 0.03, 0.04, 0.05 },
+        panelBorder = { 0.18, 0.20, 0.25, 0.8 },
+        button = {
+            normal   = { 0.82, 0.82, 0.82 },
+            hover    = { 1.00, 1.00, 1.00 },
+            pressed  = { 0.58, 0.58, 0.58 },
+            selected = { 1.00, 0.86, 0.45 },
+        },
+        plaqueArt = "art_header_plaque_plain",
+        plaque = { 1, 1, 1 },
+        dropdown = { 0.15, 0.15, 0.15, 0.95 },
+        popupItem = { 0.04, 0.05, 0.06, 0.6 },
+        popupHover = { 0.25, 0.28, 0.35, 1 },
+        popupHeader = { 0.12, 0.14, 0.20, 0.95 },
+    },
+    -- warm brown and bronze, like the WoW Forever profession window
+    bronze = {
+        nameKey = "SKIN_BRONZE",
+        window = { 0.11, 0.08, 0.06, 0.98 },
+        windowBorder = { 0.72, 0.50, 0.25, 1.0 },
+        panel = { 0.07, 0.05, 0.04 },
+        panelBorder = { 0.45, 0.31, 0.17, 0.9 },
+        button = {
+            normal   = { 0.88, 0.72, 0.55 },
+            hover    = { 1.00, 0.90, 0.74 },
+            pressed  = { 0.62, 0.48, 0.36 },
+            selected = { 1.00, 0.80, 0.45 },
+        },
+        plaqueArt = "art_header_plaque_plain",
+        plaque = { 1.00, 0.86, 0.70 },
+        dropdown = { 0.30, 0.20, 0.12, 0.95 },
+        popupItem = { 0.08, 0.06, 0.04, 0.6 },
+        popupHover = { 0.34, 0.23, 0.12, 1 },
+        popupHeader = { 0.22, 0.15, 0.08, 0.95 },
+    },
+    -- dark with fel green, like The Burning Crusade
+    tbc = {
+        nameKey = "SKIN_TBC",
+        window = { 0.04, 0.08, 0.05, 0.98 },
+        windowBorder = { 0.35, 0.80, 0.25, 1.0 },
+        panel = { 0.03, 0.06, 0.04 },
+        panelBorder = { 0.20, 0.50, 0.16, 0.9 },
+        button = {
+            normal   = { 0.65, 0.90, 0.60 },
+            hover    = { 0.85, 1.00, 0.80 },
+            pressed  = { 0.45, 0.65, 0.42 },
+            selected = { 0.62, 1.00, 0.35 },
+        },
+        plaqueArt = "art_header_plaque_plain",
+        plaque = { 0.65, 1.00, 0.55 },
+        dropdown = { 0.10, 0.22, 0.10, 0.95 },
+        popupItem = { 0.03, 0.07, 0.04, 0.6 },
+        popupHover = { 0.14, 0.34, 0.14, 1 },
+        popupHeader = { 0.08, 0.20, 0.08, 0.95 },
+    },
+}
+
+-- Everything that was skinned, so a skin change can recolor it (weak: frames are never kept alive by this)
+local skinnedWindows = setmetatable({}, { __mode = "k" })
+local skinnedPanels = setmetatable({}, { __mode = "k" })   -- frame -> background alpha
+local skinnedButtons = setmetatable({}, { __mode = "k" })
+local skinnedPlaques = setmetatable({}, { __mode = "k" })
+local skinnedDropdowns = setmetatable({}, { __mode = "k" })
+
+--- Returns the key of the skin chosen in the settings ("dark" when none or an unknown one is stored)
+function RR.UI.Theme:GetSkinKey()
+    local profile = RR.Config and RR.Config:GetProfile()
+    local key = profile and profile.skin
+    return (key and self.SKINS[key]) and key or "dark"
+end
+
+function RR.UI.Theme:GetSkin()
+    return self.SKINS[self:GetSkinKey()]
+end
+
+local function applyWindowSkin(frame)
+    local skin = RR.UI.Theme:GetSkin()
+    if frame.SetBackdropColor then frame:SetBackdropColor(unpack(skin.window)) end
+    if frame.SetBackdropBorderColor then frame:SetBackdropBorderColor(unpack(skin.windowBorder)) end
+end
+
+local function applyPanelSkin(frame, bgAlpha)
+    local skin = RR.UI.Theme:GetSkin()
+    local r, g, b = unpack(skin.panel)
+    if frame.SetBackdropColor then frame:SetBackdropColor(r, g, b, bgAlpha) end
+    if frame.SetBackdropBorderColor then frame:SetBackdropBorderColor(unpack(skin.panelBorder)) end
+end
+
 function RR.UI.Theme:SkinWindow(frame)
     if not frame then return end
     if frame.SetBackdrop then
         frame:SetBackdrop(self.BackdropMain)
-        if frame.SetBackdropColor then frame:SetBackdropColor(0.07, 0.08, 0.10, 0.98) end
-        if frame.SetBackdropBorderColor then frame:SetBackdropBorderColor(0.42, 0.35, 0.20, 1.0) end
+        skinnedWindows[frame] = true
+        applyWindowSkin(frame)
     end
 end
 
@@ -41,9 +143,53 @@ function RR.UI.Theme:SkinPanel(frame, bgAlpha)
     if not frame then return end
     if frame.SetBackdrop then
         frame:SetBackdrop(self.BackdropPanel)
-        if frame.SetBackdropColor then frame:SetBackdropColor(0.03, 0.04, 0.05, bgAlpha or 0.95) end
-        if frame.SetBackdropBorderColor then frame:SetBackdropBorderColor(0.18, 0.20, 0.25, 0.8) end
+        skinnedPanels[frame] = bgAlpha or 0.95
+        applyPanelSkin(frame, bgAlpha or 0.95)
     end
+end
+
+-- the plaque art is cut in three: both ends keep their size, the middle stretches (fraction of the image width)
+local PLAQUE_CAP_UV = 0.125
+
+local function applyPlaqueSkin(banner)
+    local skin = RR.UI.Theme:GetSkin()
+    local c = skin.plaque
+    local pieces = banner.pieces
+    local art = RR.ADDON_PATH .. "\\images\\" .. skin.plaqueArt .. ".tga"
+    pieces.left:SetTexture(art)
+    pieces.left:SetTexCoord(0, PLAQUE_CAP_UV, 0, 1)
+    pieces.right:SetTexture(art)
+    pieces.right:SetTexCoord(1 - PLAQUE_CAP_UV, 1, 0, 1)
+    pieces.middle:SetTexture(art)
+    pieces.middle:SetTexCoord(PLAQUE_CAP_UV, 1 - PLAQUE_CAP_UV, 0, 1)
+    for _, piece in pairs(pieces) do
+        piece:SetVertexColor(c[1], c[2], c[3], 1)
+    end
+end
+
+local function applyDropdownSkin(dropdown)
+    local c = RR.UI.Theme:GetSkin().dropdown
+    for _, piece in ipairs(dropdown.artPieces) do
+        piece:SetVertexColor(c[1], c[2], c[3], c[4])
+    end
+end
+
+--- Recolors everything that was skinned with the skin that is chosen now
+function RR.UI.Theme:ApplySkin()
+    for frame in pairs(skinnedWindows) do applyWindowSkin(frame) end
+    for frame, bgAlpha in pairs(skinnedPanels) do applyPanelSkin(frame, bgAlpha) end
+    for btn in pairs(skinnedButtons) do btn:SetTint(btn.isSelected and "selected" or "normal") end
+    for banner in pairs(skinnedPlaques) do applyPlaqueSkin(banner) end
+    for dropdown in pairs(skinnedDropdowns) do applyDropdownSkin(dropdown) end
+    if RR.UI.Dropdown then RR.UI.Dropdown:Hide() end
+end
+
+--- Chooses a skin, stores it in the profile and applies it to the open windows
+function RR.UI.Theme:SetSkin(key)
+    if not self.SKINS[key] then return end
+    local profile = RR.Config and RR.Config:GetProfile()
+    if profile then profile.skin = key end
+    self:ApplySkin()
 end
 
 function RR.UI.Theme:Create3SlicePieces(parent, texture, cap_uv, cap_px, layer)
@@ -78,8 +224,12 @@ function RR.UI.Theme:CreateTitlePlaque(parent, width, height, titleText)
     local banner = CreateFrame("Frame", nil, parent)
     banner:SetSize(width or 380, height or 46)
 
-    local plaqueTex = RR.ADDON_PATH .. "\\images\\art_header_plaque.tga"
-    banner.pieces = self:Create3SlicePieces(banner, plaqueTex, 0.125, 23, "ARTWORK")
+    -- texture and tint come from the skin (applyPlaqueSkin below)
+    local plaqueTex = RR.ADDON_PATH .. "\\images\\" .. self:GetSkin().plaqueArt .. ".tga"
+    banner.pieces = self:Create3SlicePieces(banner, plaqueTex, PLAQUE_CAP_UV, 23, "ARTWORK")
+
+    skinnedPlaques[banner] = true
+    applyPlaqueSkin(banner)
 
     banner.text = banner:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     banner.text:SetPoint("CENTER", banner, "CENTER", 0, -3)
@@ -101,19 +251,14 @@ function RR.UI.Theme:CreateDarkButton(parent, text, width, height)
     local btnTex = RR.ADDON_PATH .. "\\images\\art_button.tga"
     btn.art_pieces = self:Create3SlicePieces(btn, btnTex, 0.0625, 6, "BACKGROUND")
 
-    local TINTS = {
-        normal   = { 0.82, 0.82, 0.82 },
-        hover    = { 1.00, 1.00, 1.00 },
-        pressed  = { 0.58, 0.58, 0.58 },
-        selected = { 1.00, 0.86, 0.45 },
-    }
-
     btn.SetTint = function(button, state)
-        local c = TINTS[state] or TINTS.normal
+        local tints = RR.UI.Theme:GetSkin().button
+        local c = tints[state] or tints.normal
         for _, piece in pairs(button.art_pieces) do
             piece:SetVertexColor(c[1], c[2], c[3], 1)
         end
     end
+    skinnedButtons[btn] = true
     btn:SetTint("normal")
 
     btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -176,14 +321,12 @@ function RR.UI.Theme:CreateDropDownFrame(parent, width, titleText, onClick)
     left:SetTexCoord(0, 0.1953125, 0, 1)
     left:SetSize(22, 34)
     left:SetPoint("TOPLEFT", -12, 5)
-    left:SetVertexColor(0.15, 0.15, 0.15, 0.95)
 
     local right = f:CreateTexture(nil, "BACKGROUND")
     right:SetTexture("Interface\\Glues\\CharacterCreate\\CharacterCreate-LabelFrame")
     right:SetTexCoord(0.8046875, 1, 0, 1)
     right:SetSize(22, 34)
     right:SetPoint("TOPRIGHT", 12, 5)
-    right:SetVertexColor(0.15, 0.15, 0.15, 0.95)
 
     local mid = f:CreateTexture(nil, "BACKGROUND")
     mid:SetTexture("Interface\\Glues\\CharacterCreate\\CharacterCreate-LabelFrame")
@@ -191,7 +334,10 @@ function RR.UI.Theme:CreateDropDownFrame(parent, width, titleText, onClick)
     mid:SetPoint("LEFT", left, "RIGHT", 0, 0)
     mid:SetPoint("RIGHT", right, "LEFT", 0, 0)
     mid:SetHeight(34)
-    mid:SetVertexColor(0.15, 0.15, 0.15, 0.95)
+
+    f.artPieces = { left, mid, right }
+    skinnedDropdowns[f] = true
+    applyDropdownSkin(f)
 
     local btn = CreateFrame("Button", nil, f)
     btn:SetSize(20, 20)

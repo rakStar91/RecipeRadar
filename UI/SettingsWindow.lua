@@ -523,6 +523,32 @@ function RR.UI.SettingsWindow:Initialize()
         print(RR.COLORS.TITLE .. "RecipeRadar: " .. RR.COLORS.WHITE .. L["SETTINGS_POS_RESET_NOTICE"])
     end)
 
+    local skinHeader = panelInterface:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    skinHeader:SetPoint("TOPLEFT", 14, -336)
+    skinHeader:SetTextColor(1, 0.82, 0, 1)
+    skinHeader:SetText(L["SETTINGS_SECTION_APPEARANCE"])
+
+    local skinDropdown = RR.UI.Theme:CreateDropDownFrame(panelInterface, 200, "", function(selfF)
+        local theme = RR.UI.Theme
+        local currentKey = theme:GetSkinKey()
+        local items = {}
+        for _, key in ipairs(theme.SKIN_ORDER) do
+            table.insert(items, {
+                text = L[theme.SKINS[key].nameKey],
+                checked = (key == currentKey),
+                func = function()
+                    theme:SetSkin(key)
+                    self:RefreshInterface()
+                    -- the skin reset the tint of the disabled delete button
+                    self:RefreshCharacters()
+                end,
+            })
+        end
+        RR.UI.Dropdown:Show(selfF, items)
+    end)
+    skinDropdown:SetPoint("TOPLEFT", 28, -366)
+    self.skinDropdown = skinDropdown
+
     -- ========================================================================
     -- PANEL 4: About & Help
     -- ========================================================================
@@ -859,6 +885,9 @@ function RR.UI.SettingsWindow:RefreshInterface()
     end
     if self.cbAutoShow then
         self.cbAutoShow:SetChecked(RR.Config:IsAutoShowEnabled() == true)
+    end
+    if self.skinDropdown then
+        self.skinDropdown.text:SetText(L[RR.UI.Theme:GetSkin().nameKey])
     end
 end
 
