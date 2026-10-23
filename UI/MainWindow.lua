@@ -61,10 +61,13 @@ function RR.UI.MainWindow:Initialize()
         end
 
         local curProf = (RR.Scanner and RR.Scanner:GetCurrentProfession()) or "Leatherworking"
+
+        -- Primary professions (crafting and gathering) first, secondary ones below; each group sorted by name
+        local secondaryProfs = { ["Cooking"] = true, ["First Aid"] = true, ["Fishing"] = true, ["Poisons"] = true }
+        local primary, secondary = {}, {}
         for _, pKey in ipairs(allProfs) do
-            local locName = RR.DB:GetProfessionDisplayName(pKey)
-            table.insert(menu, {
-                text = locName,
+            local entry = {
+                text = RR.DB:GetProfessionDisplayName(pKey),
                 value = pKey,
                 icon = "Interface\\Icons\\INV_Misc_Book_08",
                 func = function()
@@ -72,8 +75,23 @@ function RR.UI.MainWindow:Initialize()
                     self:Refresh()
                 end,
                 checked = (curProf == pKey),
-            })
+            }
+            table.insert(secondaryProfs[pKey] and secondary or primary, entry)
         end
+
+        local function byText(a, b) return a.text:lower() < b.text:lower() end
+        table.sort(primary, byText)
+        table.sort(secondary, byText)
+
+        local function addGroup(headerKey, group)
+            if #group == 0 then return end
+            table.insert(menu, { text = "--- " .. RR.L[headerKey] .. " ---", isHeader = true })
+            for _, entry in ipairs(group) do
+                table.insert(menu, entry)
+            end
+        end
+        addGroup("PROFESSIONS_PRIMARY", primary)
+        addGroup("PROFESSIONS_SECONDARY", secondary)
         return menu
     end
 
