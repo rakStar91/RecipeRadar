@@ -46,6 +46,33 @@ def load_store(path=STORE_PATH):
     return store
 
 
+# Version of the names in the store (2: an English name is never a copy of the German one)
+NAMES_VERSION = 2
+
+
+def reset_copied_names(store):
+    """Earlier scraper runs wrote the German name into the English slot as well. An English name that equals the German
+    one tells nothing and is wrong for every translated name, so it is dropped once; the next scrape or export fills
+    it with the real one (the build falls back to the German name for what stays empty, as before)."""
+    removed = 0
+    for kind in ("npcs", "quests"):
+        for entry in store[kind].values():
+            names = entry.get("name", {})
+            if "English" in names and names["English"] == names.get("German"):
+                del names["English"]
+                removed += 1
+    store["names_version"] = NAMES_VERSION
+    return removed
+
+
+def referenced_npcs(store):
+    """Ids of the NPCs that a recipe source or a quest still points to; only these end up in Database/Forever."""
+    referenced = {n for kind in ("items", "skills") for e in store[kind].values()
+                  for source in ("vendors", "drops", "trainers") for n in e.get(source, {}).get("sources", [])}
+    referenced.update(n for q in store["quests"].values() for n in q.get("npcs", []))
+    return referenced
+
+
 def save_store(store, path=STORE_PATH):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="\n") as f:
@@ -268,10 +295,14 @@ def _merge_where(store_entry, new):
 
 
 def _merge_names(store_entry, names):
+    """The first name of a language wins. The exception is an English name that equals the German one: exports from
+    before the scraper read the English page carry such copies, so a real English name replaces it."""
     if names:
         target = store_entry.setdefault("name", {})
         for locale, text in names.items():
-            target.setdefault(locale, text)
+            copied = locale == "English" and target.get("English") == target.get("German") and text != target.get("English")
+            if locale not in target or copied:
+                target[locale] = text
 
 
 def _merge_priced(entry, key, new):
@@ -468,9 +499,7 @@ def apply_store(store, skills, items, base_ids, unknown_source, auto_learned, tr
     zones = zone_map(store)
     new_npcs, new_quests, new_objects = [], [], []
     # only NPCs that a source still points to; the store keeps the others (e.g. mobs that a level range replaced)
-    referenced = {n for kind in ("items", "skills") for e in store[kind].values()
-                  for source in ("vendors", "drops", "trainers") for n in e.get(source, {}).get("sources", [])}
-    referenced.update(n for q in store["quests"].values() for n in q.get("npcs", []))
+    referenced = referenced_npcs(store)
     for key in sorted(store["npcs"], key=int):
         o = store["npcs"][key]
         if o["id"] in base_ids["npcs"]:

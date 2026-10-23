@@ -10,7 +10,8 @@ import argparse
 import sys
 
 from lua_tables import read_assignment
-from observed import STORE_PATH, clean_export, load_base_ids, load_known, load_store, merge_into_store, save_store, zone_map
+from observed import (NAMES_VERSION, STORE_PATH, clean_export, load_base_ids, load_known, load_store, merge_into_store,
+                      referenced_npcs, reset_copied_names, save_store, zone_map)
 
 
 def main():
@@ -23,6 +24,9 @@ def main():
 
     known_items, known_spells = load_known()
     store = load_store(args.store)
+    if store.get("names_version") != NAMES_VERSION:
+        print(f"names: {reset_copied_names(store)} English name(s) that were copies of the German name dropped; "
+              f"scrape again to fill the real ones")
     failed = 0
     for path in args.exports:
         try:
@@ -47,15 +51,17 @@ def main():
     unresolved = sorted({f"{n.get('zone_name', '?')} (map {n['map_id']})" for n in store["npcs"].values()
                          if "zone_id" not in n and "location" in n and n.get("map_id") not in zones})
     if unresolved:
-        print(f"{len(unresolved)} zone(s) without a RecipeRadar zone id (their coordinates are left out of the database): {', '.join(unresolved)}")
-    # Only NPCs and quests that Database/Base does not have need names from players; Base entries already have all 10 languages
+        print(f"{len(unresolved)} zone(s) without a RecipeRadar zone id (their coordinates are left out of the database):{', '.join(unresolved)}")
+    # Only NPCs and quests that Database/Base does not have need names (Base entries already have all 10 languages), and
+    # only the NPCs a source uses end up in the database
     base = load_base_ids()
-    named = [e for e in store["npcs"].values() if e["id"] not in base["npcs"]] \
+    referenced = referenced_npcs(store)
+    named = [e for e in store["npcs"].values() if e["id"] not in base["npcs"] and e["id"] in referenced] \
         + [e for e in store["quests"].values() if e["id"] not in base["quests"]]
     no_english = sum(1 for e in named if "English" not in e.get("name", {}))
     if no_english:
-        print(f"{no_english} new NPC/quest name(s) have no English name yet. Other languages show the name that is known until "
-              f"someone exports from a client in that language (the game only gives the names of its own language).")
+        print(f"{no_english} new NPC/quest name(s) have no English name yet. Languages without a name of their own show the "
+              f"English name, or the German one while the English one is missing; run the Wowhead scraper to fetch it.")
     print(f"store: {len(store['npcs'])} npcs, {len(store['items'])} items, {len(store['skills'])} skills, "
           f"{len(store['quests'])} quests, {len(store['objects'])} objects from {store['imports']} export(s)")
     if args.dry_run:
