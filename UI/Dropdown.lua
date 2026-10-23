@@ -94,7 +94,8 @@ end
 -- @param anchorBtn Frame The anchor button
 -- @param items Table or Function Array of item tables or a generator function returning array
 -- @param isMulti Boolean If true, clicking an item will toggle and re-render without closing
-function RR.UI.Dropdown:Show(anchorBtn, items, isMulti)
+-- @param matchAnchorWidth Boolean If true, the popup is as wide as the anchor (unless an entry needs more room)
+function RR.UI.Dropdown:Show(anchorBtn, items, isMulti, matchAnchorWidth)
     local popup = self:GetPopupFrame()
 
     if popup:IsShown() and popup.currentAnchor == anchorBtn then
@@ -103,6 +104,7 @@ function RR.UI.Dropdown:Show(anchorBtn, items, isMulti)
     end
 
     popup.currentAnchor = anchorBtn
+    popup.matchAnchorWidth = matchAnchorWidth or false
     popup.isMulti = isMulti or false
     popup.itemsGenerator = (type(items) == "function") and items or nil
     popup:ClearAllPoints()
@@ -117,7 +119,6 @@ function RR.UI.Dropdown:Render(items, isInitial)
     if not popup or not popup.currentAnchor then return end
 
     local anchorBtn = popup.currentAnchor
-    local maxWidth = (anchorBtn:GetWidth() or 120) + 20
     local itemHeight = 22
     local count = #items
     local maxVisible = 12
@@ -125,6 +126,14 @@ function RR.UI.Dropdown:Render(items, isInitial)
     local totalContentHeight = count * itemHeight
     local viewHeight = visibleCount * itemHeight
     local needsScroll = count > maxVisible
+
+    -- room the scroll bar takes next to the entries
+    local barSpace = RR.UI.Theme:HasModernScrollBar() and 22 or 16
+    local maxWidth = (anchorBtn:GetWidth() or 120) + 20
+    if popup.matchAnchorWidth then
+        -- the popup (entries + padding + scroll bar) ends up exactly as wide as the anchor
+        maxWidth = (anchorBtn:GetWidth() or 120) - (needsScroll and barSpace + 4 or 8)
+    end
 
     local checkedIndex = nil
     for i, itm in ipairs(items) do
@@ -229,8 +238,6 @@ function RR.UI.Dropdown:Render(items, isInitial)
     end
 
     popup.viewHeight = viewHeight
-    -- room the scroll bar takes next to the entries
-    local barSpace = RR.UI.Theme:HasModernScrollBar() and 22 or 16
 
     popup.scrollFrame:ClearAllPoints()
     if needsScroll then

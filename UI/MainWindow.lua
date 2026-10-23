@@ -97,7 +97,7 @@ function RR.UI.MainWindow:Initialize()
 
     self.titlePlaque:SetScript("OnMouseDown", function()
         if RR.UI.Dropdown then
-            RR.UI.Dropdown:Show(self.titlePlaque, buildProfessionMenu())
+            RR.UI.Dropdown:Show(self.titlePlaque, buildProfessionMenu(), false, true)
         end
     end)
     RR.UI.Theme:AddTooltip(self.titlePlaque, RR.NAME, RR.L["TOOLTIP_CHANGE_PROFESSION"])
