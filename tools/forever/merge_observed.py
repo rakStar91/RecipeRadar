@@ -47,7 +47,7 @@ def main():
     unresolved = sorted({f"{n.get('zone_name', '?')} (map {n['map_id']})" for n in store["npcs"].values()
                          if "zone_id" not in n and "location" in n and n.get("map_id") not in zones})
     if unresolved:
-        print(f"{len(unresolved)} zone(s) without a RecipeRadar zone id (NPCs there show no zone): {', '.join(unresolved)}")
+        print(f"{len(unresolved)} zone(s) without a RecipeRadar zone id (their coordinates are left out of the database): {', '.join(unresolved)}")
     # Only NPCs and quests that Database/Base does not have need names from players; Base entries already have all 10 languages
     base = load_base_ids()
     named = [e for e in store["npcs"].values() if e["id"] not in base["npcs"]] \

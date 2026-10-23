@@ -480,12 +480,20 @@ def apply_store(store, skills, items, base_ids, unknown_source, auto_learned, tr
             report["npcs left out (no source uses them)"] = report.get("npcs left out (no source uses them)", 0) + 1
             continue
         entry = {"id": o["id"], "name": _fill_names(o.get("name"), f"NPC {o['id']}")}
-        if "location" in o:
+        zone_id = o.get("zone_id") or zones.get(o.get("map_id"))
+        if zone_id and "location" in o:
             entry["location"] = o["location"]
-        if "zone_id" in o:
-            entry["zone_id"] = o["zone_id"]
-        elif o.get("map_id") in zones:
-            entry["zone_id"] = zones[o["map_id"]]
+            entry["zone_id"] = zone_id
+        else:
+            # Coordinates only make sense with a zone. Without one they are coordinates of a continent map (Wowhead
+            # lists some NPCs there) and would send the player to the wrong place, so they are left out ("-" is the
+            # Base marker for an unknown position)
+            entry["location"] = {"x": "-", "y": "-"}
+            if zone_id:
+                entry["zone_id"] = zone_id
+            if "location" in o:
+                report["npcs without a zone (coordinates left out)"] = \
+                    report.get("npcs without a zone (coordinates left out)", 0) + 1
         if o.get("obs_react"):
             entry["reacts"] = final_reacts(o["obs_react"])
             if len([v for f, v in o["obs_react"].items() if v == f]) == 1 and len(o["obs_react"]) == 1:
