@@ -549,6 +549,31 @@ function RR.UI.SettingsWindow:Initialize()
     skinDropdown:SetPoint("TOPLEFT", 28, -366)
     self.skinDropdown = skinDropdown
 
+    local decorHeader = panelInterface:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    decorHeader:SetPoint("TOPLEFT", 270, -336)
+    decorHeader:SetTextColor(1, 0.82, 0, 1)
+    decorHeader:SetText(L["SETTINGS_SECTION_DECOR"])
+
+    local decorDropdown = RR.UI.Theme:CreateDropDownFrame(panelInterface, 200, "", function(selfF)
+        local theme = RR.UI.Theme
+        local currentKey = theme:GetDecorKey()
+        local items = {}
+        for _, key in ipairs(theme.DECOR_ORDER) do
+            table.insert(items, {
+                text = L[theme.DECORS[key].nameKey],
+                checked = (key == currentKey),
+                func = function()
+                    theme:SetDecor(key)
+                    self:RefreshInterface()
+                    self:RefreshCharacters()
+                end,
+            })
+        end
+        RR.UI.Dropdown:Show(selfF, items)
+    end)
+    decorDropdown:SetPoint("TOPLEFT", 284, -366)
+    self.decorDropdown = decorDropdown
+
     -- ========================================================================
     -- PANEL 4: About & Help
     -- ========================================================================
@@ -888,6 +913,9 @@ function RR.UI.SettingsWindow:RefreshInterface()
     end
     if self.skinDropdown then
         self.skinDropdown.text:SetText(L[RR.UI.Theme:GetSkin().nameKey])
+    end
+    if self.decorDropdown then
+        self.decorDropdown.text:SetText(L[RR.UI.Theme.DECORS[RR.UI.Theme:GetDecorKey()].nameKey])
     end
 end
 

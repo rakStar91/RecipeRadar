@@ -40,6 +40,7 @@ RR.UI.Theme.SKIN_ORDER = { "dark", "bronze", "tbc" }
 RR.UI.Theme.SKINS = {
     dark = {
         nameKey = "SKIN_DARK",
+        decorFamily = "classic",
         window = { 0.07, 0.08, 0.10, 0.98 },
         windowBorder = { 0.42, 0.35, 0.20, 1.0 },
         panel = { 0.03, 0.04, 0.05 },
@@ -60,6 +61,7 @@ RR.UI.Theme.SKINS = {
     -- warm brown and bronze, like the WoW Forever profession window
     bronze = {
         nameKey = "SKIN_BRONZE",
+        decorFamily = "forever",
         window = { 0.11, 0.08, 0.06, 0.98 },
         windowBorder = { 0.72, 0.50, 0.25, 1.0 },
         panel = { 0.07, 0.05, 0.04 },
@@ -80,6 +82,7 @@ RR.UI.Theme.SKINS = {
     -- dark with fel green, like The Burning Crusade
     tbc = {
         nameKey = "SKIN_TBC",
+        decorFamily = "classic",
         window = { 0.04, 0.08, 0.05, 0.98 },
         windowBorder = { 0.35, 0.80, 0.25, 1.0 },
         panel = { 0.03, 0.06, 0.04 },
@@ -99,6 +102,33 @@ RR.UI.Theme.SKINS = {
     },
 }
 
+-- Statues on both ends of the title banner, chosen independently of the skin and shown as they are (not tinted).
+-- files: image files in images\, so they work on every client.
+RR.UI.Theme.DECOR_ORDER = { "gryphon", "wyvern", "gryphon_forever", "wyvern_forever", "none" }
+local DECOR_SIZE = 88
+
+-- kind and family tell which statue is the counterpart in the other family; a skin's decorFamily says which
+-- family it starts with (see GetDecorKey)
+RR.UI.Theme.DECORS = {
+    gryphon = {
+        nameKey = "DECOR_GRYPHON", kind = "gryphon", family = "classic",
+        files = { left = "art_gryphon_left", right = "art_gryphon_right" },
+    },
+    gryphon_forever = {
+        nameKey = "DECOR_GRYPHON_FOREVER", kind = "gryphon", family = "forever",
+        files = { left = "art_gryphon_forever_left", right = "art_gryphon_forever_right" },
+    },
+    wyvern = {
+        nameKey = "DECOR_WYVERN", kind = "wyvern", family = "classic",
+        files = { left = "art_wyvern_left", right = "art_wyvern_right" },
+    },
+    wyvern_forever = {
+        nameKey = "DECOR_WYVERN_FOREVER", kind = "wyvern", family = "forever",
+        files = { left = "art_wyvern_forever_left", right = "art_wyvern_forever_right" },
+    },
+    none = { nameKey = "DECOR_NONE" },
+}
+
 -- Everything that was skinned, so a skin change can recolor it (weak: frames are never kept alive by this)
 local skinnedWindows = setmetatable({}, { __mode = "k" })
 local skinnedPanels = setmetatable({}, { __mode = "k" })   -- frame -> background alpha
@@ -115,6 +145,26 @@ end
 
 function RR.UI.Theme:GetSkin()
     return self.SKINS[self:GetSkinKey()]
+end
+
+--- Returns the same kind of statue (gryphon or wyvern) in the given family, "none" stays "none"
+function RR.UI.Theme:ConvertDecor(key, family)
+    local decor = self.DECORS[key] or self.DECORS.gryphon
+    if not decor.kind then return key end
+    for otherKey, other in pairs(self.DECORS) do
+        if other.kind == decor.kind and other.family == family then return otherKey end
+    end
+    return key
+end
+
+--- Returns the key of the statues of the current skin. Every skin remembers its own choice; as long as it has none,
+-- the faction decides: wyverns for the Horde, gryphons for everyone else, in the skin's family.
+function RR.UI.Theme:GetDecorKey()
+    local profile = RR.Config and RR.Config:GetProfile()
+    local stored = profile and profile.decorBySkin and profile.decorBySkin[self:GetSkinKey()]
+    if stored and self.DECORS[stored] then return stored end
+    local factionDefault = (UnitFactionGroup("player") == "Horde") and "wyvern" or "gryphon"
+    return self:ConvertDecor(factionDefault, self:GetSkin().decorFamily)
 end
 
 local function applyWindowSkin(frame)
@@ -165,6 +215,18 @@ local function applyPlaqueSkin(banner)
     for _, piece in pairs(pieces) do
         piece:SetVertexColor(c[1], c[2], c[3], 1)
     end
+
+    -- statues at both ends of the banner
+    local decor = RR.UI.Theme.DECORS[RR.UI.Theme:GetDecorKey()]
+    for side, tex in pairs({ left = banner.decorLeft, right = banner.decorRight }) do
+        if decor.files then
+            tex:SetTexture(RR.ADDON_PATH .. "\\images\\" .. decor.files[side] .. ".tga")
+            tex:SetSize(DECOR_SIZE, DECOR_SIZE)
+            tex:Show()
+        else
+            tex:Hide()
+        end
+    end
 end
 
 local function applyDropdownSkin(dropdown)
@@ -184,11 +246,32 @@ function RR.UI.Theme:ApplySkin()
     if RR.UI.Dropdown then RR.UI.Dropdown:Hide() end
 end
 
---- Chooses a skin, stores it in the profile and applies it to the open windows
+--- Chooses a skin, stores it in the profile and applies it to the open windows.
+-- Each skin keeps its own statues: the one it had before is remembered, and a skin that is chosen for the first time
+-- gets the same kind of statue (gryphon, wyvern) in its own family (Classic or WoW Forever).
 function RR.UI.Theme:SetSkin(key)
     if not self.SKINS[key] then return end
     local profile = RR.Config and RR.Config:GetProfile()
-    if profile then profile.skin = key end
+    if profile then
+        local previousSkin, previousDecor = self:GetSkinKey(), self:GetDecorKey()
+        profile.decorBySkin = profile.decorBySkin or {}
+        profile.decorBySkin[previousSkin] = profile.decorBySkin[previousSkin] or previousDecor
+        profile.decorBySkin[key] = profile.decorBySkin[key]
+            or self:ConvertDecor(previousDecor, self.SKINS[key].decorFamily)
+        profile.skin = key
+    end
+    self:ApplySkin()
+end
+
+--- Chooses the statues on the title banners for the current skin, stores them in the profile and applies them to the
+-- open windows
+function RR.UI.Theme:SetDecor(key)
+    if not self.DECORS[key] then return end
+    local profile = RR.Config and RR.Config:GetProfile()
+    if profile then
+        profile.decorBySkin = profile.decorBySkin or {}
+        profile.decorBySkin[self:GetSkinKey()] = key
+    end
     self:ApplySkin()
 end
 
@@ -227,6 +310,12 @@ function RR.UI.Theme:CreateTitlePlaque(parent, width, height, titleText)
     -- texture and tint come from the skin (applyPlaqueSkin below)
     local plaqueTex = RR.ADDON_PATH .. "\\images\\" .. self:GetSkin().plaqueArt .. ".tga"
     banner.pieces = self:Create3SlicePieces(banner, plaqueTex, PLAQUE_CAP_UV, 23, "ARTWORK")
+
+    -- statues (drawn when the skin has them) sit on the banner's ends, over the banner, and rise above its top edge
+    banner.decorLeft = banner:CreateTexture(nil, "ARTWORK", nil, 2)
+    banner.decorLeft:SetPoint("BOTTOMLEFT", banner, "BOTTOMLEFT", -20, -2)
+    banner.decorRight = banner:CreateTexture(nil, "ARTWORK", nil, 2)
+    banner.decorRight:SetPoint("BOTTOMRIGHT", banner, "BOTTOMRIGHT", 20, -2)
 
     skinnedPlaques[banner] = true
     applyPlaqueSkin(banner)
