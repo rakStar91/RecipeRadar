@@ -1526,10 +1526,9 @@ RR_DATA["items"]["Blacksmithing"] = {
 		},
 	},
 	{
-		["classic_source"] = true,
 		["drops"] = {
 			["range"] = {
-				["max_xp_level"] = 60,
+				["max_xp_level"] = 62,
 				["min_xp_level"] = 45,
 			},
 		},
@@ -1547,7 +1546,25 @@ RR_DATA["items"]["Blacksmithing"] = {
 			["Spanish"] = "Patrón: malla Espina Salvaje",
 			["Taiwanese"] = "圖樣：野刺鎖甲",
 		},
+		["objects"] = {
+			153451,
+			153453,
+			153463,
+			153464,
+			176224,
+			179697,
+		},
 		["quality"] = "uncommon",
+		["verified"] = {
+			["objects"] = {
+				153451,
+				153453,
+				153463,
+				153464,
+				176224,
+				179697,
+			},
+		},
 	},
 	{
 		["classic_source"] = true,
@@ -1778,11 +1795,10 @@ RR_DATA["items"]["Blacksmithing"] = {
 		["quality"] = "uncommon",
 	},
 	{
-		["classic_source"] = true,
 		["drops"] = {
 			["range"] = {
 				["max_xp_level"] = 63,
-				["min_xp_level"] = 50,
+				["min_xp_level"] = 53,
 			},
 		},
 		["forever"] = true,
@@ -1799,10 +1815,23 @@ RR_DATA["items"]["Blacksmithing"] = {
 			["Spanish"] = "Patrón: guanteletes de tormenta",
 			["Taiwanese"] = "圖樣：風暴護手",
 		},
+		["objects"] = {
+			153454,
+			153464,
+		},
 		["quality"] = "rare",
 		["vendors"] = {
 			["price"] = 40000,
 			["sources"] = {
+				11278,
+			},
+		},
+		["verified"] = {
+			["objects"] = {
+				153454,
+				153464,
+			},
+			["vendors"] = {
 				11278,
 			},
 		},
@@ -1991,10 +2020,9 @@ RR_DATA["items"]["Blacksmithing"] = {
 		},
 	},
 	{
-		["classic_source"] = true,
 		["drops"] = {
 			["range"] = {
-				["max_xp_level"] = 63,
+				["max_xp_level"] = 62,
 				["min_xp_level"] = 60,
 			},
 		},
@@ -2173,11 +2201,10 @@ RR_DATA["items"]["Blacksmithing"] = {
 		},
 	},
 	{
-		["classic_source"] = true,
 		["drops"] = {
 			["range"] = {
 				["max_xp_level"] = 63,
-				["min_xp_level"] = 60,
+				["min_xp_level"] = 58,
 			},
 		},
 		["forever"] = true,
@@ -2849,7 +2876,6 @@ RR_DATA["items"]["Blacksmithing"] = {
 		["quality"] = "rare",
 	},
 	{
-		["classic_source"] = true,
 		["forever"] = true,
 		["id"] = 19202,
 		["name"] = {
@@ -2872,6 +2898,11 @@ RR_DATA["items"]["Blacksmithing"] = {
 		["vendors"] = {
 			["price"] = 22000,
 			["sources"] = {
+				11557,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
 				11557,
 			},
 		},
@@ -2907,7 +2938,6 @@ RR_DATA["items"]["Blacksmithing"] = {
 		},
 	},
 	{
-		["classic_source"] = true,
 		["forever"] = true,
 		["id"] = 19204,
 		["name"] = {
@@ -2930,6 +2960,11 @@ RR_DATA["items"]["Blacksmithing"] = {
 		["vendors"] = {
 			["price"] = 40000,
 			["sources"] = {
+				11557,
+			},
+		},
+		["verified"] = {
+			["vendors"] = {
 				11557,
 			},
 		},

@@ -110,16 +110,16 @@ local forever_npcs = {
 			["y"] = "42.40",
 		},
 		["name"] = {
-			["Chinese"] = "Koch Torka",
-			["English"] = "Koch Torka",
-			["French"] = "Koch Torka",
+			["Chinese"] = "Cook Torka",
+			["English"] = "Cook Torka",
+			["French"] = "Cook Torka",
 			["German"] = "Koch Torka",
-			["Korean"] = "Koch Torka",
-			["Mexican"] = "Koch Torka",
-			["Portuguese"] = "Koch Torka",
-			["Russian"] = "Koch Torka",
-			["Spanish"] = "Koch Torka",
-			["Taiwanese"] = "Koch Torka",
+			["Korean"] = "Cook Torka",
+			["Mexican"] = "Cook Torka",
+			["Portuguese"] = "Cook Torka",
+			["Russian"] = "Cook Torka",
+			["Spanish"] = "Cook Torka",
+			["Taiwanese"] = "Cook Torka",
 		},
 		["xp_level"] = {
 			["is_elite"] = 0,
@@ -154,6 +154,31 @@ local forever_npcs = {
 		["zone_id"] = 1637,
 	},
 	{
+		["id"] = 3446,
+		["location"] = {
+			["x"] = "62.40",
+			["y"] = "37.60",
+		},
+		["name"] = {
+			["Chinese"] = "Mebok Mizzyrix",
+			["English"] = "Mebok Mizzyrix",
+			["French"] = "Mebok Mizzyrix",
+			["German"] = "Mebok Mizzyrix",
+			["Korean"] = "Mebok Mizzyrix",
+			["Mexican"] = "Mebok Mizzyrix",
+			["Portuguese"] = "Mebok Mizzyrix",
+			["Russian"] = "Mebok Mizzyrix",
+			["Spanish"] = "Mebok Mizzyrix",
+			["Taiwanese"] = "Mebok Mizzyrix",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 30,
+			["min"] = 30,
+		},
+		["zone_id"] = 17,
+	},
+	{
 		["id"] = 3666,
 		["location"] = {
 			["x"] = "37.00",
@@ -177,6 +202,31 @@ local forever_npcs = {
 			["min"] = 30,
 		},
 		["zone_id"] = 148,
+	},
+	{
+		["id"] = 5398,
+		["location"] = {
+			["x"] = "74.80",
+			["y"] = "68.00",
+		},
+		["name"] = {
+			["Chinese"] = "Warug",
+			["English"] = "Warug",
+			["French"] = "Warug",
+			["German"] = "Warug",
+			["Korean"] = "Warug",
+			["Mexican"] = "Warug",
+			["Portuguese"] = "Warug",
+			["Russian"] = "Warug",
+			["Spanish"] = "Warug",
+			["Taiwanese"] = "Warug",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 30,
+			["min"] = 30,
+		},
+		["zone_id"] = 405,
 	},
 	{
 		["id"] = 5565,
@@ -226,6 +276,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 10184,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Onyxia",
 			["English"] = "Onyxia",
@@ -241,6 +295,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 11583,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Nefarian",
 			["English"] = "Nefarian",
@@ -391,16 +449,16 @@ local forever_npcs = {
 			["y"] = "76.80",
 		},
 		["name"] = {
-			["Chinese"] = "Fischbot 5000",
-			["English"] = "Fischbot 5000",
-			["French"] = "Fischbot 5000",
+			["Chinese"] = "Fishbot 5000",
+			["English"] = "Fishbot 5000",
+			["French"] = "Fishbot 5000",
 			["German"] = "Fischbot 5000",
-			["Korean"] = "Fischbot 5000",
-			["Mexican"] = "Fischbot 5000",
-			["Portuguese"] = "Fischbot 5000",
-			["Russian"] = "Fischbot 5000",
-			["Spanish"] = "Fischbot 5000",
-			["Taiwanese"] = "Fischbot 5000",
+			["Korean"] = "Fishbot 5000",
+			["Mexican"] = "Fishbot 5000",
+			["Portuguese"] = "Fishbot 5000",
+			["Russian"] = "Fishbot 5000",
+			["Spanish"] = "Fishbot 5000",
+			["Taiwanese"] = "Fishbot 5000",
 		},
 		["xp_level"] = {
 			["is_elite"] = 0,
@@ -435,6 +493,31 @@ local forever_npcs = {
 		["zone_id"] = 1377,
 	},
 	{
+		["id"] = 32287,
+		["location"] = {
+			["x"] = "14.00",
+			["y"] = "63.20",
+		},
+		["name"] = {
+			["Chinese"] = "Archmage Alvareaux",
+			["English"] = "Archmage Alvareaux",
+			["French"] = "Archmage Alvareaux",
+			["German"] = "Erzmagier Alvareaux",
+			["Korean"] = "Archmage Alvareaux",
+			["Mexican"] = "Archmage Alvareaux",
+			["Portuguese"] = "Archmage Alvareaux",
+			["Russian"] = "Archmage Alvareaux",
+			["Spanish"] = "Archmage Alvareaux",
+			["Taiwanese"] = "Archmage Alvareaux",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 55,
+			["min"] = 55,
+		},
+		["zone_id"] = 36,
+	},
+	{
 		["id"] = 180503,
 		["location"] = {
 			["x"] = "38.00",
@@ -460,6 +543,30 @@ local forever_npcs = {
 		["zone_id"] = 1377,
 	},
 	{
+		["id"] = 216672,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
+		["name"] = {
+			["Chinese"] = "Namdo Bizzfizzle",
+			["English"] = "Namdo Bizzfizzle",
+			["French"] = "Namdo Bizzfizzle",
+			["German"] = "Namdo Bizzfizzle",
+			["Korean"] = "Namdo Bizzfizzle",
+			["Mexican"] = "Namdo Bizzfizzle",
+			["Portuguese"] = "Namdo Bizzfizzle",
+			["Russian"] = "Namdo Bizzfizzle",
+			["Spanish"] = "Namdo Bizzfizzle",
+			["Taiwanese"] = "Namdo Bizzfizzle",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 40,
+			["min"] = 40,
+		},
+	},
+	{
 		["id"] = 216902,
 		["location"] = {
 			["x"] = "32.40",
@@ -483,6 +590,31 @@ local forever_npcs = {
 			["min"] = 30,
 		},
 		["zone_id"] = 1537,
+	},
+	{
+		["id"] = 222261,
+		["location"] = {
+			["x"] = "79.80",
+			["y"] = "77.20",
+		},
+		["name"] = {
+			["Chinese"] = "Maximillian \"The Greaser\"",
+			["English"] = "Maximillian \"The Greaser\"",
+			["French"] = "Maximillian \"The Greaser\"",
+			["German"] = "Maximillian \"The Greaser\"",
+			["Korean"] = "Maximillian \"The Greaser\"",
+			["Mexican"] = "Maximillian \"The Greaser\"",
+			["Portuguese"] = "Maximillian \"The Greaser\"",
+			["Russian"] = "Maximillian \"The Greaser\"",
+			["Spanish"] = "Maximillian \"The Greaser\"",
+			["Taiwanese"] = "Maximillian \"The Greaser\"",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 36,
+			["min"] = 36,
+		},
+		["zone_id"] = 400,
 	},
 	{
 		["id"] = 227853,
@@ -511,6 +643,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 228429,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Lucifron",
 			["English"] = "Lucifron",
@@ -526,6 +662,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 228430,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Magmadar",
 			["English"] = "Magmadar",
@@ -541,6 +681,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 228431,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Gehennas",
 			["English"] = "Gehennas",
@@ -556,6 +700,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 228432,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Garr",
 			["English"] = "Garr",
@@ -571,6 +719,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 228433,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Baron Geddon",
 			["English"] = "Baron Geddon",
@@ -586,6 +738,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 228434,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Shazzrah",
 			["English"] = "Shazzrah",
@@ -601,6 +757,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 228435,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Golemagg the Incinerator",
 			["English"] = "Golemagg the Incinerator",
@@ -616,6 +776,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 228436,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Sulfuron Harbinger",
 			["English"] = "Sulfuron Harbinger",
@@ -631,6 +795,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 230302,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Lord Kazzak",
 			["English"] = "Lord Kazzak",
@@ -646,6 +814,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 234880,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Emeriss",
 			["English"] = "Emeriss",
@@ -661,6 +833,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 235180,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Lethon",
 			["English"] = "Lethon",
@@ -676,6 +852,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 235197,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Taerar",
 			["English"] = "Taerar",
@@ -691,6 +871,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 235232,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Ysondre",
 			["English"] = "Ysondre",
@@ -736,16 +920,16 @@ local forever_npcs = {
 			["y"] = "43.60",
 		},
 		["name"] = {
-			["Chinese"] = "Materialbot",
-			["English"] = "Materialbot",
-			["French"] = "Materialbot",
+			["Chinese"] = "Reagent Bot",
+			["English"] = "Reagent Bot",
+			["French"] = "Reagent Bot",
 			["German"] = "Materialbot",
-			["Korean"] = "Materialbot",
-			["Mexican"] = "Materialbot",
-			["Portuguese"] = "Materialbot",
-			["Russian"] = "Materialbot",
-			["Spanish"] = "Materialbot",
-			["Taiwanese"] = "Materialbot",
+			["Korean"] = "Reagent Bot",
+			["Mexican"] = "Reagent Bot",
+			["Portuguese"] = "Reagent Bot",
+			["Russian"] = "Reagent Bot",
+			["Spanish"] = "Reagent Bot",
+			["Taiwanese"] = "Reagent Bot",
 		},
 		["xp_level"] = {
 			["is_elite"] = 0,
@@ -805,6 +989,31 @@ local forever_npcs = {
 		["zone_id"] = 36,
 	},
 	{
+		["id"] = 247223,
+		["location"] = {
+			["x"] = "52.20",
+			["y"] = "43.40",
+		},
+		["name"] = {
+			["Chinese"] = "Nancy Songflower",
+			["English"] = "Nancy Songflower",
+			["French"] = "Nancy Songflower",
+			["German"] = "Nancy Songflower",
+			["Korean"] = "Nancy Songflower",
+			["Mexican"] = "Nancy Songflower",
+			["Portuguese"] = "Nancy Songflower",
+			["Russian"] = "Nancy Songflower",
+			["Spanish"] = "Nancy Songflower",
+			["Taiwanese"] = "Nancy Songflower",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 60,
+			["min"] = 60,
+		},
+		["zone_id"] = 12,
+	},
+	{
 		["id"] = 247226,
 		["location"] = {
 			["x"] = "47.20",
@@ -836,16 +1045,16 @@ local forever_npcs = {
 			["y"] = "29.40",
 		},
 		["name"] = {
-			["Chinese"] = "Apothekerin Durelle",
-			["English"] = "Apothekerin Durelle",
-			["French"] = "Apothekerin Durelle",
+			["Chinese"] = "Apothecary Durelle",
+			["English"] = "Apothecary Durelle",
+			["French"] = "Apothecary Durelle",
 			["German"] = "Apothekerin Durelle",
-			["Korean"] = "Apothekerin Durelle",
-			["Mexican"] = "Apothekerin Durelle",
-			["Portuguese"] = "Apothekerin Durelle",
-			["Russian"] = "Apothekerin Durelle",
-			["Spanish"] = "Apothekerin Durelle",
-			["Taiwanese"] = "Apothekerin Durelle",
+			["Korean"] = "Apothecary Durelle",
+			["Mexican"] = "Apothecary Durelle",
+			["Portuguese"] = "Apothecary Durelle",
+			["Russian"] = "Apothecary Durelle",
+			["Spanish"] = "Apothecary Durelle",
+			["Taiwanese"] = "Apothecary Durelle",
 		},
 		["xp_level"] = {
 			["is_elite"] = 0,
@@ -880,22 +1089,97 @@ local forever_npcs = {
 		["zone_id"] = 17,
 	},
 	{
-		["id"] = 249713,
+		["id"] = 248200,
 		["location"] = {
-			["x"] = "41.20",
-			["y"] = "79.00",
+			["x"] = "49.80",
+			["y"] = "29.60",
 		},
 		["name"] = {
-			["Chinese"] = "Seltsames Kind",
-			["English"] = "Seltsames Kind",
-			["French"] = "Seltsames Kind",
+			["Chinese"] = "Fizzlefuse",
+			["English"] = "Fizzlefuse",
+			["French"] = "Fizzlefuse",
+			["German"] = "Fizzlefuse",
+			["Korean"] = "Fizzlefuse",
+			["Mexican"] = "Fizzlefuse",
+			["Portuguese"] = "Fizzlefuse",
+			["Russian"] = "Fizzlefuse",
+			["Spanish"] = "Fizzlefuse",
+			["Taiwanese"] = "Fizzlefuse",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 60,
+			["min"] = 60,
+		},
+		["zone_id"] = 17,
+	},
+	{
+		["id"] = 248201,
+		["location"] = {
+			["x"] = "49.60",
+			["y"] = "29.60",
+		},
+		["name"] = {
+			["Chinese"] = "Pawani",
+			["English"] = "Pawani",
+			["French"] = "Pawani",
+			["German"] = "Pawani",
+			["Korean"] = "Pawani",
+			["Mexican"] = "Pawani",
+			["Portuguese"] = "Pawani",
+			["Russian"] = "Pawani",
+			["Spanish"] = "Pawani",
+			["Taiwanese"] = "Pawani",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 60,
+			["min"] = 60,
+		},
+		["zone_id"] = 17,
+	},
+	{
+		["id"] = 249235,
+		["location"] = {
+			["x"] = "60.20",
+			["y"] = "61.40",
+		},
+		["name"] = {
+			["Chinese"] = "Kaylaena Springwhisper",
+			["English"] = "Kaylaena Springwhisper",
+			["French"] = "Kaylaena Springwhisper",
+			["German"] = "Kaylaena Springwhisper",
+			["Korean"] = "Kaylaena Springwhisper",
+			["Mexican"] = "Kaylaena Springwhisper",
+			["Portuguese"] = "Kaylaena Springwhisper",
+			["Russian"] = "Kaylaena Springwhisper",
+			["Spanish"] = "Kaylaena Springwhisper",
+			["Taiwanese"] = "Kaylaena Springwhisper",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 30,
+			["min"] = 30,
+		},
+		["zone_id"] = 616,
+	},
+	{
+		["id"] = 249713,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
+		["name"] = {
+			["Chinese"] = "Odd Child",
+			["English"] = "Odd Child",
+			["French"] = "Odd Child",
 			["German"] = "Seltsames Kind",
-			["Korean"] = "Seltsames Kind",
-			["Mexican"] = "Seltsames Kind",
-			["Portuguese"] = "Seltsames Kind",
-			["Russian"] = "Seltsames Kind",
-			["Spanish"] = "Seltsames Kind",
-			["Taiwanese"] = "Seltsames Kind",
+			["Korean"] = "Odd Child",
+			["Mexican"] = "Odd Child",
+			["Portuguese"] = "Odd Child",
+			["Russian"] = "Odd Child",
+			["Spanish"] = "Odd Child",
+			["Taiwanese"] = "Odd Child",
 		},
 		["xp_level"] = {
 			["is_elite"] = 0,
@@ -930,6 +1214,10 @@ local forever_npcs = {
 	},
 	{
 		["id"] = 250657,
+		["location"] = {
+			["x"] = "-",
+			["y"] = "-",
+		},
 		["name"] = {
 			["Chinese"] = "Rath'mael",
 			["English"] = "Rath'mael",
@@ -947,6 +1235,31 @@ local forever_npcs = {
 			["max"] = 30,
 			["min"] = 30,
 		},
+	},
+	{
+		["id"] = 251684,
+		["location"] = {
+			["x"] = "54.00",
+			["y"] = "39.00",
+		},
+		["name"] = {
+			["Chinese"] = "Strange Hermit",
+			["English"] = "Strange Hermit",
+			["French"] = "Strange Hermit",
+			["German"] = "Seltsamer Einsiedler",
+			["Korean"] = "Strange Hermit",
+			["Mexican"] = "Strange Hermit",
+			["Portuguese"] = "Strange Hermit",
+			["Russian"] = "Strange Hermit",
+			["Spanish"] = "Strange Hermit",
+			["Taiwanese"] = "Strange Hermit",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 10,
+			["min"] = 10,
+		},
+		["zone_id"] = 16593,
 	},
 	{
 		["id"] = 251905,
@@ -1024,6 +1337,31 @@ local forever_npcs = {
 		["zone_id"] = 16593,
 	},
 	{
+		["id"] = 251993,
+		["location"] = {
+			["x"] = "44.60",
+			["y"] = "44.40",
+		},
+		["name"] = {
+			["Chinese"] = "Indari Sunseam",
+			["English"] = "Indari Sunseam",
+			["French"] = "Indari Sunseam",
+			["German"] = "Indari Sunseam",
+			["Korean"] = "Indari Sunseam",
+			["Mexican"] = "Indari Sunseam",
+			["Portuguese"] = "Indari Sunseam",
+			["Russian"] = "Indari Sunseam",
+			["Spanish"] = "Indari Sunseam",
+			["Taiwanese"] = "Indari Sunseam",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 5,
+			["min"] = 5,
+		},
+		["zone_id"] = 16593,
+	},
+	{
 		["id"] = 252083,
 		["location"] = {
 			["x"] = "12.40",
@@ -1072,6 +1410,31 @@ local forever_npcs = {
 			["min"] = 28,
 		},
 		["zone_id"] = 36,
+	},
+	{
+		["id"] = 252376,
+		["location"] = {
+			["x"] = "63.80",
+			["y"] = "80.40",
+		},
+		["name"] = {
+			["Chinese"] = "Emerii Tallgust",
+			["English"] = "Emerii Tallgust",
+			["French"] = "Emerii Tallgust",
+			["German"] = "Emerii Tallgust",
+			["Korean"] = "Emerii Tallgust",
+			["Mexican"] = "Emerii Tallgust",
+			["Portuguese"] = "Emerii Tallgust",
+			["Russian"] = "Emerii Tallgust",
+			["Spanish"] = "Emerii Tallgust",
+			["Taiwanese"] = "Emerii Tallgust",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 20,
+			["min"] = 20,
+		},
+		["zone_id"] = 16593,
 	},
 	{
 		["id"] = 252388,
@@ -1174,22 +1537,97 @@ local forever_npcs = {
 		["zone_id"] = 405,
 	},
 	{
+		["id"] = 253395,
+		["location"] = {
+			["x"] = "51.60",
+			["y"] = "32.20",
+		},
+		["name"] = {
+			["Chinese"] = "Ozwin Ironsprocket",
+			["English"] = "Ozwin Ironsprocket",
+			["French"] = "Ozwin Ironsprocket",
+			["German"] = "Ozwin Ironsprocket",
+			["Korean"] = "Ozwin Ironsprocket",
+			["Mexican"] = "Ozwin Ironsprocket",
+			["Portuguese"] = "Ozwin Ironsprocket",
+			["Russian"] = "Ozwin Ironsprocket",
+			["Spanish"] = "Ozwin Ironsprocket",
+			["Taiwanese"] = "Ozwin Ironsprocket",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 30,
+			["min"] = 30,
+		},
+		["zone_id"] = 40,
+	},
+	{
+		["id"] = 254151,
+		["location"] = {
+			["x"] = "63.70",
+			["y"] = "38.00",
+		},
+		["name"] = {
+			["Chinese"] = "Vayn Moongaze",
+			["English"] = "Vayn Moongaze",
+			["French"] = "Vayn Moongaze",
+			["German"] = "Vayn Moongaze",
+			["Korean"] = "Vayn Moongaze",
+			["Mexican"] = "Vayn Moongaze",
+			["Portuguese"] = "Vayn Moongaze",
+			["Russian"] = "Vayn Moongaze",
+			["Spanish"] = "Vayn Moongaze",
+			["Taiwanese"] = "Vayn Moongaze",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 10,
+			["min"] = 10,
+		},
+		["zone_id"] = 16593,
+	},
+	{
+		["id"] = 254345,
+		["location"] = {
+			["x"] = "57.80",
+			["y"] = "75.40",
+		},
+		["name"] = {
+			["Chinese"] = "Syriel Nightrain",
+			["English"] = "Syriel Nightrain",
+			["French"] = "Syriel Nightrain",
+			["German"] = "Syriel Nightrain",
+			["Korean"] = "Syriel Nightrain",
+			["Mexican"] = "Syriel Nightrain",
+			["Portuguese"] = "Syriel Nightrain",
+			["Russian"] = "Syriel Nightrain",
+			["Spanish"] = "Syriel Nightrain",
+			["Taiwanese"] = "Syriel Nightrain",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 10,
+			["min"] = 10,
+		},
+		["zone_id"] = 16593,
+	},
+	{
 		["id"] = 254695,
 		["location"] = {
 			["x"] = "38.20",
 			["y"] = "51.00",
 		},
 		["name"] = {
-			["Chinese"] = "Reparaturbot",
-			["English"] = "Reparaturbot",
-			["French"] = "Reparaturbot",
+			["Chinese"] = "Repair Bot",
+			["English"] = "Repair Bot",
+			["French"] = "Repair Bot",
 			["German"] = "Reparaturbot",
-			["Korean"] = "Reparaturbot",
-			["Mexican"] = "Reparaturbot",
-			["Portuguese"] = "Reparaturbot",
-			["Russian"] = "Reparaturbot",
-			["Spanish"] = "Reparaturbot",
-			["Taiwanese"] = "Reparaturbot",
+			["Korean"] = "Repair Bot",
+			["Mexican"] = "Repair Bot",
+			["Portuguese"] = "Repair Bot",
+			["Russian"] = "Repair Bot",
+			["Spanish"] = "Repair Bot",
+			["Taiwanese"] = "Repair Bot",
 		},
 		["xp_level"] = {
 			["is_elite"] = 0,
@@ -1205,16 +1643,16 @@ local forever_npcs = {
 			["y"] = "80.20",
 		},
 		["name"] = {
-			["Chinese"] = "Jäger Moore",
-			["English"] = "Jäger Moore",
-			["French"] = "Jäger Moore",
+			["Chinese"] = "Hunter Moore",
+			["English"] = "Hunter Moore",
+			["French"] = "Hunter Moore",
 			["German"] = "Jäger Moore",
-			["Korean"] = "Jäger Moore",
-			["Mexican"] = "Jäger Moore",
-			["Portuguese"] = "Jäger Moore",
-			["Russian"] = "Jäger Moore",
-			["Spanish"] = "Jäger Moore",
-			["Taiwanese"] = "Jäger Moore",
+			["Korean"] = "Hunter Moore",
+			["Mexican"] = "Hunter Moore",
+			["Portuguese"] = "Hunter Moore",
+			["Russian"] = "Hunter Moore",
+			["Spanish"] = "Hunter Moore",
+			["Taiwanese"] = "Hunter Moore",
 		},
 		["xp_level"] = {
 			["is_elite"] = 0,
@@ -1255,16 +1693,16 @@ local forever_npcs = {
 			["y"] = "54.00",
 		},
 		["name"] = {
-			["Chinese"] = "Gastwirtin Zizplink",
-			["English"] = "Gastwirtin Zizplink",
-			["French"] = "Gastwirtin Zizplink",
+			["Chinese"] = "Innkeeper Zizplink",
+			["English"] = "Innkeeper Zizplink",
+			["French"] = "Innkeeper Zizplink",
 			["German"] = "Gastwirtin Zizplink",
-			["Korean"] = "Gastwirtin Zizplink",
-			["Mexican"] = "Gastwirtin Zizplink",
-			["Portuguese"] = "Gastwirtin Zizplink",
-			["Russian"] = "Gastwirtin Zizplink",
-			["Spanish"] = "Gastwirtin Zizplink",
-			["Taiwanese"] = "Gastwirtin Zizplink",
+			["Korean"] = "Innkeeper Zizplink",
+			["Mexican"] = "Innkeeper Zizplink",
+			["Portuguese"] = "Innkeeper Zizplink",
+			["Russian"] = "Innkeeper Zizplink",
+			["Spanish"] = "Innkeeper Zizplink",
+			["Taiwanese"] = "Innkeeper Zizplink",
 		},
 		["xp_level"] = {
 			["is_elite"] = 0,
@@ -1390,6 +1828,56 @@ local forever_npcs = {
 			["Russian"] = "Kalsey Sanden",
 			["Spanish"] = "Kalsey Sanden",
 			["Taiwanese"] = "Kalsey Sanden",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 60,
+			["min"] = 60,
+		},
+		["zone_id"] = 44,
+	},
+	{
+		["id"] = 256733,
+		["location"] = {
+			["x"] = "10.40",
+			["y"] = "74.20",
+		},
+		["name"] = {
+			["Chinese"] = "Fritz Fizzle",
+			["English"] = "Fritz Fizzle",
+			["French"] = "Fritz Fizzle",
+			["German"] = "Fritz Fizzle",
+			["Korean"] = "Fritz Fizzle",
+			["Mexican"] = "Fritz Fizzle",
+			["Portuguese"] = "Fritz Fizzle",
+			["Russian"] = "Fritz Fizzle",
+			["Spanish"] = "Fritz Fizzle",
+			["Taiwanese"] = "Fritz Fizzle",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 60,
+			["min"] = 60,
+		},
+		["zone_id"] = 44,
+	},
+	{
+		["id"] = 256734,
+		["location"] = {
+			["x"] = "10.00",
+			["y"] = "72.40",
+		},
+		["name"] = {
+			["Chinese"] = "Daniel Stitchsong",
+			["English"] = "Daniel Stitchsong",
+			["French"] = "Daniel Stitchsong",
+			["German"] = "Daniel Stitchsong",
+			["Korean"] = "Daniel Stitchsong",
+			["Mexican"] = "Daniel Stitchsong",
+			["Portuguese"] = "Daniel Stitchsong",
+			["Russian"] = "Daniel Stitchsong",
+			["Spanish"] = "Daniel Stitchsong",
+			["Taiwanese"] = "Daniel Stitchsong",
 		},
 		["xp_level"] = {
 			["is_elite"] = 0,
@@ -1549,6 +2037,31 @@ local forever_npcs = {
 		["zone_id"] = 16593,
 	},
 	{
+		["id"] = 257021,
+		["location"] = {
+			["x"] = "43.00",
+			["y"] = "43.40",
+		},
+		["name"] = {
+			["Chinese"] = "Halassa Fernbreeze",
+			["English"] = "Halassa Fernbreeze",
+			["French"] = "Halassa Fernbreeze",
+			["German"] = "Halassa Fernbreeze",
+			["Korean"] = "Halassa Fernbreeze",
+			["Mexican"] = "Halassa Fernbreeze",
+			["Portuguese"] = "Halassa Fernbreeze",
+			["Russian"] = "Halassa Fernbreeze",
+			["Spanish"] = "Halassa Fernbreeze",
+			["Taiwanese"] = "Halassa Fernbreeze",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 10,
+			["min"] = 10,
+		},
+		["zone_id"] = 16593,
+	},
+	{
 		["id"] = 257022,
 		["location"] = {
 			["x"] = "44.60",
@@ -1572,6 +2085,31 @@ local forever_npcs = {
 			["min"] = 10,
 		},
 		["zone_id"] = 16593,
+	},
+	{
+		["id"] = 258306,
+		["location"] = {
+			["x"] = "39.00",
+			["y"] = "32.40",
+		},
+		["name"] = {
+			["Chinese"] = "Granny Finespindle",
+			["English"] = "Granny Finespindle",
+			["French"] = "Granny Finespindle",
+			["German"] = "Oma Finespindle",
+			["Korean"] = "Granny Finespindle",
+			["Mexican"] = "Granny Finespindle",
+			["Portuguese"] = "Granny Finespindle",
+			["Russian"] = "Granny Finespindle",
+			["Spanish"] = "Granny Finespindle",
+			["Taiwanese"] = "Granny Finespindle",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 24,
+			["min"] = 24,
+		},
+		["zone_id"] = 1537,
 	},
 	{
 		["id"] = 258568,
@@ -1725,6 +2263,81 @@ local forever_npcs = {
 		["zone_id"] = 16591,
 	},
 	{
+		["id"] = 260562,
+		["location"] = {
+			["x"] = "77.60",
+			["y"] = "50.80",
+		},
+		["name"] = {
+			["Chinese"] = "Melbin Powderfuse",
+			["English"] = "Melbin Powderfuse",
+			["French"] = "Melbin Powderfuse",
+			["German"] = "Melbin Powderfuse",
+			["Korean"] = "Melbin Powderfuse",
+			["Mexican"] = "Melbin Powderfuse",
+			["Portuguese"] = "Melbin Powderfuse",
+			["Russian"] = "Melbin Powderfuse",
+			["Spanish"] = "Melbin Powderfuse",
+			["Taiwanese"] = "Melbin Powderfuse",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 50,
+			["min"] = 50,
+		},
+		["zone_id"] = 16591,
+	},
+	{
+		["id"] = 260565,
+		["location"] = {
+			["x"] = "77.60",
+			["y"] = "50.80",
+		},
+		["name"] = {
+			["Chinese"] = "Kor'gar",
+			["English"] = "Kor'gar",
+			["French"] = "Kor'gar",
+			["German"] = "Kor'gar",
+			["Korean"] = "Kor'gar",
+			["Mexican"] = "Kor'gar",
+			["Portuguese"] = "Kor'gar",
+			["Russian"] = "Kor'gar",
+			["Spanish"] = "Kor'gar",
+			["Taiwanese"] = "Kor'gar",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 41,
+			["min"] = 41,
+		},
+		["zone_id"] = 16591,
+	},
+	{
+		["id"] = 260566,
+		["location"] = {
+			["x"] = "78.40",
+			["y"] = "53.60",
+		},
+		["name"] = {
+			["Chinese"] = "Fizzix Boomshot",
+			["English"] = "Fizzix Boomshot",
+			["French"] = "Fizzix Boomshot",
+			["German"] = "Fizzix Boomshot",
+			["Korean"] = "Fizzix Boomshot",
+			["Mexican"] = "Fizzix Boomshot",
+			["Portuguese"] = "Fizzix Boomshot",
+			["Russian"] = "Fizzix Boomshot",
+			["Spanish"] = "Fizzix Boomshot",
+			["Taiwanese"] = "Fizzix Boomshot",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 41,
+			["min"] = 41,
+		},
+		["zone_id"] = 16591,
+	},
+	{
 		["id"] = 261313,
 		["location"] = {
 			["x"] = "57.80",
@@ -1748,6 +2361,56 @@ local forever_npcs = {
 			["min"] = 36,
 		},
 		["zone_id"] = 16591,
+	},
+	{
+		["id"] = 264078,
+		["location"] = {
+			["x"] = "34.40",
+			["y"] = "22.80",
+		},
+		["name"] = {
+			["Chinese"] = "Sutara Plainstalker",
+			["English"] = "Sutara Plainstalker",
+			["French"] = "Sutara Plainstalker",
+			["German"] = "Sutara Plainstalker",
+			["Korean"] = "Sutara Plainstalker",
+			["Mexican"] = "Sutara Plainstalker",
+			["Portuguese"] = "Sutara Plainstalker",
+			["Russian"] = "Sutara Plainstalker",
+			["Spanish"] = "Sutara Plainstalker",
+			["Taiwanese"] = "Sutara Plainstalker",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 30,
+			["min"] = 30,
+		},
+		["zone_id"] = 215,
+	},
+	{
+		["id"] = 264797,
+		["location"] = {
+			["x"] = "71.00",
+			["y"] = "51.20",
+		},
+		["name"] = {
+			["Chinese"] = "Aisarra Nightmeadow",
+			["English"] = "Aisarra Nightmeadow",
+			["French"] = "Aisarra Nightmeadow",
+			["German"] = "Aisarra Nightmeadow",
+			["Korean"] = "Aisarra Nightmeadow",
+			["Mexican"] = "Aisarra Nightmeadow",
+			["Portuguese"] = "Aisarra Nightmeadow",
+			["Russian"] = "Aisarra Nightmeadow",
+			["Spanish"] = "Aisarra Nightmeadow",
+			["Taiwanese"] = "Aisarra Nightmeadow",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 63,
+			["min"] = 63,
+		},
+		["zone_id"] = 616,
 	},
 	{
 		["id"] = 265944,
@@ -1850,6 +2513,31 @@ local forever_npcs = {
 		["zone_id"] = 85,
 	},
 	{
+		["id"] = 267326,
+		["location"] = {
+			["x"] = "32.40",
+			["y"] = "65.20",
+		},
+		["name"] = {
+			["Chinese"] = "Florence Nightshade",
+			["English"] = "Florence Nightshade",
+			["French"] = "Florence Nightshade",
+			["German"] = "Florence Nightshade",
+			["Korean"] = "Florence Nightshade",
+			["Mexican"] = "Florence Nightshade",
+			["Portuguese"] = "Florence Nightshade",
+			["Russian"] = "Florence Nightshade",
+			["Spanish"] = "Florence Nightshade",
+			["Taiwanese"] = "Florence Nightshade",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 5,
+			["min"] = 5,
+		},
+		["zone_id"] = 85,
+	},
+	{
 		["id"] = 267328,
 		["location"] = {
 			["x"] = "40.40",
@@ -1871,6 +2559,31 @@ local forever_npcs = {
 			["is_elite"] = 0,
 			["max"] = 11,
 			["min"] = 11,
+		},
+		["zone_id"] = 14,
+	},
+	{
+		["id"] = 267329,
+		["location"] = {
+			["x"] = "42.60",
+			["y"] = "67.40",
+		},
+		["name"] = {
+			["Chinese"] = "Zor'la",
+			["English"] = "Zor'la",
+			["French"] = "Zor'la",
+			["German"] = "Zor'la",
+			["Korean"] = "Zor'la",
+			["Mexican"] = "Zor'la",
+			["Portuguese"] = "Zor'la",
+			["Russian"] = "Zor'la",
+			["Spanish"] = "Zor'la",
+			["Taiwanese"] = "Zor'la",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 8,
+			["min"] = 8,
 		},
 		["zone_id"] = 14,
 	},
@@ -1900,6 +2613,31 @@ local forever_npcs = {
 		["zone_id"] = 215,
 	},
 	{
+		["id"] = 267332,
+		["location"] = {
+			["x"] = "44.20",
+			["y"] = "77.80",
+		},
+		["name"] = {
+			["Chinese"] = "Garan Sunstrider",
+			["English"] = "Garan Sunstrider",
+			["French"] = "Garan Sunstrider",
+			["German"] = "Garan Sunstrider",
+			["Korean"] = "Garan Sunstrider",
+			["Mexican"] = "Garan Sunstrider",
+			["Portuguese"] = "Garan Sunstrider",
+			["Russian"] = "Garan Sunstrider",
+			["Spanish"] = "Garan Sunstrider",
+			["Taiwanese"] = "Garan Sunstrider",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 8,
+			["min"] = 8,
+		},
+		["zone_id"] = 215,
+	},
+	{
 		["id"] = 267334,
 		["location"] = {
 			["x"] = "58.20",
@@ -1925,6 +2663,31 @@ local forever_npcs = {
 		["zone_id"] = 141,
 	},
 	{
+		["id"] = 267335,
+		["location"] = {
+			["x"] = "59.80",
+			["y"] = "41.40",
+		},
+		["name"] = {
+			["Chinese"] = "Eleyna Duskbreeze",
+			["English"] = "Eleyna Duskbreeze",
+			["French"] = "Eleyna Duskbreeze",
+			["German"] = "Eleyna Duskbreeze",
+			["Korean"] = "Eleyna Duskbreeze",
+			["Mexican"] = "Eleyna Duskbreeze",
+			["Portuguese"] = "Eleyna Duskbreeze",
+			["Russian"] = "Eleyna Duskbreeze",
+			["Spanish"] = "Eleyna Duskbreeze",
+			["Taiwanese"] = "Eleyna Duskbreeze",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 9,
+			["min"] = 9,
+		},
+		["zone_id"] = 141,
+	},
+	{
 		["id"] = 267337,
 		["location"] = {
 			["x"] = "28.80",
@@ -1941,6 +2704,31 @@ local forever_npcs = {
 			["Russian"] = "Sally Swiftwrench",
 			["Spanish"] = "Sally Swiftwrench",
 			["Taiwanese"] = "Sally Swiftwrench",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 5,
+			["min"] = 5,
+		},
+		["zone_id"] = 1,
+	},
+	{
+		["id"] = 267338,
+		["location"] = {
+			["x"] = "28.80",
+			["y"] = "66.40",
+		},
+		["name"] = {
+			["Chinese"] = "Emrys Flintbeard",
+			["English"] = "Emrys Flintbeard",
+			["French"] = "Emrys Flintbeard",
+			["German"] = "Emrys Flintbeard",
+			["Korean"] = "Emrys Flintbeard",
+			["Mexican"] = "Emrys Flintbeard",
+			["Portuguese"] = "Emrys Flintbeard",
+			["Russian"] = "Emrys Flintbeard",
+			["Spanish"] = "Emrys Flintbeard",
+			["Taiwanese"] = "Emrys Flintbeard",
 		},
 		["xp_level"] = {
 			["is_elite"] = 0,
@@ -1998,6 +2786,31 @@ local forever_npcs = {
 			["min"] = 36,
 		},
 		["zone_id"] = 16591,
+	},
+	{
+		["id"] = 275321,
+		["location"] = {
+			["x"] = "18.40",
+			["y"] = "63.20",
+		},
+		["name"] = {
+			["Chinese"] = "Edward Egan",
+			["English"] = "Edward Egan",
+			["French"] = "Edward Egan",
+			["German"] = "Edward Egan",
+			["Korean"] = "Edward Egan",
+			["Mexican"] = "Edward Egan",
+			["Portuguese"] = "Edward Egan",
+			["Russian"] = "Edward Egan",
+			["Spanish"] = "Edward Egan",
+			["Taiwanese"] = "Edward Egan",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 28,
+			["min"] = 28,
+		},
+		["zone_id"] = 36,
 	},
 	{
 		["id"] = 275322,
