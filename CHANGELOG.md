@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Skins**: The look of RecipeRadar can be switched in the settings (Interface tab, "Appearance"). "Classic Era" is the dark look you know, "WoW Forever" is warm bronze like Forever's profession window, and "The Burning Crusade" is dark with fel green. The choice applies right away to the windows, buttons, drop-downs and title banners and is remembered.
+- **Statues on the title banner**: Gryphons or wyverns sit on both ends of the title banner, either in the Classic look or in the WoW Forever look, or you can turn them off ("Statues" in the same settings section). They are part of the addon, so they show on every client. Until you choose, Horde characters get wyverns and everyone else gets gryphons.
+- **Each skin remembers its statues**: When you change the skin, the statues change to the same kind in the matching look (for example Forever gryphons for the WoW Forever skin). What you pick for a skin stays picked when you switch away and back.
+
+### Changed
+- **Profession menu**: The list under the window title is now split into "Primary Professions" and "Secondary Professions" and sorted alphabetically in your language.
+- **Title banner**: The banner is now plain, without the golden dragons.
+
+### Fixed
+- **World map**: The RecipeRadar windows no longer cover the world map. They move behind it while it is open and come back when it closes.
+- **Profession menu width**: The menu is now exactly as wide as the title bar instead of sticking out on both sides.
+
+---
+
 ## [1.2.0] - 2026-10-21
 
 ### Added
