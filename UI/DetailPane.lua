@@ -284,7 +284,6 @@ function instance:Display(recipeItem)
     if data.item_id and data.item_id > 0 then
         pcall(function() GetItemInfo(data.item_id) end)
     end
-    local locale = GetLocale()
     local meta = RR.DB:GetRecipeAcquisitionMetadata(data)
 
     
@@ -550,7 +549,8 @@ function instance:Display(recipeItem)
         for _, qId in ipairs(questSources) do
             local q = RR.DB:GetQuest(qId)
             if q then
-                local qName = (type(q.name) == "table" and (q.name[locale] or q.name["German"] or q.name["English"])) or "Quest"
+                local qName = RR.DB:GetLocalizedText(q.name)
+                if qName == "" then qName = "Quest" end
                 local qzId = q.zone_id
                 local qx, qy, qNpcName
                 local qNpcReacts = nil
