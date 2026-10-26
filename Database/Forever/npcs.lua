@@ -1887,6 +1887,31 @@ local forever_npcs = {
 		["zone_id"] = 44,
 	},
 	{
+		["id"] = 257003,
+		["location"] = {
+			["x"] = "59.40",
+			["y"] = "76.00",
+		},
+		["name"] = {
+			["Chinese"] = "Ishlee Breezewhisper",
+			["English"] = "Ishlee Breezewhisper",
+			["French"] = "Ishlee Breezewhisper",
+			["German"] = "Ishlee Breezewhisper",
+			["Korean"] = "Ishlee Breezewhisper",
+			["Mexican"] = "Ishlee Breezewhisper",
+			["Portuguese"] = "Ishlee Breezewhisper",
+			["Russian"] = "Ishlee Breezewhisper",
+			["Spanish"] = "Ishlee Breezewhisper",
+			["Taiwanese"] = "Ishlee Breezewhisper",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 10,
+			["min"] = 10,
+		},
+		["zone_id"] = 16593,
+	},
+	{
 		["id"] = 257005,
 		["location"] = {
 			["x"] = "59.20",
@@ -2078,6 +2103,31 @@ local forever_npcs = {
 			["Russian"] = "Messana Crestwind",
 			["Spanish"] = "Messana Crestwind",
 			["Taiwanese"] = "Messana Crestwind",
+		},
+		["xp_level"] = {
+			["is_elite"] = 0,
+			["max"] = 10,
+			["min"] = 10,
+		},
+		["zone_id"] = 16593,
+	},
+	{
+		["id"] = 257024,
+		["location"] = {
+			["x"] = "43.20",
+			["y"] = "43.40",
+		},
+		["name"] = {
+			["Chinese"] = "Mendalass Tattermend",
+			["English"] = "Mendalass Tattermend",
+			["French"] = "Mendalass Tattermend",
+			["German"] = "Mendalass Tattermend",
+			["Korean"] = "Mendalass Tattermend",
+			["Mexican"] = "Mendalass Tattermend",
+			["Portuguese"] = "Mendalass Tattermend",
+			["Russian"] = "Mendalass Tattermend",
+			["Spanish"] = "Mendalass Tattermend",
+			["Taiwanese"] = "Mendalass Tattermend",
 		},
 		["xp_level"] = {
 			["is_elite"] = 0,
