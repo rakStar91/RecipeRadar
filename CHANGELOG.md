@@ -7,23 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
-
-### Added
-- **Skins**: The look of RecipeRadar can be switched in the settings (Interface tab, "Appearance"). "Classic Era" is the dark look you know, "WoW Forever" is warm bronze like Forever's profession window, and "The Burning Crusade" is dark with fel green. The choice applies right away to the windows, buttons, drop-downs and title banners and is remembered.
-- **Statues on the title banner**: Gryphons or wyverns sit on both ends of the title banner, either in the Classic look or in the WoW Forever look, or you can turn them off ("Statues" in the same settings section). They are part of the addon, so they show on every client. Until you choose, Horde characters get wyverns and everyone else gets gryphons.
-- **Each skin remembers its statues**: When you change the skin, the statues change to the same kind in the matching look (for example Forever gryphons for the WoW Forever skin). What you pick for a skin stays picked when you switch away and back.
-
-### Changed
-- **Profession menu**: The list under the window title is now split into "Primary Professions" and "Secondary Professions" and sorted alphabetically in your language.
-- **Title banner**: The banner is now plain, without the golden dragons.
-
-### Fixed
-- **World map**: The RecipeRadar windows no longer cover the world map. They move behind it while it is open and come back when it closes.
-- **Profession menu width**: The menu is now exactly as wide as the title bar instead of sticking out on both sides.
-
----
-
 ## [1.2.0] - 2026-10-21
 
 ### Added
@@ -35,12 +18,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Confirmed and unverified sources (Forever)**: Sources carried over from Classic are not verified for Forever. While a recipe still has such sources, its list is split under the headings "Confirmed in Forever" (with a check mark in front of each source) and "From Classic, not verified for Forever". Once everything is confirmed, the headings disappear.
 - **Unknown sources and skill levels (Forever)**: Recipes without a documented source are labeled "Unknown source" and can be filtered. Skill requirements come from the recipe items and from the trainers you visit, which also corrects Classic values that Forever lowered. Where a requirement is not known yet it shows "?", and these recipes are listed last.
 - **Hint about incomplete data (Forever)**: The detail pane ends with a note that the source data may be incomplete and that `/rr export` helps to complete it.
+- **Skins**: The look of RecipeRadar can be switched in the settings (Interface tab, "Appearance"). "Classic Era" is the dark look you know, "WoW Forever" is warm bronze like Forever's profession window, and "The Burning Crusade" is dark with fel green. The choice applies right away to the windows, buttons, drop-downs and title banners and is remembered.
+- **Statues on the title banner**: Gryphons or wyverns sit on both ends of the title banner, either in the Classic look or in the WoW Forever look, or you can turn them off ("Statues" in the same settings section). They are part of the addon, so they show on every client. Until you choose, Horde characters get wyverns and everyone else gets gryphons.
+- **Each skin remembers its statues**: When you change the skin, the statues change to the same kind in the matching look (for example Forever gryphons for the WoW Forever skin). What you pick for a skin stays picked when you switch away and back.
+
 
 ### Changed
 - **Tooltip settings preview**: The box at the bottom of the tooltip settings was a fixed picture that never changed. It is now a live preview with an explanation. It shows what recipe and item tooltips and spellbook tooltips really get, follows the three options above it, and scrolls when it does not fit.
 - **Forever has no phases**: The phase filter and the phase row in the detail pane are hidden.
 - **Faction of new Forever recipes**: A recipe that is new in Forever is no longer shown as Alliance-only or Horde-only just because the only trainer recorded so far belongs to one faction.
 - **Forever start**: Parts of the interface that the Forever client does not have are skipped, so RecipeRadar starts there and its buttons appear.
+- **Profession menu**: The list under the window title is now split into "Primary Professions" and "Secondary Professions" and sorted alphabetically in your language.
+- **Title banner**: The banner is now plain, without the golden dragons.
+
+
+### Fixed
+- **World map**: The RecipeRadar windows no longer cover the world map. They move behind it while it is open and come back when it closes.
+- **Profession menu width**: The menu is now exactly as wide as the title bar instead of sticking out on both sides.
+
+---
+
+## [1.1.2] - 2026-10-26
+
+### Fixed
+- **Quest names**: The recipe details always showed quest names in German, whatever language your game client uses. They now follow the client language.
 
 ---
 
