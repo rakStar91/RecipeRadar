@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.1.2] - 2026-10-26
 
 ### Fixed
 - **Quest names on English clients**: Quest names in the recipe details were always shown in German. They now follow the language of your game client.
