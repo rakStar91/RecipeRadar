@@ -22,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Statues on the title banner**: Gryphons or wyverns sit on both ends of the title banner, either in the Classic look or in the WoW Forever look, or you can turn them off ("Statues" in the same settings section). They are part of the addon, so they show on every client. Until you choose, Horde characters get wyverns and everyone else gets gryphons.
 - **Each skin remembers its statues**: When you change the skin, the statues change to the same kind in the matching look (for example Forever gryphons for the WoW Forever skin). What you pick for a skin stays picked when you switch away and back.
 
-
 ### Changed
 - **Tooltip settings preview**: The box at the bottom of the tooltip settings was a fixed picture that never changed. It is now a live preview with an explanation. It shows what recipe and item tooltips and spellbook tooltips really get, follows the three options above it, and scrolls when it does not fit.
 - **Forever has no phases**: The phase filter and the phase row in the detail pane are hidden.
@@ -30,7 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Forever start**: Parts of the interface that the Forever client does not have are skipped, so RecipeRadar starts there and its buttons appear.
 - **Profession menu**: The list under the window title is now split into "Primary Professions" and "Secondary Professions" and sorted alphabetically in your language.
 - **Title banner**: The banner is now plain, without the golden dragons.
-
 
 ### Fixed
 - **World map**: The RecipeRadar windows no longer cover the world map. They move behind it while it is open and come back when it closes.
