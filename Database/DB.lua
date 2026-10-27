@@ -605,9 +605,11 @@ function RR.DB:HasUnknownSources()
     return RR_DATA and RR_DATA["has_unknown_sources"] == true
 end
 
---- Returns true when the data has recipes that are new in WoW Forever, so the list shows the Forever marker column
-function RR.DB:HasNewRecipeMarker()
-    return RR_DATA and RR_DATA["new_recipe_marker"] == true
+--- Returns where a recipe comes from: "forever" (new in WoW Forever), "tbc" (added by The Burning Crusade) or "classic"
+function RR.DB:GetRecipeOrigin(recipe)
+    if recipe.forever_new then return "forever" end
+    if recipe.expansion == 2 then return "tbc" end
+    return "classic"
 end
 
 --- Returns false when the loaded data has no content phases (WoW Forever), so the phase

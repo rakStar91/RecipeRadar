@@ -303,9 +303,9 @@ function instance:Display(recipeItem)
 
     
     local rName = recipeItem.name or "-"
-    if recipeItem.isNew then
-        -- recipe that is new in WoW Forever: same marker as in the list
-        rName = RR.FOREVER_ICON_ESCAPE .. " " .. rName
+    if recipeItem.origin then
+        -- same origin marker as in the list
+        rName = RR.ORIGIN_ICONS[recipeItem.origin].escape .. " " .. rName
     end
     local phaseNum = tonumber(meta.phase or data.phase or 1)
     local rPhase = RR.DB:GetPhaseName(phaseNum, meta.expansion or data.expansion)

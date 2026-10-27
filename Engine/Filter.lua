@@ -222,7 +222,7 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
                 name = recipeName,
                 isKnown = isKnown,
                 skillReq = recipe.min_skill, -- nil while the requirement is not known (new Forever recipes)
-                isNew = recipe.forever_new == true,
+                origin = RR.DB:GetRecipeOrigin(recipe),
             })
         end
     end

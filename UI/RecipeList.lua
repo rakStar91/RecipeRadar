@@ -54,14 +54,11 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
         if hl then hl:SetVertexColor(1, 1, 1, 0.10) end
 
         -- Text: [Skill] Recipe Name
-        -- Marker column for recipes that are new in WoW Forever (only when the data has such recipes)
-        local markerWidth = RR.DB:HasNewRecipeMarker() and 18 or 0
-        row.iconForever = row:CreateTexture(nil, "OVERLAY")
-        row.iconForever:SetSize(14, 14)
-        row.iconForever:SetPoint("LEFT", row, "LEFT", 4, 0)
-        row.iconForever:SetTexture(RR.FOREVER_ICON)
-        row.iconForever:SetTexCoord(unpack(RR.FOREVER_ICON_CROP))
-        row.iconForever:Hide()
+        -- Origin marker column (Classic / TBC / new in WoW Forever)
+        local markerWidth = RR.ORIGIN_COLUMN_WIDTH + 4
+        row.iconOrigin = row:CreateTexture(nil, "OVERLAY")
+        row.iconOrigin:SetPoint("CENTER", row, "LEFT", 4 + RR.ORIGIN_COLUMN_WIDTH / 2, 0)
+        row.iconOrigin:Hide()
 
         row.text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.text:SetPoint("LEFT", 6 + markerWidth, 0)
@@ -96,8 +93,9 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
             if selfR.recipeData then
                 GameTooltip:SetOwner(selfR, "ANCHOR_RIGHT")
                 GameTooltip:AddLine(selfR.recipeData.name or "Rezept", 1, 0.82, 0)
-                if selfR.recipeData.isNew then
-                    GameTooltip:AddLine(RR.FOREVER_ICON_ESCAPE .. " " .. RR.L["FOREVER_NEW_RECIPE"], 1, 0.82, 0.29)
+                local origin = RR.ORIGIN_ICONS[selfR.recipeData.origin]
+                if origin then
+                    GameTooltip:AddLine(origin.escape .. " " .. RR.L[origin.label], 1, 0.82, 0.29)
                 end
                 if selfR.recipeData.skillReq == nil then
                     GameTooltip:AddLine(string.format("%s: ? (%s)", RR.L["LABEL_MIN_SKILL"], RR.L["SKILL_UNKNOWN"]), 0.75, 0.75, 0.75)
@@ -219,7 +217,18 @@ function RR.UI.RecipeList:Create(parent, onSelectRecipe)
                 local skillColor = "|cff00ff00" -- Green
                 if not item.isKnown then skillColor = "|cff44ff44" end
                 row.text:SetText(string.format("%s[%s]|r %s", skillColor, item.skillReq and tostring(item.skillReq) or "?", item.name))
-                if item.isNew then row.iconForever:Show() else row.iconForever:Hide() end
+                local origin = RR.ORIGIN_ICONS[item.origin]
+                if origin then
+                    row.iconOrigin:SetSize(RR.ORIGIN_ICON_SIZE, RR.ORIGIN_ICON_SIZE)
+                    row.iconOrigin:SetTexture(origin.file)
+                    row.iconOrigin:SetTexCoord(unpack(origin.texCoord))
+                    row.iconOrigin:SetDesaturated(origin.desaturate == true)
+                    local tint = origin.tint or { 1, 1, 1 }
+                    row.iconOrigin:SetVertexColor(tint[1], tint[2], tint[3])
+                    row.iconOrigin:Show()
+                else
+                    row.iconOrigin:Hide()
+                end
 
                 if item.isKnown then
                     row.text:SetTextColor(0.18, 0.83, 0.75, 1) -- Cyan / Turquoise
