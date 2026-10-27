@@ -624,6 +624,16 @@ function instance:Display(recipeItem)
                         if not qNpcReacts then qNpcReacts = npc.reacts or npc.faction end
                     end
                 end
+                -- a quest that a game object starts (book on the ground, remains): the object holds the position
+                if not (qzId and qx and qy) and q.objects and q.objects[1] then
+                    local obj = RR.DB:GetObject(q.objects[1])
+                    if obj then
+                        if not qzId then qzId = (obj.location and obj.location.zone_id) or obj.zone_id end
+                        if not qx then qx = tonumber(obj.location and obj.location.x or obj.x) end
+                        if not qy then qy = tonumber(obj.location and obj.location.y or obj.y) end
+                        if not qNpcName then qNpcName = RR.DB:GetLocalizedText(obj.name) end
+                    end
+                end
 
                 local zName = qzId and RR.DB:GetZoneName(qzId)
                 local lineText
