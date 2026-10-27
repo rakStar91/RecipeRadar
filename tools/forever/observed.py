@@ -263,14 +263,21 @@ def clean_export(data, known_items, known_spells, allow_build=False):
         quest_id = _int(e.get("id")) if isinstance(e, dict) else None
         if not quest_id:
             warnings.append("quest without a valid id skipped"); continue
-        clean["quests"].append({"id": quest_id, "name": _names(e.get("name")), "npcs": _ids(e.get("npcs"))})
+        quest = {"id": quest_id, "name": _names(e.get("name")), "npcs": _ids(e.get("npcs"))}
+        if _ids(e.get("objects")):  # quests that a game object starts (a book on the ground, remains, ...)
+            quest["objects"] = _ids(e["objects"])
+        clean["quests"].append(quest)
 
     for e in data.get("objects", []):
         object_id = _int(e.get("id")) if isinstance(e, dict) else None
         if not object_id:
             warnings.append("object without a valid id skipped"); continue
         entry = {"id": object_id}
+        if _names(e.get("name")):
+            entry["name"] = _names(e["name"])
         entry.update(_where(e))
+        if "zone_id" not in entry and _int(e.get("zone_id")):  # an object can be known by its zone only
+            entry["zone_id"] = _int(e["zone_id"])
         clean["objects"].append(entry)
     return clean, warnings
 
@@ -375,11 +382,19 @@ def merge_into_store(store, clean):
 
     def quest(entry, e):
         _merge_names(entry, e["name"])
+        if e.get("objects"):
+            entry["objects"] = _union(entry.get("objects", []), e["objects"])
         if e["npcs"]:
             entry["npcs"] = _union(entry.get("npcs", []), e["npcs"])
+        # an id that is a game object is no NPC (earlier runs recorded quest starters as NPCs)
+        if entry.get("objects") and "npcs" in entry:
+            entry["npcs"] = [n for n in entry["npcs"] if n not in entry["objects"]]
 
     def obj(entry, e):
+        if e.get("name"):
+            _merge_names(entry, e["name"])
         _merge_where(entry, e)
+        store["npcs"].pop(str(e["id"]), None)
 
     merge("npcs", clean["npcs"], npc)
     merge("items", clean["items"], item)
@@ -537,12 +552,16 @@ def apply_store(store, skills, items, base_ids, unknown_source, auto_learned, tr
         entry = {"id": o["id"], "name": _fill_names(o.get("name"), f"Quest {o['id']}")}
         if o.get("npcs"):
             entry["npcs"] = o["npcs"]
+        if o.get("objects"):
+            entry["objects"] = o["objects"]
         new_quests.append(entry)
     for key in sorted(store["objects"], key=int):
         o = store["objects"][key]
         if o["id"] in base_ids["objects"]:
             continue
         entry = {"id": o["id"], "location": o.get("location", {"x": "-", "y": "-"})}
+        if o.get("name"):
+            entry["name"] = _fill_names(o["name"], f"Object {o['id']}")
         if "zone_id" in o:
             entry["zone_id"] = o["zone_id"]
         elif o.get("map_id") in zones:
