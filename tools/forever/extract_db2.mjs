@@ -1,8 +1,8 @@
 // Downloads DB2 tables for a WoW Forever build straight from Blizzard's CDN (CASC)
 // and dumps every row as JSON into <out>/<build>/<locale>/<Table>.json.
 //
-// Usage: node extract_db2.mjs [--product wow_classic_beta] [--region eu]
-//                             [--locales enUS,deDE] [--out ./cache] [--adb <WoW>/_classic_beta_/Cache/ADB]
+// Usage: node extract_db2.mjs [--product wowf] [--region eu]
+//                             [--locales enUS,deDE] [--out ./cache] [--adb <WoW>/_forever_/Cache/ADB]
 //                             [TableName ...]
 //
 // --adb applies the hotfixes from the client's own DBCache.bin (the base DB2 files carry placeholder
@@ -22,7 +22,7 @@ const DEFAULT_TABLES = [
 const LOCALIZED = new Set(['Faction', 'SkillLine', 'SpellName', 'ItemSparse', 'TradeSkillCategory', 'Spell']);
 
 const args = process.argv.slice(2);
-const opts = { product: 'wow_classic_beta', region: 'eu', locales: 'enUS', out: './cache', adb: '' };
+const opts = { product: 'wowf', region: 'eu', locales: 'enUS', out: './cache', adb: '' };
 const tables = [];
 for (let i = 0; i < args.length; i++) {
     if (args[i].startsWith('--')) opts[args[i].slice(2)] = args[++i];

@@ -15,15 +15,15 @@ Needs Node 20+ and Python 3. The tables are read from Blizzard's CDN, so the gam
 cd tools/forever
 npm install
 
-# Forever beta build, all 10 languages, with the hotfixes from your local client (optional but recommended)
+# Forever build (CDN product `wowf`), all 10 languages, with the hotfixes from your local client (optional but recommended)
 node extract_db2.mjs --locales enUS,deDE,frFR,esES,esMX,ruRU,zhCN,zhTW,koKR,ptBR `
-    --adb "C:/Games/World of Warcraft/_classic_beta_/Cache/ADB" `
+    --adb "C:/Games/World of Warcraft/_forever_/Cache/ADB" `
     --out cache
 
 # Baseline: what Classic Era already had (recipes in Era are not part of the Forever delta)
 node extract_db2.mjs --product wow_classic_era --out cache SkillLineAbility
 
-python build_forever.py --forever 1.60.1.70450 --era 1.15.9.70003
+python build_forever.py --forever 1.60.1.70630 --era 1.15.9.70003
 python ../verify_tocs.py   # run from the repo root
 ```
 
@@ -57,7 +57,7 @@ the counters and the export; `/rr export` opens it. The export is a Lua table in
 
 ```lua
 RR_OBSERVED = {
-    ["format"] = 2, ["build"] = "1.60.1.70450", ["addon"] = "1.1.1", ["locale"] = "German",
+    ["format"] = 2, ["build"] = "1.60.1.70630", ["addon"] = "1.1.1", ["locale"] = "German",
     ["npcs"]    = { { ["id"] = 4567, ["name"] = { ["German"] = "Telonis" }, ["location"] = { ["x"] = "64.43", ["y"] = "21.49" },
                       ["zone_id"] = 1657, ["reacts"] = "Alliance", ["xp_level"] = { ["min"] = 40, ["max"] = 40, ["is_elite"] = 0 },
                       ["seen_by"] = { "Alliance" }, ["map_id"] = 1457, ["zone_name"] = "Darnassus" } },
@@ -117,7 +117,7 @@ The client does not contain server-side knowledge, so:
   `build_forever.py` fills it in. A rank a trainer asks for also replaces a value that only came from Classic or from the client's skill line rank (Forever lowered many of them), but never the rank printed on a recipe item.
 * **New recipes**: Recipes that are not in the Classic database carry `forever_new`. The list and the detail pane
   mark them with the game's own Forever logo (`Interface\Glues\Common\Glues-WoW-ForeverLogo-Infinity`, read from the
-  client, nothing copied into the addon; see `RR.FOREVER_ICON` in `Core/Constants.lua`), enabled by
-  `RR_DATA["new_recipe_marker"]` in `flags.lua`.
+  client, nothing copied into the addon; see `RR.ORIGIN_ICONS` in `Core/Constants.lua`). Classic and TBC recipes carry
+  the WoW icon of the friends list in the same column (green for TBC), in every client.
 * **Phase**: Forever has no content phases. Entries carry none, and `flags.lua` sets `RR_DATA["no_phases"]`,
   which hides the phase filter and the phase row in the detail pane.
