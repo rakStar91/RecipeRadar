@@ -112,6 +112,96 @@ local forever_quests = {
 		},
 	},
 	{
+		["id"] = 2757,
+		["name"] = {
+			["Chinese"] = "Booty Bay or Bust!",
+			["English"] = "Booty Bay or Bust!",
+			["French"] = "Booty Bay or Bust!",
+			["German"] = "Auf nach Booty Bay!",
+			["Korean"] = "Booty Bay or Bust!",
+			["Mexican"] = "Booty Bay or Bust!",
+			["Portuguese"] = "Booty Bay or Bust!",
+			["Russian"] = "Booty Bay or Bust!",
+			["Spanish"] = "Booty Bay or Bust!",
+			["Taiwanese"] = "Booty Bay or Bust!",
+		},
+		["npcs"] = {
+			7793,
+		},
+	},
+	{
+		["id"] = 2759,
+		["name"] = {
+			["Chinese"] = "In Search of Galvan",
+			["English"] = "In Search of Galvan",
+			["French"] = "In Search of Galvan",
+			["German"] = "Auf der Suche nach Galvan",
+			["Korean"] = "In Search of Galvan",
+			["Mexican"] = "In Search of Galvan",
+			["Portuguese"] = "In Search of Galvan",
+			["Russian"] = "In Search of Galvan",
+			["Spanish"] = "In Search of Galvan",
+			["Taiwanese"] = "In Search of Galvan",
+		},
+		["npcs"] = {
+			7798,
+		},
+	},
+	{
+		["id"] = 2760,
+		["name"] = {
+			["Chinese"] = "The Mithril Order",
+			["English"] = "The Mithril Order",
+			["French"] = "The Mithril Order",
+			["German"] = "Der Mithrilorden",
+			["Korean"] = "The Mithril Order",
+			["Mexican"] = "The Mithril Order",
+			["Portuguese"] = "The Mithril Order",
+			["Russian"] = "The Mithril Order",
+			["Spanish"] = "The Mithril Order",
+			["Taiwanese"] = "The Mithril Order",
+		},
+		["npcs"] = {
+			7794,
+		},
+	},
+	{
+		["id"] = 2764,
+		["name"] = {
+			["Chinese"] = "Galvan's Finest Pupil",
+			["English"] = "Galvan's Finest Pupil",
+			["French"] = "Galvan's Finest Pupil",
+			["German"] = "Galvans bester Schüler",
+			["Korean"] = "Galvan's Finest Pupil",
+			["Mexican"] = "Galvan's Finest Pupil",
+			["Portuguese"] = "Galvan's Finest Pupil",
+			["Russian"] = "Galvan's Finest Pupil",
+			["Spanish"] = "Galvan's Finest Pupil",
+			["Taiwanese"] = "Galvan's Finest Pupil",
+		},
+		["npcs"] = {
+			7802,
+		},
+	},
+	{
+		["id"] = 2765,
+		["name"] = {
+			["Chinese"] = "Expert Blacksmith!",
+			["English"] = "Expert Blacksmith!",
+			["French"] = "Expert Blacksmith!",
+			["German"] = "Schmiedkunstexperte!",
+			["Korean"] = "Expert Blacksmith!",
+			["Mexican"] = "Expert Blacksmith!",
+			["Portuguese"] = "Expert Blacksmith!",
+			["Russian"] = "Expert Blacksmith!",
+			["Spanish"] = "Expert Blacksmith!",
+			["Taiwanese"] = "Expert Blacksmith!",
+		},
+		["npcs"] = {
+			7802,
+		},
+	},
+	{
 		["id"] = 2847,
 		["name"] = {
 			["Chinese"] = "Wild Leather Armor",
@@ -145,6 +235,24 @@ local forever_quests = {
 		},
 		["npcs"] = {
 			7854,
+		},
+	},
+	{
+		["id"] = 3321,
+		["name"] = {
+			["Chinese"] = "Did You Lose This?",
+			["English"] = "Did You Lose This?",
+			["French"] = "Did You Lose This?",
+			["German"] = "Habt Ihr das verloren?",
+			["Korean"] = "Did You Lose This?",
+			["Mexican"] = "Did You Lose This?",
+			["Portuguese"] = "Did You Lose This?",
+			["Russian"] = "Did You Lose This?",
+			["Spanish"] = "Did You Lose This?",
+			["Taiwanese"] = "Did You Lose This?",
+		},
+		["npcs"] = {
+			7804,
 		},
 	},
 	{
@@ -415,6 +523,24 @@ local forever_quests = {
 		},
 	},
 	{
+		["id"] = 5103,
+		["name"] = {
+			["Chinese"] = "Hot Fiery Death",
+			["English"] = "Hot Fiery Death",
+			["French"] = "Hot Fiery Death",
+			["German"] = "Heißer, feuriger Tod",
+			["Korean"] = "Hot Fiery Death",
+			["Mexican"] = "Hot Fiery Death",
+			["Portuguese"] = "Hot Fiery Death",
+			["Russian"] = "Hot Fiery Death",
+			["Spanish"] = "Hot Fiery Death",
+			["Taiwanese"] = "Hot Fiery Death",
+		},
+		["objects"] = {
+			176090,
+		},
+	},
+	{
 		["id"] = 5145,
 		["name"] = {
 			["Chinese"] = "Dragonscale Leatherworking",
@@ -466,6 +592,42 @@ local forever_quests = {
 		},
 		["npcs"] = {
 			7871,
+		},
+	},
+	{
+		["id"] = 5301,
+		["name"] = {
+			["Chinese"] = "The Art of the Armorsmith",
+			["English"] = "The Art of the Armorsmith",
+			["French"] = "The Art of the Armorsmith",
+			["German"] = "Die Kunst des Rüstungsschmiedes",
+			["Korean"] = "The Art of the Armorsmith",
+			["Mexican"] = "The Art of the Armorsmith",
+			["Portuguese"] = "The Art of the Armorsmith",
+			["Russian"] = "The Art of the Armorsmith",
+			["Spanish"] = "The Art of the Armorsmith",
+			["Taiwanese"] = "The Art of the Armorsmith",
+		},
+		["npcs"] = {
+			11177,
+		},
+	},
+	{
+		["id"] = 5302,
+		["name"] = {
+			["Chinese"] = "The Way of the Weaponsmith",
+			["English"] = "The Way of the Weaponsmith",
+			["French"] = "The Way of the Weaponsmith",
+			["German"] = "Der Weg des Waffenschmieds...",
+			["Korean"] = "The Way of the Weaponsmith",
+			["Mexican"] = "The Way of the Weaponsmith",
+			["Portuguese"] = "The Way of the Weaponsmith",
+			["Russian"] = "The Way of the Weaponsmith",
+			["Spanish"] = "The Way of the Weaponsmith",
+			["Taiwanese"] = "The Way of the Weaponsmith",
+		},
+		["npcs"] = {
+			11178,
 		},
 	},
 	{
@@ -574,6 +736,24 @@ local forever_quests = {
 		},
 		["npcs"] = {
 			5150,
+		},
+	},
+	{
+		["id"] = 7652,
+		["name"] = {
+			["Chinese"] = "A Blue Light Bargain",
+			["English"] = "A Blue Light Bargain",
+			["French"] = "A Blue Light Bargain",
+			["German"] = "Ein Sonderangebot",
+			["Korean"] = "A Blue Light Bargain",
+			["Mexican"] = "A Blue Light Bargain",
+			["Portuguese"] = "A Blue Light Bargain",
+			["Russian"] = "A Blue Light Bargain",
+			["Spanish"] = "A Blue Light Bargain",
+			["Taiwanese"] = "A Blue Light Bargain",
+		},
+		["npcs"] = {
+			14567,
 		},
 	},
 	{
@@ -703,6 +883,21 @@ local forever_quests = {
 		},
 	},
 	{
+		["id"] = 8869,
+		["name"] = {
+			["Chinese"] = "Sweet Serenity",
+			["English"] = "Sweet Serenity",
+			["French"] = "Sweet Serenity",
+			["German"] = "Süße Beschaulichkeit",
+			["Korean"] = "Sweet Serenity",
+			["Mexican"] = "Sweet Serenity",
+			["Portuguese"] = "Sweet Serenity",
+			["Russian"] = "Sweet Serenity",
+			["Spanish"] = "Sweet Serenity",
+			["Taiwanese"] = "Sweet Serenity",
+		},
+	},
+	{
 		["id"] = 91920,
 		["name"] = {
 			["Chinese"] = "Wild Eyes",
@@ -793,6 +988,24 @@ local forever_quests = {
 		},
 	},
 	{
+		["id"] = 95217,
+		["name"] = {
+			["Chinese"] = "The Quarry's Smith",
+			["English"] = "The Quarry's Smith",
+			["French"] = "The Quarry's Smith",
+			["German"] = "Der Schmied des Steinbruchs",
+			["Korean"] = "The Quarry's Smith",
+			["Mexican"] = "The Quarry's Smith",
+			["Portuguese"] = "The Quarry's Smith",
+			["Russian"] = "The Quarry's Smith",
+			["Spanish"] = "The Quarry's Smith",
+			["Taiwanese"] = "The Quarry's Smith",
+		},
+		["npcs"] = {
+			1698,
+		},
+	},
+	{
 		["id"] = 95697,
 		["name"] = {
 			["Chinese"] = "Changing Tastes",
@@ -826,6 +1039,24 @@ local forever_quests = {
 		},
 		["npcs"] = {
 			265813,
+		},
+	},
+	{
+		["id"] = 96874,
+		["name"] = {
+			["Chinese"] = "This Is Spinal Axe",
+			["English"] = "This Is Spinal Axe",
+			["French"] = "This Is Spinal Axe",
+			["German"] = "Vom Stachel zur Axt",
+			["Korean"] = "This Is Spinal Axe",
+			["Mexican"] = "This Is Spinal Axe",
+			["Portuguese"] = "This Is Spinal Axe",
+			["Russian"] = "This Is Spinal Axe",
+			["Spanish"] = "This Is Spinal Axe",
+			["Taiwanese"] = "This Is Spinal Axe",
+		},
+		["npcs"] = {
+			10266,
 		},
 	},
 	{
