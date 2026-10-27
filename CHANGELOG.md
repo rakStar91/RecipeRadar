@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.2.0] - 2026-10-21
+## [1.2.0] - 2026-10-27
 
 ### Added
 - **Support for World of Warcraft: Forever (experimental)**: RecipeRadar has its own recipe database for Forever: the 1243 Classic recipes that still exist plus 934 new ones, including the new camping recipes of Mining, Herbalism, Skinning and Fishing. Recipe names come in all 10 languages. Names of NPCs and quests that are new in Forever are only available in English and German for now, other languages show the English name. Forever has no Jewelcrafting and no TBC content. Classic Era and TBC Anniversary are not affected.
