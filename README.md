@@ -3,9 +3,9 @@
 [![CurseForge](https://img.shields.io/badge/CurseForge-RecipeRadar-orange.svg)](https://www.curseforge.com/wow/addons/reciperadar)
 [![Support on Ko-fi](https://img.shields.io/badge/Support%20on-Ko--fi-FF5E5B.svg?logo=kofi&logoColor=white)](https://ko-fi.com/rakstar91)
 [![License: All Rights Reserved](https://img.shields.io/badge/License-All%20Rights%20Reserved-red.svg)](LICENSE)
-[![WoW Versions](https://img.shields.io/badge/WoW-Classic%20Era%20%7C%20TBC-blue.svg)](https://worldofwarcraft.com/)
+[![WoW Versions](https://img.shields.io/badge/WoW-Classic%20Era%20%7C%20TBC%20%7C%20Forever-blue.svg)](https://worldofwarcraft.com/)
 
-**RecipeRadar** is a modern, standalone profession recipe and skill tracker for **World of Warcraft Classic Era** and **TBC Anniversary**.
+**RecipeRadar** is a modern, standalone profession recipe and skill tracker for **World of Warcraft Classic Era**, **TBC Anniversary** and **WoW Forever** (experimental).
 
 It helps you discover every missing recipe, pattern, plan, schematic, and formula for all primary and secondary professions, showing you exactly where and how to obtain them with integrated TomTom coordinates in **10 languages**.
 
@@ -29,6 +29,7 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 
 * **Missing recipe finder**: Lists every recipe, pattern, plan, schematic, and formula for all primary and secondary professions, and shows where to get it (trainer, vendor, quest, drop, object, or holiday).
 * **Missing / Known / All views**: Switch between recipes you still need, the ones you already know, or everything.
+* **Recipe origin**: A small icon in front of each recipe shows where it comes from: Classic, The Burning Crusade, or new in WoW Forever.
 * **Filters**: Narrow the list by source, zone (any, current, or last visited), faction, reputation, specialization, and content phase. Classic Era phases 1–6 and TBC phases 1–5 are supported.
 * **TomTom waypoints**: Click a coordinate or NPC name to place a waypoint on your map.
 * **Alt tracking**: Tooltips on recipes and crafted items show which of your characters on the realm already know the recipe.
@@ -62,13 +63,13 @@ It helps you discover every missing recipe, pattern, plan, schematic, and formul
 ## Installation
 
 1. Download the latest release package.
-2. Extract the folder into your `World of Warcraft\_classic_era_\Interface\AddOns\` directory.
+2. Extract the folder into the `Interface\AddOns\` directory of your game version: `World of Warcraft\_classic_era_\` (Classic Era), `_anniversary_\` (TBC Anniversary) or `_forever_\` (WoW Forever).
 3. Ensure the folder is named `RecipeRadar`.
 4. Restart World of Warcraft or reload your UI with `/reload`.
 
 ### WoW Forever (experimental)
 
-`RecipeRadar_Camelot.toc` loads a recipe database of its own for WoW Forever, generated from the Forever client's data: every Classic recipe Forever still hands out plus the recipes that are new in Forever. Forever reworked parts of Classic, so the Classic recipe lists are not reused as they are.
+The Forever client loads `RecipeRadar_Camelot.toc`, which brings a recipe database of its own for WoW Forever, generated from the Forever client's data: every Classic recipe Forever still hands out plus the recipes that are new in Forever. Forever reworked parts of Classic, so the Classic recipe lists are not reused as they are.
 
 * Trainers, vendors, drops and quests of the Classic recipes are carried over from the Classic database. They are **not verified for Forever** and the detail pane says so.
 * The trainer/vendor/drop sources of the **new** recipes are not available from the game client. They are marked "Unknown source" until a player has seen them. Skill requirements come from the recipe items and from trainers you visit; where neither is known yet the list shows "?" and puts the recipe last.
