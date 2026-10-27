@@ -1,0 +1,29 @@
+-------------------------------------------------------
+-- Data flags - WoW Forever
+-------------------------------------------------------
+-- Forever has no content phases: hides the phase filter/label and skips phase filtering.
+RR_DATA["no_phases"] = true
+-- Recipes with the "source unknown" special action exist: offer the "Unknown source" filter.
+RR_DATA["has_unknown_sources"] = true
+-- The TOC lists RecipeRadar in the minimap Addons menu; the separate minimap button starts hidden.
+RR_DATA["addon_compartment"] = true
+-- Recipes that are new in Forever carry forever_new; the list marks them with the Forever symbol.
+RR_DATA["new_recipe_marker"] = true
+-- The client has the modern scroll bar template (MinimalScrollBar); the lists use it instead of the old one.
+RR_DATA["modern_scrollbar"] = true
+-- Professions offered in the profession menu (the Era/TBC menu is a fixed list without gatherers).
+RR_DATA["profession_menu"] = {
+	"Leatherworking",
+	"Tailoring",
+	"Blacksmithing",
+	"Alchemy",
+	"Engineering",
+	"Enchanting",
+	"Cooking",
+	"First Aid",
+	"Poisons",
+	"Mining",
+	"Herbalism",
+	"Skinning",
+	"Fishing",
+}

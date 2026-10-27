@@ -42,6 +42,9 @@ function RR.UI.DetailPane:Create(parent)
         RR.L["LABEL_HOLIDAY"],
         RR.L["LABEL_PRICE"],
     }
+    if not RR.DB:HasPhases() then
+        table.remove(attrKeys, 2) -- no phase row; Display() drops the matching value
+    end
     local attrY = -6
     for i, labelText in ipairs(attrKeys) do
         local rowF = CreateFrame(i == 1 and "Button" or "Frame", nil, attrBox)
@@ -152,11 +155,10 @@ function RR.UI.DetailPane:Create(parent)
 
                 local itemLink = nil
                 if itemId and itemId > 0 then
-                    local _, link = GetItemInfo(itemId)
-                    itemLink = link or ("item:" .. itemId)
+                    itemLink = RR.Utils:GetItemLink(itemId) or ("item:" .. itemId)
                 end
-                if not itemLink and spellId and spellId > 0 and GetSpellLink then
-                    itemLink = GetSpellLink(spellId)
+                if not itemLink and spellId and spellId > 0 then
+                    itemLink = RR.Utils:GetSpellLink(spellId)
                 end
 
                 if itemLink then
@@ -188,6 +190,18 @@ function RR.UI.DetailPane:Create(parent)
     local srcScrollFrame = CreateFrame("ScrollFrame", "RecipeRadarSourceScroll", attrBox)
     srcScrollFrame:SetPoint("TOPLEFT", attrBox, "TOPLEFT", 6, attrY - 20)
     srcScrollFrame:SetPoint("BOTTOMRIGHT", attrBox, "BOTTOMRIGHT", -6, 6)
+
+    -- WoW Forever: the source data is collected by players, so say that it may be incomplete and how to help
+    if RR.Recorder then
+        local hint = attrBox:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+        hint:SetPoint("BOTTOMLEFT", attrBox, "BOTTOMLEFT", 8, 6)
+        hint:SetPoint("BOTTOMRIGHT", attrBox, "BOTTOMRIGHT", -8, 6)
+        hint:SetJustifyH("LEFT")
+        hint:SetJustifyV("BOTTOM")
+        hint:SetText(RR.L["DATA_INCOMPLETE_HINT"])
+        srcScrollFrame:SetPoint("BOTTOMRIGHT", attrBox, "BOTTOMRIGHT", -6, 8 + math.max(26, hint:GetStringHeight() or 0))
+        instance.dataHint = hint
+    end
     srcScrollFrame:EnableMouse(true)
     srcScrollFrame:EnableMouseWheel(true)
 
@@ -199,16 +213,17 @@ function RR.UI.DetailPane:Create(parent)
     instance.srcScrollFrame = srcScrollFrame
     instance.srcScrollChild = srcScrollChild
 
-    local srcScrollBar = CreateFrame("Slider", "RecipeRadarSourceScrollBar", srcScrollFrame, "UIPanelScrollBarTemplate")
-    srcScrollBar:SetPoint("TOPRIGHT", srcScrollFrame, "TOPRIGHT", -2, -16)
-    srcScrollBar:SetPoint("BOTTOMRIGHT", srcScrollFrame, "BOTTOMRIGHT", -2, 16)
-    srcScrollBar:SetWidth(14)
-    srcScrollBar:SetMinMaxValues(0, 0)
-    srcScrollBar:SetValue(0)
-    srcScrollBar:SetValueStep(14)
-    srcScrollBar:SetScript("OnValueChanged", function(sb, val)
-        srcScrollFrame:SetVerticalScroll(val)
-    end)
+    local srcScrollBar = RR.UI.Theme:CreateScrollBar(srcScrollFrame, {
+        name = "RecipeRadarSourceScrollBar",
+        step = 14,
+        width = 14,
+        right = -2,
+        inset = 16,
+        visible = function() return srcScrollFrame:GetHeight() end,
+        onValueChanged = function(_, val)
+            srcScrollFrame:SetVerticalScroll(val)
+        end,
+    })
     srcScrollBar:Hide()
     instance.srcScrollBar = srcScrollBar
 
@@ -282,15 +297,25 @@ function instance:Display(recipeItem)
     self.selectedRecipe = recipeItem
     local data = recipeItem.data or {}
     if data.item_id and data.item_id > 0 then
-        pcall(function() GetItemInfo(data.item_id) end)
+        RR.Utils:GetItemLink(data.item_id) -- requests the item so its data is cached for the tooltip
     end
     local meta = RR.DB:GetRecipeAcquisitionMetadata(data)
 
     
     local rName = recipeItem.name or "-"
+    if recipeItem.origin then
+        -- same origin marker as in the list
+        rName = RR.ORIGIN_ICONS[recipeItem.origin].escape .. " " .. rName
+    end
     local phaseNum = tonumber(meta.phase or data.phase or 1)
     local rPhase = RR.DB:GetPhaseName(phaseNum, meta.expansion or data.expansion)
-    local rSkill = tostring(recipeItem.skillReq or 1)
+    local rSkill
+    if recipeItem.skillReq then
+        rSkill = tostring(recipeItem.skillReq)
+    else
+        -- the game client has no skill requirement for this recipe; a trainer's export fills it in
+        rSkill = "? (" .. RR.L["SKILL_UNKNOWN"] .. ")"
+    end
     
     local rRep = "-"
     local repList = meta.reputations or {}
@@ -504,6 +529,25 @@ function instance:Display(recipeItem)
         end
     end
 
+    -- WoW Forever: sources a player has seen in the game are marked with a check; the rest comes from Classic
+    local verified = { vendors = {}, drops = {}, quests = {}, objects = {}, trainers = {} }
+    local function addVerified(entry)
+        for kind, ids in pairs(entry and entry.verified or {}) do
+            for _, id in ipairs(ids) do
+                if verified[kind] then verified[kind][id] = true end
+            end
+        end
+    end
+    addVerified(data)
+    for _, itemId in ipairs(data.items or {}) do
+        addVerified(RR.DB:GetItem(itemId))
+    end
+    local isForever = (data and data.forever) or (RR_DATA and (RR_DATA["no_phases"] or RR_DATA["new_recipe_marker"]))
+    local CHECK = "|TInterface\\RAIDFRAME\\ReadyCheck-Ready:12:12:0:0|t "
+    local function mark(kind, id, text)
+        return (isForever and verified[kind][id]) and (CHECK .. text) or text
+    end
+
     -- Collect ALL possible sources for detailed display
     local allSources = {}
     local seenSources = {}
@@ -515,9 +559,12 @@ function instance:Display(recipeItem)
             if nName and not seenSources[id] then
                 seenSources[id] = true
                 local lineText, wp = formatNPC(nName, zName, nx, ny, RR.L["SOURCE_VENDOR"])
+                lineText = mark("vendors", id, lineText)
                 table.insert(allSources, {
                     text = lineText,
+                    verified = verified.vendors[id],
                     waypoint = wp,
+                    zone = zName,
                     faction = effFaction,
                     isPlayerFaction = isFactionMatch,
                     isOtherFaction = isOtherFaction,
@@ -533,9 +580,12 @@ function instance:Display(recipeItem)
             if nName and not seenSources[id] then
                 seenSources[id] = true
                 local lineText, wp = formatNPC(nName, zName, nx, ny, RR.L["SOURCE_TRAINER"])
+                lineText = mark("trainers", id, lineText)
                 table.insert(allSources, {
                     text = lineText,
+                    verified = verified.trainers[id],
                     waypoint = wp,
+                    zone = zName,
                     faction = effFaction,
                     isPlayerFaction = isFactionMatch,
                     isOtherFaction = isOtherFaction,
@@ -574,6 +624,16 @@ function instance:Display(recipeItem)
                         if not qNpcReacts then qNpcReacts = npc.reacts or npc.faction end
                     end
                 end
+                -- a quest that a game object starts (book on the ground, remains): the object holds the position
+                if not (qzId and qx and qy) and q.objects and q.objects[1] then
+                    local obj = RR.DB:GetObject(q.objects[1])
+                    if obj then
+                        if not qzId then qzId = (obj.location and obj.location.zone_id) or obj.zone_id end
+                        if not qx then qx = tonumber(obj.location and obj.location.x or obj.x) end
+                        if not qy then qy = tonumber(obj.location and obj.location.y or obj.y) end
+                        if not qNpcName then qNpcName = RR.DB:GetLocalizedText(obj.name) end
+                    end
+                end
 
                 local zName = qzId and RR.DB:GetZoneName(qzId)
                 local lineText
@@ -588,6 +648,8 @@ function instance:Display(recipeItem)
                 else
                     lineText = string.format("%s (Quest)", qName)
                 end
+
+                lineText = mark("quests", qId, lineText)
 
                 local qFaction = nil
                 if q.reacts then
@@ -606,7 +668,9 @@ function instance:Display(recipeItem)
                 table.insert(allSources, {
                     text = lineText,
                     waypoint = wp,
+                    zone = zName,
                     faction = qFaction,
+                    verified = verified.quests[qId],
                     isPlayerFaction = isMatch,
                     isOtherFaction = isOther,
                 })
@@ -627,9 +691,12 @@ function instance:Display(recipeItem)
                 local ox = tonumber(obj.location and obj.location.x or obj.x)
                 local oy = tonumber(obj.location and obj.location.y or obj.y)
                 local lineText, wp = formatNPC(oName, zName, ox, oy, RR.L["SOURCE_OBJECT"])
+                lineText = mark("objects", objId, lineText)
                 table.insert(allSources, {
                     text = lineText,
+                    verified = verified.objects[objId],
                     waypoint = wp,
+                    zone = zName,
                     faction = "Neutral",
                     isPlayerFaction = true,
                 })
@@ -644,9 +711,12 @@ function instance:Display(recipeItem)
             if nName and not seenSources[id] then
                 seenSources[id] = true
                 local lineText, wp = formatNPC(nName, zName, nx, ny, RR.L["SOURCE_DROP"])
+                lineText = mark("drops", id, lineText)
                 table.insert(allSources, {
                     text = lineText,
+                    verified = verified.drops[id],
                     waypoint = wp,
+                    zone = zName,
                     faction = effFaction or "Neutral",
                     isPlayerFaction = isFactionMatch,
                     isOtherFaction = isOtherFaction,
@@ -660,39 +730,90 @@ function instance:Display(recipeItem)
             text = string.format(RR.L["SOURCE_DROP_LEVEL_RANGE"] or "Drop (Level %d-%d)", meta.dropRange.min_xp_level or 1, meta.dropRange.max_xp_level or 60),
             waypoint = nil,
             isPlayerFaction = true,
+            verified = not meta.classicSource,
         })
     end
 
     -- 5. Special Actions (e.g. Book in Scholomance, Tablet in Zul'Gurub, Mind Control in BWL)
     local specActionKey = data.special_action or meta.special_action
+    -- "source not documented yet" is no news once the recipe has a documented source (e.g. a trainer), even if one of
+    -- its recipe items is still unknown
+    if specActionKey == "source unknown" and #allSources > 0 then
+        specActionKey = nil
+    end
     if specActionKey then
         local saText = RR.DB:GetSpecialActionText(specActionKey)
         if saText then
+            -- notes that are not a Classic source (source unknown, notes added for Forever) must not end up under the
+            -- "from Classic" header; they stand on top of the list
+            local sa = RR_DATA and RR_DATA["special_actions"] and RR_DATA["special_actions"][specActionKey]
+            local isForeverNote = specActionKey == "source unknown" or (sa and sa.forever) or false
             table.insert(allSources, {
                 text = string.format(RR.L["LABEL_NOTE"], saText),
                 waypoint = nil,
                 faction = "Neutral",
                 isPlayerFaction = true,
+                verified = (specActionKey ~= "source unknown" and not meta.classicSource),
+                noHeader = isForeverNote,
+                pinned = isForeverNote,
             })
         end
     end
 
-    -- Sort sources: player's faction first, then others!
+    -- Sort sources: own faction, then neutral, then the other faction; within a group by zone name (entries without a
+    -- zone last), then by text so the order is stable
+    local function factionRank(src)
+        if src.faction == playerFaction then return 1 end
+        if src.isOtherFaction then return 3 end
+        return 2
+    end
     table.sort(allSources, function(a, b)
-        if a.isPlayerFaction and not b.isPlayerFaction then return true end
-        if not a.isPlayerFaction and b.isPlayerFaction then return false end
-        return false
+        if (a.pinned or false) ~= (b.pinned or false) then return a.pinned or false end
+        local rankA, rankB = factionRank(a), factionRank(b)
+        if rankA ~= rankB then return rankA < rankB end
+        local zoneA, zoneB = a.zone and a.zone:lower(), b.zone and b.zone:lower()
+        if zoneA ~= zoneB then
+            if not zoneA then return false end
+            if not zoneB then return true end
+            return zoneA < zoneB
+        end
+        return a.text < b.text
     end)
 
-    local attrVals = {
-        rName,
-        rPhase,
-        rSkill,
-        rRep,
-        rSpec,
-        rHol,
-        rPrice,
-    }
+    -- WoW Forever: split the list into confirmed sources and Classic unverified sources
+    if isForever then
+        local confirmed, others = {}, {}
+        for _, src in ipairs(allSources) do
+            if src.verified or src.noHeader then
+                confirmed[#confirmed + 1] = src
+            else
+                others[#others + 1] = src
+            end
+        end
+        if #others > 0 then
+            allSources = {}
+            if #confirmed > 0 then
+                allSources[#allSources + 1] = { text = CHECK .. RR.L["SOURCES_HEADER_VERIFIED"], header = "verified" }
+                for _, src in ipairs(confirmed) do allSources[#allSources + 1] = src end
+            end
+            allSources[#allSources + 1] = { text = RR.L["SOURCES_HEADER_CLASSIC"], header = "classic" }
+            for _, src in ipairs(others) do allSources[#allSources + 1] = src end
+        else
+            -- All sources are confirmed in Forever: clean display without warning/grouping headers
+            for _, src in ipairs(allSources) do
+                if src.text then
+                    src.text = src.text:gsub("^|TInterface\\RAIDFRAME\\ReadyCheck%-Ready:12:12:0:0|t%s*", "")
+                end
+            end
+        end
+    end
+
+    local attrVals
+    if RR.DB:HasPhases() then
+        attrVals = { rName, rPhase, rSkill, rRep, rSpec, rHol, rPrice }
+    else
+        attrVals = { rName, rSkill, rRep, rSpec, rHol, rPrice } -- matches the rows created without a phase label
+    end
     if self.attrRows then
         for i, rowF in ipairs(self.attrRows) do
             if attrVals[i] then
@@ -712,7 +833,7 @@ function instance:Display(recipeItem)
     -- Populate interactive source rows inside srcScrollChild
     local curY = 0
     if self.sourceRows and self.srcScrollChild then
-        local childWidth = (self.srcScrollFrame and self.srcScrollFrame:GetWidth() or 300) - 22
+        local childWidth = (self.srcScrollFrame and self.srcScrollFrame:GetWidth() or 300) - RR.UI.Theme:GetScrollBarSpace()
         if childWidth > 50 then
             self.srcScrollChild:SetWidth(childWidth)
         end
@@ -733,11 +854,21 @@ function instance:Display(recipeItem)
                     factionIcon = "|TInterface\\AddOns\\RecipeRadar\\images\\neutral.tga:13:13:0:0|t "
                 end
 
-                row.text:SetText("• " .. factionIcon .. src.text)
-                if src.isOtherFaction then
-                    row.text:SetTextColor(0.65, 0.65, 0.65)
+                if src.header then
+                    -- group heading: no bullet, no faction icon
+                    row.text:SetText(src.text)
+                    if src.header == "verified" then
+                        row.text:SetTextColor(0.3, 1, 0.3)
+                    else
+                        row.text:SetTextColor(1, 0.6, 0.2)
+                    end
                 else
-                    row.text:SetTextColor(1, 1, 1)
+                    row.text:SetText("• " .. factionIcon .. src.text)
+                    if src.isOtherFaction then
+                        row.text:SetTextColor(0.65, 0.65, 0.65)
+                    else
+                        row.text:SetTextColor(1, 1, 1)
+                    end
                 end
                 row.waypoint = src.waypoint
                 row:Show()

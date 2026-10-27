@@ -29,12 +29,40 @@ RR_DATA = RR_DATA or {
 }
 
 RR.NAME = "RecipeRadar"
-RR.VERSION = "1.1.2"
+RR.VERSION = "1.2.0"
 RR.AUTHOR = "rakStar"
 
 -- Addon path
 local addonName = ...
 RR.ADDON_PATH = "Interface\\AddOns\\" .. (addonName or "RecipeRadar")
+
+-- Origin markers of the recipe list: the game's own icons, read from the client by file id, so no copy of the artwork
+-- ships with the addon. "crop" is the emblem inside the texture in pixels (left, right, top, bottom). The game has no
+-- emblem of its own for Classic and The Burning Crusade, so both use the WoW icon of the friends list; The Burning
+-- Crusade has it desaturated and tinted green.
+--   classic: Interface\FriendsFrame\Battlenet-WoWicon (374212, 32x32)
+--   tbc:     the same icon, desaturated and tinted green
+--   forever: Interface\Glues\Common\Glues-WoW-ForeverLogo-Infinity (8363869, 512x256)
+RR.ORIGIN_ICON_SIZE = 14
+RR.ORIGIN_ICONS = {
+    classic = { file = 374212, texW = 32, texH = 32, crop = { 0, 32, 0, 32 }, label = "ORIGIN_CLASSIC" },
+    tbc = { file = 374212, texW = 32, texH = 32, crop = { 0, 32, 0, 32 }, label = "ORIGIN_TBC",
+        desaturate = true, tint = { 0.55, 1, 0.35 } },
+    forever = { file = 8363869, texW = 512, texH = 256, crop = { 43, 299, 0, 256 }, label = "FOREVER_NEW_RECIPE" },
+}
+for _, icon in pairs(RR.ORIGIN_ICONS) do
+    local c = icon.crop
+    icon.texCoord = { c[1] / icon.texW, c[2] / icon.texW, c[3] / icon.texH, c[4] / icon.texH }
+    -- the escape cannot desaturate, so a tinted icon is only approximated in tooltips and the detail pane
+    local color = ""
+    if icon.tint then
+        local r, g, b = unpack(icon.tint)
+        color = string.format(":%d:%d:%d", math.floor(r * 255), math.floor(g * 255), math.floor(b * 255))
+    end
+    icon.escape = string.format("|T%d:%d:%d:0:0:%d:%d:%d:%d:%d:%d%s|t", icon.file, RR.ORIGIN_ICON_SIZE,
+        RR.ORIGIN_ICON_SIZE, icon.texW, icon.texH, c[1], c[2], c[3], c[4], color)
+end
+RR.ORIGIN_COLUMN_WIDTH = RR.ORIGIN_ICON_SIZE
 
 -- Profession IDs and English Names
 RR.PROFESSIONS = {

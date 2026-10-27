@@ -23,6 +23,7 @@ function RR.UI.MainWindow:Initialize()
     end
 
     f:SetFrameStrata("HIGH")
+    RR.UI.Theme:KeepBehindWorldMap(f, "HIGH")
     f:SetMovable(true)
     f:EnableMouse(true)
     f:RegisterForDrag("LeftButton")
@@ -47,21 +48,27 @@ function RR.UI.MainWindow:Initialize()
 
     local function buildProfessionMenu()
         local menu = {}
-        local allProfs = {
-            "Leatherworking", "Tailoring", "Blacksmithing", "Alchemy", 
-            "Engineering", "Enchanting", "Jewelcrafting", "Cooking", "First Aid", "Poisons"
-        }
-        if RR.DB and not RR.DB:IsTBC() then
-            for i = #allProfs, 1, -1 do
-                if allProfs[i] == "Jewelcrafting" then table.remove(allProfs, i) end
+        local allProfs = RR.DB:GetCustomProfessionMenu()
+        if not allProfs then
+            allProfs = {
+                "Leatherworking", "Tailoring", "Blacksmithing", "Alchemy",
+                "Engineering", "Enchanting", "Jewelcrafting", "Cooking", "First Aid", "Poisons"
+            }
+            if RR.DB and not RR.DB:IsTBC() then
+                for i = #allProfs, 1, -1 do
+                    if allProfs[i] == "Jewelcrafting" then table.remove(allProfs, i) end
+                end
             end
         end
 
         local curProf = (RR.Scanner and RR.Scanner:GetCurrentProfession()) or "Leatherworking"
+
+        -- Primary professions (crafting and gathering) first, secondary ones below; each group sorted by name
+        local secondaryProfs = { ["Cooking"] = true, ["First Aid"] = true, ["Fishing"] = true, ["Poisons"] = true }
+        local primary, secondary = {}, {}
         for _, pKey in ipairs(allProfs) do
-            local locName = RR.DB:GetProfessionDisplayName(pKey)
-            table.insert(menu, {
-                text = locName,
+            local entry = {
+                text = RR.DB:GetProfessionDisplayName(pKey),
                 value = pKey,
                 icon = "Interface\\Icons\\INV_Misc_Book_08",
                 func = function()
@@ -69,14 +76,29 @@ function RR.UI.MainWindow:Initialize()
                     self:Refresh()
                 end,
                 checked = (curProf == pKey),
-            })
+            }
+            table.insert(secondaryProfs[pKey] and secondary or primary, entry)
         end
+
+        local function byText(a, b) return a.text:lower() < b.text:lower() end
+        table.sort(primary, byText)
+        table.sort(secondary, byText)
+
+        local function addGroup(headerKey, group)
+            if #group == 0 then return end
+            table.insert(menu, { text = "--- " .. RR.L[headerKey] .. " ---", isHeader = true })
+            for _, entry in ipairs(group) do
+                table.insert(menu, entry)
+            end
+        end
+        addGroup("PROFESSIONS_PRIMARY", primary)
+        addGroup("PROFESSIONS_SECONDARY", secondary)
         return menu
     end
 
     self.titlePlaque:SetScript("OnMouseDown", function()
         if RR.UI.Dropdown then
-            RR.UI.Dropdown:Show(self.titlePlaque, buildProfessionMenu())
+            RR.UI.Dropdown:Show(self.titlePlaque, buildProfessionMenu(), false, true)
         end
     end)
     RR.UI.Theme:AddTooltip(self.titlePlaque, RR.NAME, RR.L["TOOLTIP_CHANGE_PROFESSION"])
@@ -140,6 +162,8 @@ end
 
 function RR.UI.MainWindow:Show()
     if not self.frame then self:Initialize() end
+    -- Open on the profession that is open in the game's profession window (WoW Forever)
+    RR.Scanner:SyncWithOpenProfession()
     self.frame:Show()
     self:Refresh()
 end

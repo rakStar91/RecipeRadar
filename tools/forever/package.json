@@ -1,0 +1,9 @@
+{
+  "name": "reciperadar-forever-tools",
+  "private": true,
+  "type": "module",
+  "description": "Extracts WoW Forever DB2 tables from Blizzard's CDN for RecipeRadar's database generator.",
+  "dependencies": {
+    "@rhyster/wow-casc-dbc": "2.16.17"
+  }
+}

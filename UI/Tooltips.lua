@@ -7,71 +7,77 @@ local RR = RecipeRadar
 RR.UI = RR.UI or {}
 RR.UI.Tooltips = {}
 
+--- Appends the block with the knowledge of the other characters to a tooltip.
+--- Also used by the settings preview, so the preview is the real thing.
+function RR.UI.Tooltips:AppendAlts(tooltip, alts, isCompact)
+    if not (alts and #alts > 0) then return end
+    tooltip._rr_hasAppended = true
+    tooltip:AddLine(" ")
+
+    if isCompact == nil then
+        local profile = RR.Config:GetProfile()
+        isCompact = profile and profile.tooltipCompact == true
+    end
+
+    if isCompact then
+        tooltip:AddLine(RR.COLORS.TITLE .. "RecipeRadar (" .. (RR.L["ALTS"] or "Alts") .. "):")
+        local knownList, missingList = {}, {}
+        for _, alt in ipairs(alts) do
+            local classKey = alt.class or "WARRIOR"
+            local cColor = RAID_CLASS_COLORS and RAID_CLASS_COLORS[classKey]
+            local coloredName = alt.name
+            if cColor then
+                coloredName = string.format("|cff%02x%02x%02x%s|r", cColor.r * 255, cColor.g * 255, cColor.b * 255, alt.name)
+            end
+            if alt.isKnown then
+                table.insert(knownList, coloredName)
+            else
+                table.insert(missingList, coloredName)
+            end
+        end
+        if #knownList > 0 then
+            tooltip:AddDoubleLine("|TInterface\\RAIDFRAME\\ReadyCheck-Ready:12:12:0:0|t |cff33ff33" .. RR.L["LEARNED"] .. ":|r", table.concat(knownList, ", "))
+        end
+        if #missingList > 0 then
+            tooltip:AddDoubleLine("|TInterface\\RAIDFRAME\\ReadyCheck-NotReady:12:12:0:0|t |cffff4444" .. RR.L["MODE_MISSING"] .. ":|r", table.concat(missingList, ", "))
+        end
+    else
+        tooltip:AddLine(RR.COLORS.TITLE .. "RecipeRadar (" .. (RR.L["ALTS"] or "Alts") .. "):")
+        for _, alt in ipairs(alts) do
+            local classKey = alt.class or "WARRIOR"
+            local classIcon = ""
+            local cCoords = CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[classKey]
+            if cCoords then
+                local left = math.floor(cCoords[1] * 256)
+                local right = math.floor(cCoords[2] * 256)
+                local top = math.floor(cCoords[3] * 256)
+                local bottom = math.floor(cCoords[4] * 256)
+                classIcon = string.format("|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:256:256:%d:%d:%d:%d|t ", left, right, top, bottom)
+            end
+
+            local cColor = RAID_CLASS_COLORS and RAID_CLASS_COLORS[classKey]
+            local coloredName = alt.name
+            if cColor then
+                coloredName = string.format("|cff%02x%02x%02x%s|r", cColor.r * 255, cColor.g * 255, cColor.b * 255, alt.name)
+            end
+
+            local statusStr
+            if alt.isKnown then
+                statusStr = "|TInterface\\RAIDFRAME\\ReadyCheck-Ready:12:12:0:0|t |cff33ff33" .. RR.L["LEARNED"] .. "|r"
+            else
+                statusStr = "|TInterface\\RAIDFRAME\\ReadyCheck-NotReady:12:12:0:0|t |cffff4444" .. RR.L["MODE_MISSING"] .. "|r"
+            end
+
+            tooltip:AddDoubleLine(classIcon .. coloredName .. ":", statusStr)
+        end
+    end
+    tooltip:Show()
+end
+
 function RR.UI.Tooltips:Initialize()
     local function AppendAltLines(tooltip, profName, spellId, recipeName)
         if not (profName and (spellId or recipeName)) then return end
-        local alts = RR.AltTracker:GetAltStatusForRecipe(profName, spellId, recipeName)
-        if alts and #alts > 0 then
-            tooltip._rr_hasAppended = true
-            tooltip:AddLine(" ")
-            
-            local profile = RR.Config:GetProfile()
-            local isCompact = profile and profile.tooltipCompact == true
-
-            if isCompact then
-                tooltip:AddLine(RR.COLORS.TITLE .. "RecipeRadar (" .. (RR.L["ALTS"] or "Alts") .. "):")
-                local knownList, missingList = {}, {}
-                for _, alt in ipairs(alts) do
-                    local classKey = alt.class or "WARRIOR"
-                    local cColor = RAID_CLASS_COLORS and RAID_CLASS_COLORS[classKey]
-                    local coloredName = alt.name
-                    if cColor then
-                        coloredName = string.format("|cff%02x%02x%02x%s|r", cColor.r * 255, cColor.g * 255, cColor.b * 255, alt.name)
-                    end
-                    if alt.isKnown then
-                        table.insert(knownList, coloredName)
-                    else
-                        table.insert(missingList, coloredName)
-                    end
-                end
-                if #knownList > 0 then
-                    tooltip:AddDoubleLine("|TInterface\\RAIDFRAME\\ReadyCheck-Ready:12:12:0:0|t |cff33ff33" .. RR.L["LEARNED"] .. ":|r", table.concat(knownList, ", "))
-                end
-                if #missingList > 0 then
-                    tooltip:AddDoubleLine("|TInterface\\RAIDFRAME\\ReadyCheck-NotReady:12:12:0:0|t |cffff4444" .. RR.L["MODE_MISSING"] .. ":|r", table.concat(missingList, ", "))
-                end
-            else
-                tooltip:AddLine(RR.COLORS.TITLE .. "RecipeRadar (" .. (RR.L["ALTS"] or "Alts") .. "):")
-                for _, alt in ipairs(alts) do
-                    local classKey = alt.class or "WARRIOR"
-                    local classIcon = ""
-                    local cCoords = CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[classKey]
-                    if cCoords then
-                        local left = math.floor(cCoords[1] * 256)
-                        local right = math.floor(cCoords[2] * 256)
-                        local top = math.floor(cCoords[3] * 256)
-                        local bottom = math.floor(cCoords[4] * 256)
-                        classIcon = string.format("|TInterface\\WorldStateFrame\\Icons-Classes:13:13:0:0:256:256:%d:%d:%d:%d|t ", left, right, top, bottom)
-                    end
-
-                    local cColor = RAID_CLASS_COLORS and RAID_CLASS_COLORS[classKey]
-                    local coloredName = alt.name
-                    if cColor then
-                        coloredName = string.format("|cff%02x%02x%02x%s|r", cColor.r * 255, cColor.g * 255, cColor.b * 255, alt.name)
-                    end
-
-                    local statusStr
-                    if alt.isKnown then
-                        statusStr = "|TInterface\\RAIDFRAME\\ReadyCheck-Ready:12:12:0:0|t |cff33ff33" .. RR.L["LEARNED"] .. "|r"
-                    else
-                        statusStr = "|TInterface\\RAIDFRAME\\ReadyCheck-NotReady:12:12:0:0|t |cffff4444" .. RR.L["MODE_MISSING"] .. "|r"
-                    end
-
-                    tooltip:AddDoubleLine(classIcon .. coloredName .. ":", statusStr)
-                end
-            end
-            tooltip:Show()
-        end
+        RR.UI.Tooltips:AppendAlts(tooltip, RR.AltTracker:GetAltStatusForRecipe(profName, spellId, recipeName))
     end
 
     local function OnTooltipSetItem(tooltip)
@@ -124,11 +130,15 @@ function RR.UI.Tooltips:Initialize()
     local function HookTooltip(tt)
         if not tt then return end
         if tt.HookScript then
-            tt:HookScript("OnTooltipSetItem", OnTooltipSetItem)
-            tt:HookScript("OnTooltipSetSpell", OnTooltipSetSpell)
-            tt:HookScript("OnTooltipCleared", function(self)
-                self._rr_hasAppended = nil
-            end)
+            -- Hooking a script type the client does not have raises an error (WoW Forever has no
+            -- OnTooltipSet* scripts), so only hook the ones the tooltip supports.
+            if tt:HasScript("OnTooltipSetItem") then tt:HookScript("OnTooltipSetItem", OnTooltipSetItem) end
+            if tt:HasScript("OnTooltipSetSpell") then tt:HookScript("OnTooltipSetSpell", OnTooltipSetSpell) end
+            if tt:HasScript("OnTooltipCleared") then
+                tt:HookScript("OnTooltipCleared", function(self)
+                    self._rr_hasAppended = nil
+                end)
+            end
         end
     end
 

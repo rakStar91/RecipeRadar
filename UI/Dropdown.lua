@@ -29,20 +29,33 @@ function RR.UI.Dropdown:GetPopupFrame()
         scrollFrame:SetScrollChild(scrollChild)
         dropdownPopup.scrollChild = scrollChild
 
-        -- ScrollBar slider
-        local scrollBar = CreateFrame("Slider", "RecipeRadarDropdownScrollBar", dropdownPopup, BackdropTemplateMixin and "BackdropTemplate")
-        scrollBar:SetWidth(10)
-        scrollBar:SetPoint("TOPRIGHT", -4, -4)
-        scrollBar:SetPoint("BOTTOMRIGHT", -4, 4)
-        RR.UI.Theme:SkinPanel(scrollBar, 0.8)
-        scrollBar:SetThumbTexture("Interface\\Buttons\\UI-SliderBar-Button-Vertical")
-        scrollBar:SetOrientation("VERTICAL")
-        scrollBar:SetMinMaxValues(0, 100)
-        scrollBar:SetValue(0)
-        scrollBar:SetValueStep(22)
-        scrollBar:SetScript("OnValueChanged", function(selfSB, val)
-            scrollFrame:SetVerticalScroll(val)
-        end)
+        -- ScrollBar: the modern one where the client has it, otherwise the slider drawn here
+        local scrollBar
+        if RR.UI.Theme:HasModernScrollBar() then
+            scrollBar = RR.UI.Theme:CreateScrollBar(dropdownPopup, {
+                name = "RecipeRadarDropdownScrollBar",
+                step = 22,
+                right = -3,
+                visible = function() return dropdownPopup.viewHeight or 0 end,
+                onValueChanged = function(_, val)
+                    scrollFrame:SetVerticalScroll(val)
+                end,
+            })
+        else
+            scrollBar = CreateFrame("Slider", "RecipeRadarDropdownScrollBar", dropdownPopup, BackdropTemplateMixin and "BackdropTemplate")
+            scrollBar:SetWidth(10)
+            scrollBar:SetPoint("TOPRIGHT", -4, -4)
+            scrollBar:SetPoint("BOTTOMRIGHT", -4, 4)
+            RR.UI.Theme:SkinPanel(scrollBar, 0.8)
+            scrollBar:SetThumbTexture("Interface\\Buttons\\UI-SliderBar-Button-Vertical")
+            scrollBar:SetOrientation("VERTICAL")
+            scrollBar:SetMinMaxValues(0, 100)
+            scrollBar:SetValue(0)
+            scrollBar:SetValueStep(22)
+            scrollBar:SetScript("OnValueChanged", function(selfSB, val)
+                scrollFrame:SetVerticalScroll(val)
+            end)
+        end
         dropdownPopup.scrollBar = scrollBar
 
         local function onMouseWheel(selfF, delta)
@@ -81,7 +94,8 @@ end
 -- @param anchorBtn Frame The anchor button
 -- @param items Table or Function Array of item tables or a generator function returning array
 -- @param isMulti Boolean If true, clicking an item will toggle and re-render without closing
-function RR.UI.Dropdown:Show(anchorBtn, items, isMulti)
+-- @param matchAnchorWidth Boolean If true, the popup is as wide as the anchor (unless an entry needs more room)
+function RR.UI.Dropdown:Show(anchorBtn, items, isMulti, matchAnchorWidth)
     local popup = self:GetPopupFrame()
 
     if popup:IsShown() and popup.currentAnchor == anchorBtn then
@@ -90,6 +104,7 @@ function RR.UI.Dropdown:Show(anchorBtn, items, isMulti)
     end
 
     popup.currentAnchor = anchorBtn
+    popup.matchAnchorWidth = matchAnchorWidth or false
     popup.isMulti = isMulti or false
     popup.itemsGenerator = (type(items) == "function") and items or nil
     popup:ClearAllPoints()
@@ -104,7 +119,6 @@ function RR.UI.Dropdown:Render(items, isInitial)
     if not popup or not popup.currentAnchor then return end
 
     local anchorBtn = popup.currentAnchor
-    local maxWidth = (anchorBtn:GetWidth() or 120) + 20
     local itemHeight = 22
     local count = #items
     local maxVisible = 12
@@ -112,6 +126,14 @@ function RR.UI.Dropdown:Render(items, isInitial)
     local totalContentHeight = count * itemHeight
     local viewHeight = visibleCount * itemHeight
     local needsScroll = count > maxVisible
+
+    -- room the scroll bar takes next to the entries
+    local barSpace = RR.UI.Theme:HasModernScrollBar() and 22 or 16
+    local maxWidth = (anchorBtn:GetWidth() or 120) + 20
+    if popup.matchAnchorWidth then
+        -- the popup (entries + padding + scroll bar) ends up exactly as wide as the anchor
+        maxWidth = (anchorBtn:GetWidth() or 120) - (needsScroll and barSpace + 4 or 8)
+    end
 
     local checkedIndex = nil
     for i, itm in ipairs(items) do
@@ -136,10 +158,10 @@ function RR.UI.Dropdown:Render(items, isInitial)
             btn.check:SetPoint("RIGHT", -4, 0)
 
             btn:SetScript("OnEnter", function(selfB)
-                if selfB.SetBackdropColor then selfB:SetBackdropColor(0.25, 0.28, 0.35, 1) end
+                if selfB.SetBackdropColor then selfB:SetBackdropColor(unpack(RR.UI.Theme:GetSkin().popupHover)) end
             end)
             btn:SetScript("OnLeave", function(selfB)
-                if selfB.SetBackdropColor then selfB:SetBackdropColor(0.04, 0.05, 0.06, 0.6) end
+                if selfB.SetBackdropColor then selfB:SetBackdropColor(unpack(RR.UI.Theme:GetSkin().popupItem)) end
             end)
             btn:EnableMouseWheel(true)
             btn:SetScript("OnMouseWheel", function(selfB, delta)
@@ -160,12 +182,12 @@ function RR.UI.Dropdown:Render(items, isInitial)
             btn.text:SetPoint("LEFT", 8, 0)
             btn.text:SetTextColor(1, 0.82, 0, 1)
             btn.text:SetFontObject("GameFontNormalSmall")
-            if btn.SetBackdropColor then btn:SetBackdropColor(0.12, 0.14, 0.20, 0.95) end
+            if btn.SetBackdropColor then btn:SetBackdropColor(unpack(RR.UI.Theme:GetSkin().popupHeader)) end
             btn:SetScript("OnClick", nil)
         else
             btn:Enable()
             btn.text:SetFontObject("GameFontHighlightSmall")
-            if btn.SetBackdropColor then btn:SetBackdropColor(0.04, 0.05, 0.06, 0.6) end
+            if btn.SetBackdropColor then btn:SetBackdropColor(unpack(RR.UI.Theme:GetSkin().popupItem)) end
 
             if itm.icon then
                 btn.icon:SetTexture(itm.icon)
@@ -215,10 +237,12 @@ function RR.UI.Dropdown:Render(items, isInitial)
         btn:SetSize(childWidth, itemHeight)
     end
 
+    popup.viewHeight = viewHeight
+
     popup.scrollFrame:ClearAllPoints()
     if needsScroll then
         popup.scrollFrame:SetPoint("TOPLEFT", 4, -4)
-        popup.scrollFrame:SetPoint("BOTTOMRIGHT", -16, 4)
+        popup.scrollFrame:SetPoint("BOTTOMRIGHT", -barSpace, 4)
         popup.scrollBar:Show()
         local maxScroll = math.max(0, totalContentHeight - viewHeight)
         popup.scrollBar:SetMinMaxValues(0, maxScroll)
@@ -239,7 +263,7 @@ function RR.UI.Dropdown:Render(items, isInitial)
         popup.scrollFrame:SetVerticalScroll(0)
     end
 
-    local finalPopupWidth = maxWidth + (needsScroll and 20 or 8)
+    local finalPopupWidth = maxWidth + (needsScroll and barSpace + 4 or 8)
     local finalPopupHeight = viewHeight + 8
 
     popup:SetSize(finalPopupWidth, finalPopupHeight)

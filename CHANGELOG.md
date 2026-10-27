@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-10-27
+
+### Added
+- **Support for World of Warcraft: Forever (experimental)**: RecipeRadar has its own recipe database for Forever: the 1243 Classic recipes that still exist plus 934 new ones, including the new camping recipes of Mining, Herbalism, Skinning and Fishing. Recipe names come in all 10 languages. Names of NPCs and quests that are new in Forever are only available in English and German for now, other languages show the English name. Forever has no Jewelcrafting and no TBC content. Classic Era and TBC Anniversary are not affected.
+- **Forever profession windows and menu**: The "RR" button appears on Forever's profession window and overview, learned recipes are read from it, and RecipeRadar is listed in the minimap "Addons" menu. The separate minimap button starts hidden there; `/rr minimap` brings it back.
+- **New in Forever**: Recipes that are new in Forever show the Forever logo with the tooltip "New in WoW Forever".
+- **Sources recorded by players (Forever)**: Sources of new recipes (vendors, trainers, loot, quest rewards) are noted while you play. The new "Sources" tab in the settings turns recording on or off and offers the data to copy and share (`/rr export`, `/rr record [on|off|clear]`). Only facts about recipes are kept, nothing is sent anywhere.
+- **Confirmed and unknown sources (Forever)**: Sources carried over from Classic are listed separately from those confirmed in Forever. Recipes without a known source are labeled "Unknown source" and can be filtered, and unknown skill requirements show "?".
+- **Skins**: The settings (Interface tab, "Appearance") offer three looks: "Classic Era", "WoW Forever" and "The Burning Crusade".
+- **Statues on the title banner**: Gryphons or wyverns on both ends of the title banner, or none. Each skin remembers its own choice.
+
+### Changed
+- **Tooltip settings preview**: The box at the bottom of the tooltip settings is now a live preview that follows your options.
+- **Profession menu**: Split into "Primary Professions" and "Secondary Professions", sorted alphabetically in your language.
+- **Title banner**: The banner is now plain, without the golden dragons.
+- **Forever**: The phase filter and phase row are hidden, and new recipes are no longer shown as Alliance-only or Horde-only because of a single recorded trainer.
+
+### Fixed
+- **World map**: The RecipeRadar windows no longer cover the world map.
+- **Profession menu width**: The menu is now exactly as wide as the title bar.
+
+---
+
 ## [1.1.2] - 2026-10-26
 
 ### Fixed

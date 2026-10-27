@@ -12,6 +12,7 @@ local CANDIDATE_FRAMES = {
     "DragonflightUIProfessionFrame",
     "DragonflightUIRetailProfessionFrame",
     "ProfessionsFrame",
+    "ProfessionsBookFrame", -- standalone profession overview ("Berufe") when it is not a page of ProfessionsFrame
     "SkilletFrame",
     "MRTF_TradeSkillFrame",
     "TradeSkillFrame",
@@ -134,13 +135,13 @@ end
 function RR.UI.AttachButton:HookFrames()
     -- 1. Event watcher
     local watcher = CreateFrame("Frame")
-    watcher:RegisterEvent("TRADE_SKILL_SHOW")
-    watcher:RegisterEvent("TRADE_SKILL_CLOSE")
-    watcher:RegisterEvent("CRAFT_SHOW")
-    watcher:RegisterEvent("CRAFT_CLOSE")
+    RR.Utils:RegisterEvents(watcher, { "ADDON_LOADED", "TRADE_SKILL_SHOW", "TRADE_SKILL_CLOSE", "CRAFT_SHOW", "CRAFT_CLOSE" })
 
     watcher:SetScript("OnEvent", function(_, event)
-        if event == "TRADE_SKILL_SHOW" or event == "CRAFT_SHOW" then
+        if event == "ADDON_LOADED" then
+            -- The profession windows live in load-on-demand addons, so they do not exist at startup
+            self:HookCandidateFrames()
+        elseif event == "TRADE_SKILL_SHOW" or event == "CRAFT_SHOW" then
             self:PositionButton()
             if self.button and self.anchor_frame and RR.Config:IsAttachButtonShown() then
                 self.button:Show()
@@ -192,10 +193,17 @@ function RR.UI.AttachButton:HookFrames()
         end
     end)
 
-    -- 2. Direct OnShow / OnHide hooks on known candidate frames
+    -- 2. Direct OnShow / OnHide hooks on known candidate frames (those that already exist)
+    self:HookCandidateFrames()
+end
+
+--- Hooks OnShow / OnHide of every known profession window that exists, once per frame.
+-- Called at startup and after each addon load, because the profession windows are load-on-demand.
+function RR.UI.AttachButton:HookCandidateFrames()
     for _, name in ipairs(CANDIDATE_FRAMES) do
         local f = _G[name]
-        if f and f.HookScript then
+        if f and f.HookScript and not f.rr_candidate_hooked then
+            f.rr_candidate_hooked = true
             f:HookScript("OnShow", function()
                 self:PositionButton()
                 if self.button and self.anchor_frame and RR.Config:IsAttachButtonShown() then
@@ -217,6 +225,22 @@ function RR.UI.AttachButton:HookFrames()
     end
 end
 
+--- Highest frame level among a frame and its descendants, ignoring one frame (the button itself).
+-- Profession pages set fixed frame levels (ProfessionsFrame pages use 100), so "parent level + n"
+-- is not reliable for staying on top of the window content.
+local function MaxFrameLevel(frame, skip, depth)
+    local max = frame:GetFrameLevel() or 0
+    if depth > 0 then
+        for _, child in ipairs({ frame:GetChildren() }) do
+            if child ~= skip and not (child.IsForbidden and child:IsForbidden()) then
+                local level = MaxFrameLevel(child, skip, depth - 1)
+                if level > max then max = level end
+            end
+        end
+    end
+    return max
+end
+
 function RR.UI.AttachButton:PositionButton()
     if not self.button then return end
 
@@ -230,8 +254,9 @@ function RR.UI.AttachButton:PositionButton()
 
     self.anchor_frame = parentFrame
     self.button:SetParent(parentFrame)
+    -- Same strata as the window (so other windows can still cover it), but above all of its content
     self.button:SetFrameStrata(parentFrame:GetFrameStrata() or "HIGH")
-    self.button:SetFrameLevel((parentFrame:GetFrameLevel() or 1) + 10)
+    self.button:SetFrameLevel(math.min(MaxFrameLevel(parentFrame, self.button, 6) + 5, 9990))
     self.button:SetToplevel(false)
 
     -- Hook events on the parent frame if not yet installed

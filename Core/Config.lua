@@ -13,6 +13,7 @@ local DEFAULT_CONFIG = {
         tooltipSpells = true,
         tooltipCompact = false,
         attachButton = true,
+        skin = "dark",          -- key of RR.UI.Theme.SKINS
         minimap = { hide = false, minimapPos = 220 },
         buttonPosition = { x = 0, y = 0, isCustom = false },
         windowPosition = { point = "CENTER", relativePoint = "CENTER", x = 0, y = 0 },

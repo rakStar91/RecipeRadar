@@ -177,7 +177,9 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
             return false
         end
 
-        if type(phaseFilter) == "table" then
+        if not RR.DB:HasPhases() then
+            -- Data without content phases (WoW Forever): the phase filter does not apply
+        elseif type(phaseFilter) == "table" then
             local matched = false
             for reqP, enabled in pairs(phaseFilter) do
                 if enabled and matchSinglePhase(reqP, meta.phase, meta.expansion) then
@@ -219,14 +221,19 @@ function RR.Filter:ApplyFilters(recipes, profName, searchQuery)
                 id = spellId,
                 name = recipeName,
                 isKnown = isKnown,
-                skillReq = recipe.min_skill or 1,
+                skillReq = recipe.min_skill, -- nil while the requirement is not known (new Forever recipes)
+                origin = RR.DB:GetRecipeOrigin(recipe),
             })
         end
     end
 
-    -- Sort by required skill, then by name
+    -- Sort by required skill, then by name; recipes whose skill requirement is not known yet go last
     table.sort(filtered, function(a, b)
-        if a.skillReq ~= b.skillReq then
+        local aUnknown, bUnknown = a.skillReq == nil, b.skillReq == nil
+        if aUnknown ~= bUnknown then
+            return bUnknown
+        end
+        if not aUnknown and a.skillReq ~= b.skillReq then
             return a.skillReq < b.skillReq
         end
         return a.name < b.name
