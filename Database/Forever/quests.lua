@@ -256,6 +256,42 @@ local forever_quests = {
 		},
 	},
 	{
+		["id"] = 3379,
+		["name"] = {
+			["Chinese"] = "Shadoweaver",
+			["English"] = "Shadoweaver",
+			["French"] = "Shadoweaver",
+			["German"] = "Schattenweber",
+			["Korean"] = "Shadoweaver",
+			["Mexican"] = "Shadoweaver",
+			["Portuguese"] = "Shadoweaver",
+			["Russian"] = "Shadoweaver",
+			["Spanish"] = "Shadoweaver",
+			["Taiwanese"] = "Shadoweaver",
+		},
+		["npcs"] = {
+			8439,
+		},
+	},
+	{
+		["id"] = 3385,
+		["name"] = {
+			["Chinese"] = "The Undermarket",
+			["English"] = "The Undermarket",
+			["French"] = "The Undermarket",
+			["German"] = "Der Untermarkt",
+			["Korean"] = "The Undermarket",
+			["Mexican"] = "The Undermarket",
+			["Portuguese"] = "The Undermarket",
+			["Russian"] = "The Undermarket",
+			["Spanish"] = "The Undermarket",
+			["Taiwanese"] = "The Undermarket",
+		},
+		["npcs"] = {
+			8439,
+		},
+	},
+	{
 		["id"] = 3526,
 		["name"] = {
 			["Chinese"] = "Goblin Engineering",
